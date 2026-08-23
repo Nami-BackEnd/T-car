@@ -13,6 +13,7 @@ class ContactUsService
     {
         $data['model'] = 'driver';
         $data['model_id'] = auth()->id();
+        $data['lang'] = app()->getLocale();
         ContactUs::create($data);
 
         return ApiResponse::success(

@@ -1,0 +1,402 @@
+@extends('admin.layouts.master')
+
+@section('title', $config['entity'] . ' | ' . __('admin.panel_name'))
+
+@section('content')
+  <div class="card card-lg">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3 border-bottom">
+      <h5 class="mb-0 d-flex align-items-center gap-2">
+        <i class="ti {{ $config['icon'] }}"></i>
+        <span>{{ $config['entity'] }}</span>
+      </h5>
+
+      <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
+        <div class="position-relative">
+          <input type="text" id="alrtSearch" class="form-control ps-5" style="min-width: 220px;"
+            placeholder="{{ __('admin.alerts.placeholder_search') }}" autocomplete="off">
+          <i class="ti ti-search position-absolute top-50 translate-middle-y text-secondary" style="inset-inline-start: 14px;"></i>
+        </div>
+
+        <button type="button" id="addAlrtBtn" class="btn btn-primary d-inline-flex align-items-center gap-1">
+          <i class="ti ti-plus"></i>
+          <span>{{ __('admin.content.add_new') }}</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table text-nowrap mb-0 table-centered table-hover">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>{{ __('admin.alerts.table_title') }}</th>
+            <th>{{ __('admin.content.table_date') }}</th>
+            <th>{{ __('admin.common.actions') }}</th>
+          </tr>
+        </thead>
+        <tbody id="alrtsTableBody"></tbody>
+      </table>
+    </div>
+
+    {{-- Empty state --}}
+    <div id="alrtsEmpty" class="text-center py-16 px-4 d-none">
+      <div class="icon-shape icon-xl rounded-circle bg-gray-200 text-secondary d-inline-flex align-items-center justify-content-center mb-4">
+        <i class="ti {{ $config['icon'] }}" style="font-size:32px"></i>
+      </div>
+      <h6 class="mb-1">{{ __('admin.alerts.empty_title') }}</h6>
+      <p class="text-secondary mb-4">{{ __('admin.alerts.empty_text') }}</p>
+      <button type="button" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1 js-open-create">
+        <i class="ti ti-plus"></i>
+        <span>{{ __('admin.content.add_new') }}</span>
+      </button>
+    </div>
+
+    {{-- Pagination --}}
+    <div class="card-footer d-flex flex-wrap justify-content-between align-items-center gap-2 border-top">
+      <small class="text-secondary" id="alrtsSummary"></small>
+      <nav aria-label="pagination"><ul class="pagination pagination-sm mb-0" id="alrtsPagination"></ul></nav>
+    </div>
+  </div>
+
+  {{-- Create / Edit Modal --}}
+  <div class="modal fade" id="alrtModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="alrtModalTitle">{{ __('admin.alerts.add_alert') }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="alrtForm" novalidate>
+            <input type="hidden" name="_method" value="POST">
+
+            <div class="row g-4">
+              <div class="col-md-6">
+                <label class="form-label" for="alrtTitleAr">{{ __('admin.alerts.field_title_ar') }}</label>
+                <input type="text" name="title_ar" id="alrtTitleAr" dir="rtl" class="form-control"
+                  placeholder="{{ __('admin.alerts.placeholder_title_ar') }}">
+                <div class="invalid-feedback" data-error-for="title_ar"></div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="alrtTitleEn">{{ __('admin.alerts.field_title_en') }}</label>
+                <input type="text" name="title_en" id="alrtTitleEn" dir="ltr" class="form-control"
+                  placeholder="{{ __('admin.alerts.placeholder_title_en') }}">
+                <div class="invalid-feedback" data-error-for="title_en"></div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-white" data-bs-dismiss="modal">{{ __('admin.content.cancel') }}</button>
+          <button type="button" id="alrtSaveBtn" class="btn btn-primary d-inline-flex align-items-center gap-2">
+            <i class="ti ti-device-floppy"></i>
+            <span>{{ __('admin.content.save') }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @include('admin.partials.flash')
+@endsection
+
+@push('scripts')
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const listUrl = @json(route('admin.alrts.index'));
+      const i18n = {
+        confirmTitle: @json(__('admin.common.confirm_title')),
+        confirmButton: @json(__('admin.common.confirm_delete')),
+        confirmDelete: @json(__('admin.alerts.delete_confirm')),
+        networkError: @json(__('admin.common.network_error')),
+        sessionExpired: @json(__('admin.messages.session_expired')),
+        loading: @json(__('admin.common.loading')),
+        addTitle: @json(__('admin.alerts.add_alert')),
+        editTitle: @json(__('admin.alerts.edit_alert')),
+      };
+
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+      const jsonHeaders = { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
+      const numberFormatter = new Intl.NumberFormat(document.body.getAttribute('data-locale') === 'ar' ? 'ar-EG' : 'en-US');
+      const adminLocale = document.body.getAttribute('data-locale') || 'en';
+
+      const tbody = document.getElementById('alrtsTableBody');
+      const emptyState = document.getElementById('alrtsEmpty');
+      const summaryEl = document.getElementById('alrtsSummary');
+      const paginationEl = document.getElementById('alrtsPagination');
+      const searchInput = document.getElementById('alrtSearch');
+
+      const modalEl = document.getElementById('alrtModal');
+      const alrtModal = new bootstrap.Modal(modalEl);
+      const form = document.getElementById('alrtForm');
+      const modalTitle = document.getElementById('alrtModalTitle');
+      const saveBtn = document.getElementById('alrtSaveBtn');
+
+      let alrtsCache = [];
+      let paginationMeta = null;
+      let currentPage = 1;
+      let editingId = null;
+
+      function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+        }[char]));
+      }
+
+      function formatDate(value) {
+        if (!value) return '—';
+        return new Date(value).toLocaleDateString(
+          adminLocale === 'ar' ? 'ar-EG' : 'en-GB',
+          { day: '2-digit', month: 'short', year: 'numeric' }
+        );
+      }
+
+      async function requestJson(url, options = {}) {
+        const response = await fetch(url, options);
+        const payload = await response.json().catch(() => null);
+        return { ok: response.ok, status: response.status, payload };
+      }
+
+      // ---------- List ----------
+      async function loadAlrts() {
+        const params = new URLSearchParams({ page: currentPage });
+        if (searchInput.value.trim()) params.set('search', searchInput.value.trim());
+
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-secondary py-4">${escapeHtml(i18n.loading)}</td></tr>`;
+
+        try {
+          const { ok, status, payload } = await requestJson(`${listUrl}?${params}`, { headers: jsonHeaders });
+
+          if (status === 401) {
+            if (window.adminToast) window.adminToast(i18n.sessionExpired, 'danger');
+            return;
+          }
+          if (!ok || !payload) {
+            if (window.adminToast) window.adminToast(i18n.networkError, 'danger');
+            tbody.innerHTML = '';
+            return;
+          }
+
+          alrtsCache = payload.data || [];
+          paginationMeta = payload.pagination || null;
+          renderRows();
+          renderPagination(payload.pagination);
+        } catch (e) {
+          tbody.innerHTML = '';
+          if (window.adminToast) window.adminToast(i18n.networkError, 'danger');
+        }
+      }
+
+      function renderRows() {
+        emptyState.classList.toggle('d-none', alrtsCache.length > 0);
+
+        const offset = paginationMeta ? (paginationMeta.current_page - 1) * paginationMeta.per_page : 0;
+
+        tbody.innerHTML = alrtsCache.map((alrt, index) => {
+          const rowNumber = offset + index + 1;
+          const title = adminLocale === 'ar' ? alrt.title_ar : alrt.title_en;
+          const altTitle = adminLocale === 'ar' ? alrt.title_en : alrt.title_ar;
+
+          return `
+            <tr data-alrt-id="${alrt.id}">
+              <td>${numberFormatter.format(rowNumber)}</td>
+              <td style="max-width: 480px;">
+                <div class="text-truncate fw-semibold">${escapeHtml(title)}</div>
+                <div class="text-truncate text-secondary small">${escapeHtml(altTitle)}</div>
+              </td>
+              <td>${formatDate(alrt.created_at)}</td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <button type="button" class="btn btn-white btn-sm d-inline-flex align-items-center gap-1 js-edit">
+                    <i class="ti ti-pencil"></i>
+                    <span>{{ __('admin.content.edit') }}</span>
+                  </button>
+                  <button type="button" class="btn btn-white btn-sm text-danger d-inline-flex align-items-center gap-1 js-delete"
+                    data-confirm="${escapeHtml(i18n.confirmDelete)}">
+                    <i class="ti ti-trash"></i>
+                    <span>{{ __('admin.content.delete') }}</span>
+                  </button>
+                </div>
+              </td>
+            </tr>`;
+        }).join('');
+      }
+
+      function renderPagination(pagination) {
+        if (!pagination) {
+          summaryEl.textContent = '';
+          paginationEl.innerHTML = '';
+          return;
+        }
+
+        summaryEl.textContent = `${numberFormatter.format(pagination.from ?? 0)} - ${numberFormatter.format(pagination.to ?? 0)} / ${numberFormatter.format(pagination.total)}`;
+
+        const pages = [];
+        const pushPage = (page, label, active, disabled, isPrevNext = false) => pages.push(`
+          <li class="page-item ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}">
+            <a class="page-link ${isPrevNext ? 'px-2' : ''}" href="#" data-page="${page}">
+              ${isPrevNext ? label : numberFormatter.format(page)}
+            </a>
+          </li>`);
+
+        pushPage(pagination.current_page - 1, '<i class="ti ti-chevron-left"></i>', false, pagination.current_page <= 1, true);
+        for (let page = 1; page <= pagination.last_page; page++) {
+          pushPage(page, null, page === pagination.current_page, false);
+        }
+        pushPage(pagination.current_page + 1, '<i class="ti ti-chevron-right"></i>', false, pagination.current_page >= pagination.last_page, true);
+
+        paginationEl.innerHTML = pages.join('');
+      }
+
+      paginationEl.addEventListener('click', function (event) {
+        const link = event.target.closest('[data-page]');
+        if (!link || link.parentElement.classList.contains('disabled')) return;
+        event.preventDefault();
+
+        const page = parseInt(link.getAttribute('data-page'), 10);
+        if (!Number.isFinite(page)) return;
+
+        currentPage = page;
+        loadAlrts();
+      });
+
+      // ---------- Search ----------
+      let searchTimer = null;
+      searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+          currentPage = 1;
+          loadAlrts();
+        }, 300);
+      });
+
+      // ---------- Form helpers ----------
+      function clearErrors() {
+        form.querySelectorAll('.invalid-feedback').forEach((el) => { el.textContent = ''; });
+        form.querySelectorAll('.form-control').forEach((el) => el.classList.remove('is-invalid'));
+      }
+
+      function showErrors(errors) {
+        Object.entries(errors || {}).forEach(([field, messages]) => {
+          const feedback = form.querySelector(`[data-error-for="${field}"]`);
+          if (!feedback) return;
+          feedback.textContent = Array.isArray(messages) ? messages[0] : String(messages);
+          const input = form.querySelector(`[name="${field}"]`);
+          if (input) input.classList.add('is-invalid');
+        });
+      }
+
+      function openCreate() {
+        editingId = null;
+        clearErrors();
+        form.reset();
+        form.querySelector('[name="_method"]').value = 'POST';
+        modalTitle.textContent = i18n.addTitle;
+        alrtModal.show();
+      }
+
+      function openEdit(alrt) {
+        editingId = alrt.id;
+        clearErrors();
+        form.reset();
+        form.querySelector('[name="_method"]').value = 'PUT';
+        form.elements.title_ar.value = alrt.title_ar ?? '';
+        form.elements.title_en.value = alrt.title_en ?? '';
+        modalTitle.textContent = i18n.editTitle;
+        alrtModal.show();
+      }
+
+      document.getElementById('addAlrtBtn').addEventListener('click', openCreate);
+      document.querySelectorAll('.js-open-create').forEach((btn) => btn.addEventListener('click', openCreate));
+
+      // ---------- Row actions ----------
+      tbody.addEventListener('click', async function (event) {
+        const row = event.target.closest('[data-alrt-id]');
+        if (!row) return;
+
+        const alrtId = parseInt(row.getAttribute('data-alrt-id'), 10);
+        const alrt = alrtsCache.find((item) => item.id === alrtId);
+        if (!alrt) return;
+
+        if (event.target.closest('.js-edit')) {
+          openEdit(alrt);
+          return;
+        }
+
+        const deleteBtn = event.target.closest('.js-delete');
+        if (!deleteBtn) return;
+
+        const confirmed = await window.adminConfirm({
+          title: i18n.confirmTitle,
+          text: deleteBtn.getAttribute('data-confirm'),
+          confirmText: i18n.confirmButton,
+        });
+        if (!confirmed) return;
+
+        deleteBtn.disabled = true;
+        try {
+          const { ok, status, payload } = await requestJson(listUrl + '/' + alrtId, {
+            method: 'DELETE',
+            headers: { ...jsonHeaders, 'X-CSRF-TOKEN': csrfToken },
+          });
+
+          if (status === 401) {
+            if (window.adminToast) window.adminToast(i18n.sessionExpired, 'danger');
+          } else if (ok) {
+            if (window.adminToast) window.adminToast(payload?.message || 'OK', 'success');
+            loadAlrts();
+          } else {
+            if (window.adminToast) window.adminToast(payload?.message || i18n.networkError, 'danger');
+          }
+        } catch (e) {
+          if (window.adminToast) window.adminToast(i18n.networkError, 'danger');
+        } finally {
+          deleteBtn.disabled = false;
+        }
+      });
+
+      // ---------- Save (create / update) ----------
+      saveBtn.addEventListener('click', async function () {
+        clearErrors();
+
+        const formData = new FormData(form);
+        if (editingId) formData.set('_method', 'PUT');
+
+        const url = editingId ? listUrl + '/' + editingId : listUrl;
+        saveBtn.disabled = true;
+
+        try {
+          const { ok, status, payload } = await requestJson(url, {
+            method: 'POST',
+            headers: { ...jsonHeaders, 'X-CSRF-TOKEN': csrfToken },
+            body: formData,
+          });
+
+          if (status === 401) {
+            if (window.adminToast) window.adminToast(i18n.sessionExpired, 'danger');
+            return;
+          }
+          if (status === 422 && payload?.errors) {
+            showErrors(payload.errors);
+            if (window.adminToast) window.adminToast(payload?.message || '', 'danger');
+            return;
+          }
+          if (ok) {
+            if (window.adminToast) window.adminToast(payload?.message || 'OK', 'success');
+            alrtModal.hide();
+            if (!searchInput.value.trim()) currentPage = 1;
+            loadAlrts();
+          } else {
+            if (window.adminToast) window.adminToast(payload?.message || i18n.networkError, 'danger');
+          }
+        } catch (e) {
+          if (window.adminToast) window.adminToast(i18n.networkError, 'danger');
+        } finally {
+          saveBtn.disabled = false;
+        }
+      });
+
+      loadAlrts();
+    });
+  </script>
+@endpush

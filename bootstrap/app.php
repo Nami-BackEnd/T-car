@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SetAdminLocale;
 use App\Http\Middleware\SetLocale;
 use App\Traits\ApiResponse;
 use Illuminate\Auth\AuthenticationException;
@@ -39,8 +40,26 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(prepend: [
             SetLocale::class,
         ]);
+
+        $middleware->alias([
+            'admin.locale' => SetAdminLocale::class,
+        ]);
+
+        // Guests hitting auth-protected web routes go to the admin login page.
+        $middleware->redirectGuestsTo(
+            fn (Request $request) => $request->expectsJson() ? null : route('admin.login')
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->render(function (
+            AuthenticationException $e,
+            Request $request
+        ) {
+            if ($request->expectsJson()) {
+                return ApiResponse::unauthorized();
+            }
+        });
+
         $exceptions->shouldRenderJsonWhen(
             fn(Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
@@ -52,14 +71,6 @@ return Application::configure(basePath: dirname(__DIR__))
                     'message' => $e->getMessage(),
                     'code' => 422,
                 ], 422);
-            }
-        });
-        $exceptions->render(function (
-            AuthenticationException $e,
-            Request $request
-        ) {
-            if ($request->expectsJson()) {
-              return ApiResponse::unauthorized();
             }
         });
     })->create();

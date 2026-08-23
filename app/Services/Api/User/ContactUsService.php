@@ -12,6 +12,7 @@ class ContactUsService
     {
         $data['model'] = $model;
         $data['model_id'] = auth()->id();
+        $data['lang'] = app()->getLocale();
         $contactUs = ContactUs::create($data);
 
         return ApiResponse::success(

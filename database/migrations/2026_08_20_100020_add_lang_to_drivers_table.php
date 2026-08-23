@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasColumn('drivers', 'lang')) {
+            return;
+        }
+
         Schema::table('drivers', function (Blueprint $table) {
             $table->string('lang', 2)->default('ar')->after('password');
         });

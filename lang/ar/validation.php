@@ -54,4 +54,14 @@ return [
     'password_required'   => 'حقل كلمة المرور مطلوب.',
     'password_string'     => 'يجب أن تكون كلمة المرور نصاً.',
     'password_min'        => 'يجب أن لا تقل كلمة المرور عن :min أحرف.',
+    'type_required'       => 'حقل النوع مطلوب.',
+    'type_invalid'        => 'النوع المحدد غير صحيح.',
+    'sections_required'   => 'بيانات الأقسام مطلوبة.',
+    'sections_invalid'    => 'الأقسام المرسلة غير صحيحة.',
+    'title_required'      => 'حقل العنوان مطلوب.',
+    'title_string'        => 'يجب أن يكون العنوان نصاً.',
+    'title_max'           => 'يجب ألا يزيد العنوان عن :max حرفاً.',
+    'content_required'    => 'حقل المحتوى مطلوب.',
+    'content_string'      => 'يجب أن يكون المحتوى نصاً.',
 ];
+

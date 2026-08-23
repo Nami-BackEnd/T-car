@@ -1,0 +1,27 @@
+/* Arabic / RTL adjustments on top of theme.rtl.css */
+
+[dir='rtl'] body {
+  font-family: 'Cairo', 'Public Sans', sans-serif;
+}
+
+[dir='rtl'] h1,
+[dir='rtl'] h2,
+[dir='rtl'] h3,
+[dir='rtl'] h4,
+[dir='rtl'] h5,
+[dir='rtl'] h6,
+[dir='rtl'] .h1,
+[dir='rtl'] .h2,
+[dir='rtl'] .h3,
+[dir='rtl'] .h4,
+[dir='rtl'] .h5,
+[dir='rtl'] .h6 {
+  font-family: 'Cairo', 'Public Sans', sans-serif;
+}
+
+/* keep latin numerals readable inside badges/tables */
+[dir='rtl'] .badge,
+[dir='rtl'] table td,
+[dir='rtl'] .dropdown-item {
+  text-align: start;
+}

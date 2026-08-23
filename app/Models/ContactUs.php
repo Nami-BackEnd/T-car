@@ -16,5 +16,6 @@ class ContactUs extends Model
         'reason',
         'order_number',
         'message',
+        'lang',
     ];
 }

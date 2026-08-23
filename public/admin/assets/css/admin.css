@@ -1,0 +1,37 @@
+/* Admin overrides loaded after the base theme. */
+
+.navbar-glass {
+  border-bottom: 0 !important;
+}
+
+#miniSidebar {
+  border-right: 0 !important;
+  border-left: 0 !important;
+}
+
+#miniSidebar .nav-line,
+.offcanvasNav .nav-line {
+  display: none;
+}
+
+#miniSidebar .brand-logo {
+  display: flex;
+  justify-content: center;
+}
+
+#miniSidebar .brand-logo > a {
+  justify-content: center;
+}
+
+#miniSidebar .brand-logo-img,
+.offcanvasNav .brand-logo-img,
+.auth-logo-img {
+  height: 32px;
+  width: auto;
+  max-width: 100%;
+}
+
+html.collapsed #miniSidebar .brand-logo-img {
+  height: auto;
+  max-height: none;
+}

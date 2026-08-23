@@ -54,4 +54,13 @@ return [
     'password_required'   => 'The password field is required.',
     'password_string'     => 'The password must be a string.',
     'password_min'        => 'The password must be at least :min characters.',
+    'type_required'       => 'The type field is required.',
+    'type_invalid'        => 'The selected type is invalid.',
+    'sections_required'   => 'The sections data is required.',
+    'sections_invalid'    => 'The submitted sections are invalid.',
+    'title_required'      => 'The title field is required.',
+    'title_string'        => 'The title must be a string.',
+    'title_max'           => 'The title may not be greater than :max characters.',
+    'content_required'    => 'The content field is required.',
+    'content_string'      => 'The content must be a string.',
 ];
