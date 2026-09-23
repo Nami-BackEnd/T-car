@@ -10,23 +10,9 @@
         <span>{{ $config['entity'] }}</span>
       </h5>
 
-      <ul class="nav nav-pills-white nav-fill" id="contactTabs" role="tablist">
-        @foreach (['all' => 'ti-planet', 'user' => 'ti-user', 'driver' => 'ti-steering-wheel'] as $tab => $icon)
-          <li class="nav-item" role="presentation">
-            <button type="button" class="nav-link {{ $loop->first ? 'active' : '' }}" data-type-filter="{{ $tab }}"
-              aria-selected="{{ $loop->first ? 'true' : 'false' }}">
-              <span class="d-flex align-items-center gap-2">
-                <span><i class="ti {{ $icon }}"></i></span>
-                <span>{{ $tab === 'all' ? __('admin.common.all') : __('admin.content.badge_' . $tab) }}</span>
-              </span>
-            </button>
-          </li>
-        @endforeach
-      </ul>
-
       <div class="position-relative ms-auto">
-        <input type="text" id="contactSearch" class="form-control ps-5" style="min-width: 240px;"
-          placeholder="{{ __('admin.contact.placeholder_search') }}" autocomplete="off">
+        <input type="text" id="joinSearch" class="form-control ps-5" style="min-width: 240px;"
+          placeholder="{{ __('admin.join_us.placeholder_search') }}" autocomplete="off">
         <i class="ti ti-search position-absolute top-50 translate-middle-y text-secondary" style="inset-inline-start: 14px;"></i>
       </div>
     </div>
@@ -36,69 +22,67 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>{{ __('admin.contact.field_name') }}</th>
-            <th>{{ __('admin.login.email') }}</th>
-            <th>{{ __('admin.contact.table_reason') }}</th>
-            <th>{{ __('admin.content.table_type') }}</th>
+            <th>{{ __('admin.join_us.table_requester') }}</th>
+            <th>{{ __('admin.join_us.table_company') }}</th>
+            <th>{{ __('admin.users.table_phone') }}</th>
+            <th>{{ __('admin.join_us.table_size') }}</th>
             <th>{{ __('admin.content.table_date') }}</th>
             <th>{{ __('admin.common.actions') }}</th>
           </tr>
         </thead>
-        <tbody id="contactsTableBody"></tbody>
+        <tbody id="joinsTableBody"></tbody>
       </table>
     </div>
 
     {{-- Empty state --}}
-    <div id="contactsEmpty" class="text-center py-16 px-4 d-none">
+    <div id="joinsEmpty" class="text-center py-16 px-4 d-none">
       <div class="icon-shape icon-xl rounded-circle bg-gray-200 text-secondary d-inline-flex align-items-center justify-content-center mb-4">
         <i class="ti {{ $config['icon'] }}" style="font-size:32px"></i>
       </div>
-      <h6 class="mb-1">{{ __('admin.contact.empty_title') }}</h6>
-      <p class="text-secondary">{{ __('admin.contact.empty_text') }}</p>
+      <h6 class="mb-1">{{ __('admin.join_us.empty_title') }}</h6>
+      <p class="text-secondary">{{ __('admin.join_us.empty_text') }}</p>
     </div>
 
     {{-- Pagination --}}
     <div class="card-footer d-flex flex-wrap justify-content-between align-items-center gap-2 border-top">
-      <small class="text-secondary" id="contactsSummary"></small>
-      <nav aria-label="pagination"><ul class="pagination pagination-sm mb-0" id="contactsPagination"></ul></nav>
+      <small class="text-secondary" id="joinsSummary"></small>
+      <nav aria-label="pagination"><ul class="pagination pagination-sm mb-0" id="joinsPagination"></ul></nav>
     </div>
   </div>
 
-  {{-- Message details modal --}}
-  <div class="modal fade" id="messageModal" tabindex="-1" aria-hidden="true">
+  {{-- Request details modal --}}
+  <div class="modal fade" id="joinModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title d-flex align-items-center gap-2">
-            <i class="ti ti-mail-open"></i>
-            <span>{{ __('admin.contact.message_details') }}</span>
+            <i class="ti ti-inbox"></i>
+            <span>{{ __('admin.join_us.details_title') }}</span>
           </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <dl class="row mb-0">
-            <dt class="col-sm-3">{{ __('admin.contact.field_name') }}</dt>
+            <dt class="col-sm-3">{{ __('admin.join_us.field_name') }}</dt>
             <dd class="col-sm-9" id="detailName"></dd>
 
-            <dt class="col-sm-3">{{ __('admin.login.email') }}</dt>
+            <dt class="col-sm-3">{{ __('admin.join_us.field_company_name') }}</dt>
+            <dd class="col-sm-9" id="detailCompanyName"></dd>
+
+            <dt class="col-sm-3">{{ __('admin.users.table_email') }}</dt>
             <dd class="col-sm-9" id="detailEmail"></dd>
 
-            <dt class="col-sm-3">{{ __('admin.contact.field_reason') }}</dt>
-            <dd class="col-sm-9" id="detailReason">—</dd>
+            <dt class="col-sm-3">{{ __('admin.users.table_phone') }}</dt>
+            <dd class="col-sm-9" id="detailPhone"></dd>
 
-            <dt class="col-sm-3">{{ __('admin.contact.field_order_number') }}</dt>
-            <dd class="col-sm-9" id="detailOrderNumber">—</dd>
+            <dt class="col-sm-3">{{ __('admin.join_us.table_size') }}</dt>
+            <dd class="col-sm-9"><span class="badge text-primary-emphasis bg-primary-subtle" id="detailSize"></span></dd>
 
-            <dt class="col-sm-3">{{ __('admin.contact.table_date') }}</dt>
-            <dd class="col-sm-9" id="detailDate"></dd>
+            <dt class="col-sm-3">{{ __('admin.join_us.field_app_user') }}</dt>
+            <dd class="col-sm-9" id="detailUser"></dd>
 
-            <dt class="col-sm-3">{{ __('admin.contact.field_lang') }}</dt>
-            <dd class="col-sm-9" id="detailLang"></dd>
-
-            <dt class="col-sm-3 mt-3">{{ __('admin.contact.field_message') }}</dt>
-            <dd class="col-sm-9 mt-3">
-              <div class="bg-gray-100 p-3 rounded-3 text-wrap" id="detailMessage" style="white-space: pre-wrap;"></div>
-            </dd>
+            <dt class="col-sm-3 mt-3">{{ __('admin.content.table_date') }}</dt>
+            <dd class="col-sm-9 mt-3" id="detailDate"></dd>
           </dl>
         </div>
         <div class="modal-footer justify-content-between">
@@ -118,18 +102,14 @@
 @push('scripts')
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const listUrl = @json(route('admin.contact-us.index'));
+      const listUrl = @json(route('admin.join-us.index'));
       const i18n = {
         confirmTitle: @json(__('admin.common.confirm_title')),
         confirmButton: @json(__('admin.common.confirm_delete')),
-        confirmDelete: @json(__('admin.contact.delete_confirm')),
+        confirmDelete: @json(__('admin.join_us.delete_confirm')),
         networkError: @json(__('admin.common.network_error')),
         sessionExpired: @json(__('admin.messages.session_expired')),
         loading: @json(__('admin.common.loading')),
-        badgeUser: @json(__('admin.content.badge_user')),
-        badgeDriver: @json(__('admin.content.badge_driver')),
-        langArabic: @json(__('admin.contact.lang_arabic')),
-        langEnglish: @json(__('admin.contact.lang_english')),
       };
 
       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
@@ -137,43 +117,22 @@
       const numberFormatter = new Intl.NumberFormat(document.body.getAttribute('data-locale') === 'ar' ? 'ar-EG' : 'en-US');
       const adminLocale = document.body.getAttribute('data-locale') || 'en';
 
-      const tbody = document.getElementById('contactsTableBody');
-      const emptyState = document.getElementById('contactsEmpty');
-      const summaryEl = document.getElementById('contactsSummary');
-      const paginationEl = document.getElementById('contactsPagination');
-      const searchInput = document.getElementById('contactSearch');
+      const tbody = document.getElementById('joinsTableBody');
+      const emptyState = document.getElementById('joinsEmpty');
+      const summaryEl = document.getElementById('joinsSummary');
+      const paginationEl = document.getElementById('joinsPagination');
+      const searchInput = document.getElementById('joinSearch');
 
-      const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+      const joinModal = new bootstrap.Modal(document.getElementById('joinModal'));
 
-      const badges = {
-        user: { text: i18n.badgeUser, classes: 'badge text-info-emphasis bg-info-subtle' },
-        driver: { text: i18n.badgeDriver, classes: 'badge text-warning-emphasis bg-warning-subtle' },
-      };
-
-      const langBadges = {
-        ar: { text: i18n.langArabic, classes: 'badge text-success-emphasis bg-success-subtle' },
-        en: { text: i18n.langEnglish, classes: 'badge text-primary-emphasis bg-primary-subtle' },
-      };
-
-      let contactsCache = [];
+      let joinsCache = [];
       let paginationMeta = null;
       let currentPage = 1;
-      let currentType = 'all';
 
       function escapeHtml(value) {
         return String(value ?? '').replace(/[&<>"']/g, (char) => ({
           '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
         }[char]));
-      }
-
-      function isArabic(contact) {
-        if (contact.lang) return contact.lang === 'ar';
-        const sample = `${contact.name || ''} ${contact.reason || ''} ${contact.message || ''}`;
-        return /[\u0600-\u06FF]/.test(sample);
-      }
-
-      function langBadge(contact) {
-        return langBadges[isArabic(contact) ? 'ar' : 'en'] || langBadges.en;
       }
 
       function formatDate(value) {
@@ -191,9 +150,8 @@
       }
 
       // ---------- List ----------
-      async function loadContacts() {
+      async function loadJoins() {
         const params = new URLSearchParams({ page: currentPage });
-        if (currentType !== 'all') params.set('type', currentType);
         if (searchInput.value.trim()) params.set('search', searchInput.value.trim());
 
         tbody.innerHTML = `<tr><td colspan="7" class="text-center text-secondary py-4">${escapeHtml(i18n.loading)}</td></tr>`;
@@ -211,7 +169,7 @@
             return;
           }
 
-          contactsCache = payload.data || [];
+          joinsCache = payload.data || [];
           paginationMeta = payload.pagination || null;
           renderRows();
           renderPagination(payload.pagination);
@@ -222,29 +180,24 @@
       }
 
       function renderRows() {
-        emptyState.classList.toggle('d-none', contactsCache.length > 0);
+        emptyState.classList.toggle('d-none', joinsCache.length > 0);
 
         const offset = paginationMeta ? (paginationMeta.current_page - 1) * paginationMeta.per_page : 0;
 
-        tbody.innerHTML = contactsCache.map((contact, index) => {
+        tbody.innerHTML = joinsCache.map((request, index) => {
           const rowNumber = offset + index + 1;
-          const badge = badges[contact.model] || badges.user;
-          const reason = contact.reason
-            ? escapeHtml(contact.reason)
-            : (contact.order_number ? `# ${escapeHtml(contact.order_number)}` : '<span class="text-secondary">—</span>');
 
           return `
-            <tr data-contact-id="${contact.id}">
+            <tr data-join-id="${request.id}">
               <td>${numberFormatter.format(rowNumber)}</td>
-              <td style="max-width: 260px;">
-                <div class="fw-semibold">${escapeHtml(contact.name)}</div>
+              <td style="max-width: 320px;">
+                <div class="fw-semibold">${escapeHtml(request.name)}</div>
+                <div class="text-secondary small text-truncate">${escapeHtml(request.email)}</div>
               </td>
-              <td style="max-width: 280px;">
-                <div class="text-secondary text-truncate">${escapeHtml(contact.email)}</div>
-              </td>
-              <td>${reason}</td>
-              <td><span class="${escapeHtml(badge.classes)}">${escapeHtml(badge.text)}</span></td>
-              <td>${formatDate(contact.created_at)}</td>
+              <td>${escapeHtml(request.company_name)}</td>
+              <td>${escapeHtml(request.phone)}</td>
+              <td><span class="badge text-info-emphasis bg-info-subtle">${escapeHtml(request.size)}</span></td>
+              <td>${formatDate(request.created_at)}</td>
               <td>
                 <div class="d-flex align-items-center gap-2">
                   <button type="button" class="btn btn-white btn-sm d-inline-flex align-items-center gap-1 js-view">
@@ -297,38 +250,23 @@
         if (!Number.isFinite(page)) return;
 
         currentPage = page;
-        loadContacts();
+        loadJoins();
       });
 
-      // ---------- Tabs / Search ----------
-      document.querySelectorAll('#contactTabs [data-type-filter]').forEach((tabBtn) => {
-        tabBtn.addEventListener('click', () => {
-          currentType = tabBtn.getAttribute('data-type-filter');
-          currentPage = 1;
-
-          document.querySelectorAll('#contactTabs [data-type-filter]').forEach((btn) => {
-            const isActive = btn === tabBtn;
-            btn.classList.toggle('active', isActive);
-            btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-          });
-
-          loadContacts();
-        });
-      });
-
+      // ---------- Search ----------
       let searchTimer = null;
       searchInput.addEventListener('input', () => {
         clearTimeout(searchTimer);
         searchTimer = setTimeout(() => {
           currentPage = 1;
-          loadContacts();
+          loadJoins();
         }, 300);
       });
 
       // ---------- Row actions ----------
-      async function openDetails(contact) {
+      async function openDetails(request) {
         try {
-          const { ok, status, payload } = await requestJson(`${listUrl}/${contact.id}`, { headers: jsonHeaders });
+          const { ok, status, payload } = await requestJson(`${listUrl}/${request.id}`, { headers: jsonHeaders });
 
           if (status === 401) {
             if (window.adminToast) window.adminToast(i18n.sessionExpired, 'danger');
@@ -340,44 +278,41 @@
           }
 
           const message = payload.data.message;
-          const lang = langBadge(message);
-          const dir = isArabic(message) ? 'rtl' : 'ltr';
 
           document.getElementById('detailName').textContent = message.name ?? '—';
-          document.getElementById('detailName').setAttribute('dir', dir);
+          document.getElementById('detailCompanyName').textContent = message.company_name ?? '—';
           document.getElementById('detailEmail').textContent = message.email ?? '—';
-          document.getElementById('detailReason').textContent = message.reason || '—';
-          document.getElementById('detailReason').setAttribute('dir', dir);
-          document.getElementById('detailOrderNumber').textContent = message.order_number || '—';
+          document.getElementById('detailPhone').textContent = message.phone ?? '—';
+          document.getElementById('detailSize').textContent = message.size ?? '—';
+
+          const appUser = [message.user_name, message.user_phone].filter(Boolean).join(' · ');
+          document.getElementById('detailUser').textContent = appUser || '—';
+
           document.getElementById('detailDate').textContent = formatDate(message.created_at);
-          document.getElementById('detailLang').innerHTML =
-            `<span class="${escapeHtml(lang.classes)}">${escapeHtml(lang.text)}</span>`;
-          document.getElementById('detailMessage').textContent = message.message || '—';
-          document.getElementById('detailMessage').setAttribute('dir', dir);
           document.getElementById('detailMailto').setAttribute('href', `mailto:${encodeURIComponent(message.email ?? '')}`);
 
-          messageModal.show();
+          joinModal.show();
         } catch (e) {
           if (window.adminToast) window.adminToast(i18n.networkError, 'danger');
         }
       }
 
       tbody.addEventListener('click', async function (event) {
-        const row = event.target.closest('[data-contact-id]');
+        const row = event.target.closest('[data-join-id]');
         if (!row) return;
 
-        const contactId = parseInt(row.getAttribute('data-contact-id'), 10);
-        const contact = contactsCache.find((item) => item.id === contactId);
-        if (!contact) return;
+        const joinId = parseInt(row.getAttribute('data-join-id'), 10);
+        const request = joinsCache.find((item) => item.id === joinId);
+        if (!request) return;
 
         if (event.target.closest('.js-view')) {
-          openDetails(contact);
+          openDetails(request);
           return;
         }
 
         const deleteBtn = event.target.closest('.js-delete');
         if (!deleteBtn) return;
-                const confirmed = await window.adminConfirm({
+        const confirmed = await window.adminConfirm({
           title: i18n.confirmTitle,
           text: deleteBtn.getAttribute('data-confirm'),
           confirmText: i18n.confirmButton,
@@ -386,7 +321,7 @@
 
         deleteBtn.disabled = true;
         try {
-          const { ok, status, payload } = await requestJson(listUrl + '/' + contactId, {
+          const { ok, status, payload } = await requestJson(listUrl + '/' + joinId, {
             method: 'DELETE',
             headers: { ...jsonHeaders, 'X-CSRF-TOKEN': csrfToken },
           });
@@ -395,7 +330,7 @@
             if (window.adminToast) window.adminToast(i18n.sessionExpired, 'danger');
           } else if (ok) {
             if (window.adminToast) window.adminToast(payload?.message || 'OK', 'success');
-            loadContacts();
+            loadJoins();
           } else {
             if (window.adminToast) window.adminToast(payload?.message || i18n.networkError, 'danger');
           }
@@ -406,7 +341,7 @@
         }
       });
 
-      loadContacts();
+      loadJoins();
     });
   </script>
 @endpush

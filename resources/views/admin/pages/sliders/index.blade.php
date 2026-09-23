@@ -10,18 +10,10 @@
         <span>{{ $config['entity'] }}</span>
       </h5>
 
-      <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
-        <div class="position-relative">
-          <input type="text" id="userSearch" class="form-control ps-5" style="min-width: 240px;"
-            placeholder="{{ __('admin.users.placeholder_search') }}" autocomplete="off">
-          <i class="ti ti-search position-absolute top-50 translate-middle-y text-secondary" style="inset-inline-start: 14px;"></i>
-        </div>
-
-        <button type="button" id="addUserBtn" class="btn btn-primary d-inline-flex align-items-center gap-1">
-          <i class="ti ti-plus"></i>
-          <span>{{ __('admin.users.add_new') }}</span>
-        </button>
-      </div>
+      <button type="button" id="addSliderBtn" class="btn btn-primary d-inline-flex align-items-center gap-1 ms-auto">
+        <i class="ti ti-plus"></i>
+        <span>{{ __('admin.content.add_new') }}</span>
+      </button>
     </div>
 
     <div class="table-responsive">
@@ -29,113 +21,76 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>{{ __('admin.users.table_user') }}</th>
-            <th>{{ __('admin.users.table_phone') }}</th>
-            <th>{{ __('admin.users.table_email') }}</th>
-            <th>{{ __('admin.users.table_balance') }}</th>
-            <th>{{ __('admin.users.table_joined') }}</th>
+            <th>{{ __('admin.sliders.table_image') }}</th>
+            <th>{{ __('admin.sliders.table_order') }}</th>
+            <th>{{ __('admin.content.table_date') }}</th>
             <th>{{ __('admin.common.actions') }}</th>
           </tr>
         </thead>
-        <tbody id="usersTableBody"></tbody>
+        <tbody id="slidersTableBody"></tbody>
       </table>
     </div>
 
     {{-- Empty state --}}
-    <div id="usersEmpty" class="text-center py-16 px-4 d-none">
+    <div id="slidersEmpty" class="text-center py-16 px-4 d-none">
       <div class="icon-shape icon-xl rounded-circle bg-gray-200 text-secondary d-inline-flex align-items-center justify-content-center mb-4">
-        <i class="ti ti-users" style="font-size:32px"></i>
+        <i class="ti {{ $config['icon'] }}" style="font-size:32px"></i>
       </div>
-      <h6 class="mb-1">{{ __('admin.users.empty_title') }}</h6>
-      <p class="text-secondary mb-4">{{ __('admin.users.empty_text') }}</p>
+      <h6 class="mb-1">{{ __('admin.sliders.empty_title') }}</h6>
+      <p class="text-secondary mb-4">{{ __('admin.sliders.empty_text') }}</p>
       <button type="button" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1 js-open-create">
         <i class="ti ti-plus"></i>
-        <span>{{ __('admin.users.add_new') }}</span>
+        <span>{{ __('admin.content.add_new') }}</span>
       </button>
     </div>
 
     {{-- Pagination --}}
     <div class="card-footer d-flex flex-wrap justify-content-between align-items-center gap-2 border-top">
-      <small class="text-secondary" id="usersSummary"></small>
-      <nav aria-label="pagination"><ul class="pagination pagination-sm mb-0" id="usersPagination"></ul></nav>
+      <small class="text-secondary" id="slidersSummary"></small>
+      <nav aria-label="pagination"><ul class="pagination pagination-sm mb-0" id="slidersPagination"></ul></nav>
     </div>
   </div>
 
   {{-- Create / Edit Modal --}}
-  <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade" id="sliderModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="userModalTitle">{{ __('admin.users.add_new') }}</h5>
+          <h5 class="modal-title" id="sliderModalTitle">{{ __('admin.sliders.add_slider') }}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="userForm" novalidate>
+          <form id="sliderForm" novalidate enctype="multipart/form-data">
             <input type="hidden" name="_method" value="POST">
 
             <div class="row g-4">
-              <div class="col-md-6">
-                <label class="form-label" for="userName">{{ __('admin.users.field_name') }}</label>
-                <input type="text" name="name" id="userName" class="form-control"
-                  placeholder="{{ __('admin.users.placeholder_name') }}">
-                <div class="invalid-feedback" data-error-for="name"></div>
+              {{-- Image --}}
+              <div class="col-md-7">
+                <label class="form-label" for="sliderImage">{{ __('admin.sliders.field_image') }} <span class="text-danger">*</span></label>
+                <input type="file" name="image" id="sliderImage" accept="image/png,image/jpeg,image/webp" class="form-control">
+                <small class="text-secondary d-block mt-1">{{ __('admin.sliders.hint_image') }}</small>
+                <div class="invalid-feedback" data-error-for="image"></div>
+
+                <div id="imagePreviewWrap" class="mt-3 d-none">
+                  <img id="imagePreview" src="" alt="" class="img-fluid rounded border"
+                    style="max-height: 220px; max-width: 100%; object-fit: contain;">
+                </div>
               </div>
 
-              <div class="col-md-6">
-                <label class="form-label" for="userEmail">{{ __('admin.users.field_email') }}</label>
-                <input type="email" name="email" id="userEmail" dir="ltr" class="form-control"
-                  placeholder="{{ __('admin.users.placeholder_email') }}">
-                <div class="invalid-feedback" data-error-for="email"></div>
-              </div>
-
-              <div class="col-md-3 col-4">
-                <label class="form-label" for="userPhoneCode">{{ __('admin.users.field_phone_code') }}</label>
-                <input type="text" name="phone_code" id="userPhoneCode" dir="ltr" class="form-control"
-                  placeholder="{{ __('admin.users.placeholder_phone_code') }}">
-                <div class="invalid-feedback" data-error-for="phone_code"></div>
-              </div>
-
-              <div class="col-md-9 col-8">
-                <label class="form-label" for="userPhone">{{ __('admin.users.field_phone') }}</label>
-                <input type="tel" name="phone" id="userPhone" dir="ltr" class="form-control"
-                  placeholder="{{ __('admin.users.placeholder_phone') }}">
-                <div class="invalid-feedback" data-error-for="phone"></div>
-              </div>
-
-              <div class="col-md-4">
-                <label class="form-label" for="userBirthDate">{{ __('admin.users.field_birth_date') }}</label>
-                <input type="date" name="birth_date" id="userBirthDate" dir="ltr" class="form-control">
-                <div class="invalid-feedback" data-error-for="birth_date"></div>
-              </div>
-
-              <div class="col-md-4">
-                <label class="form-label" for="userBalance">{{ __('admin.users.field_balance') }}</label>
-                <input type="number" step="0.01" min="0" name="balance" id="userBalance" dir="ltr" class="form-control">
-                <div class="invalid-feedback" data-error-for="balance"></div>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label" for="userLang">{{ __('admin.users.field_lang') }}</label>
-                <select name="lang" id="userLang" class="form-select">
-                  <option value="">{{ __('admin.common.all') }}</option>
-                  <option value="ar">{{ __('admin.users.lang_arabic') }}</option>
-                  <option value="en">{{ __('admin.users.lang_english') }}</option>
-                </select>
-                <div class="invalid-feedback" data-error-for="lang"></div>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label" for="userAddress">{{ __('admin.users.field_address') }}</label>
-                <input type="text" name="address_name" id="userAddress" class="form-control"
-                  placeholder="{{ __('admin.users.placeholder_address') }}">
-                <div class="invalid-feedback" data-error-for="address_name"></div>
+              {{-- Order --}}
+              <div class="col-md-5">
+                <label class="form-label" for="sliderOrder">{{ __('admin.sliders.field_order') }} <span class="text-danger">*</span></label>
+                <input type="number" name="order" id="sliderOrder" min="0" step="1" class="form-control"
+                  placeholder="{{ __('admin.sliders.placeholder_order') }}">
+                <small class="text-secondary d-block mt-1">{{ __('admin.sliders.hint_order') }}</small>
+                <div class="invalid-feedback" data-error-for="order"></div>
               </div>
             </div>
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-white" data-bs-dismiss="modal">{{ __('admin.content.cancel') }}</button>
-          <button type="button" id="userSaveBtn" class="btn btn-primary d-inline-flex align-items-center gap-2">
+          <button type="button" id="sliderSaveBtn" class="btn btn-primary d-inline-flex align-items-center gap-2">
             <i class="ti ti-device-floppy"></i>
             <span>{{ __('admin.content.save') }}</span>
           </button>
@@ -150,36 +105,39 @@
 @push('scripts')
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const listUrl = @json(route('admin.users.index'));
-      const showUrlBase = @json(route('admin.users.show', ['user' => ':id:']));
+      const listUrl = @json(route('admin.sliders.index'));
       const i18n = {
         confirmTitle: @json(__('admin.common.confirm_title')),
         confirmButton: @json(__('admin.common.confirm_delete')),
-        confirmDelete: @json(__('admin.users.delete_confirm')),
+        confirmDelete: @json(__('admin.sliders.delete_confirm')),
         networkError: @json(__('admin.common.network_error')),
         sessionExpired: @json(__('admin.messages.session_expired')),
         loading: @json(__('admin.common.loading')),
-        addTitle: @json(__('admin.users.add_new')),
-        editTitle: @json(__('admin.users.edit_user')),
+        addTitle: @json(__('admin.sliders.add_slider')),
+        editTitle: @json(__('admin.sliders.edit_slider')),
       };
 
       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
       const jsonHeaders = { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
       const numberFormatter = new Intl.NumberFormat(document.body.getAttribute('data-locale') === 'ar' ? 'ar-EG' : 'en-US');
+      const adminLocale = document.body.getAttribute('data-locale') || 'en';
 
-      const tbody = document.getElementById('usersTableBody');
-      const emptyState = document.getElementById('usersEmpty');
-      const summaryEl = document.getElementById('usersSummary');
-      const paginationEl = document.getElementById('usersPagination');
-      const searchInput = document.getElementById('userSearch');
+      const tbody = document.getElementById('slidersTableBody');
+      const emptyState = document.getElementById('slidersEmpty');
+      const summaryEl = document.getElementById('slidersSummary');
+      const paginationEl = document.getElementById('slidersPagination');
 
-      const modalEl = document.getElementById('userModal');
-      const userModal = new bootstrap.Modal(modalEl);
-      const form = document.getElementById('userForm');
-      const modalTitle = document.getElementById('userModalTitle');
-      const saveBtn = document.getElementById('userSaveBtn');
+      const modalEl = document.getElementById('sliderModal');
+      const sliderModal = new bootstrap.Modal(modalEl);
+      const form = document.getElementById('sliderForm');
+      const modalTitle = document.getElementById('sliderModalTitle');
+      const saveBtn = document.getElementById('sliderSaveBtn');
+      const imageInput = document.getElementById('sliderImage');
+      const orderInput = document.getElementById('sliderOrder');
+      const imagePreviewWrap = document.getElementById('imagePreviewWrap');
+      const imagePreview = document.getElementById('imagePreview');
 
-      let usersCache = [];
+      let slidersCache = [];
       let paginationMeta = null;
       let currentPage = 1;
       let editingId = null;
@@ -193,7 +151,7 @@
       function formatDate(value) {
         if (!value) return '—';
         return new Date(value).toLocaleDateString(
-          document.body.getAttribute('data-locale') === 'ar' ? 'ar-EG' : 'en-GB',
+          adminLocale === 'ar' ? 'ar-EG' : 'en-GB',
           { day: '2-digit', month: 'short', year: 'numeric' }
         );
       }
@@ -205,11 +163,10 @@
       }
 
       // ---------- List ----------
-      async function loadUsers() {
+      async function loadSliders() {
         const params = new URLSearchParams({ page: currentPage });
-        if (searchInput.value.trim()) params.set('search', searchInput.value.trim());
 
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-secondary py-4">${escapeHtml(i18n.loading)}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-secondary py-4">${escapeHtml(i18n.loading)}</td></tr>`;
 
         try {
           const { ok, status, payload } = await requestJson(`${listUrl}?${params}`, { headers: jsonHeaders });
@@ -224,7 +181,7 @@
             return;
           }
 
-          usersCache = payload.data || [];
+          slidersCache = payload.data || [];
           paginationMeta = payload.pagination || null;
           renderRows();
           renderPagination(payload.pagination);
@@ -235,40 +192,24 @@
       }
 
       function renderRows() {
-        emptyState.classList.toggle('d-none', usersCache.length > 0);
+        emptyState.classList.toggle('d-none', slidersCache.length > 0);
 
         const offset = paginationMeta ? (paginationMeta.current_page - 1) * paginationMeta.per_page : 0;
 
-        tbody.innerHTML = usersCache.map((user, index) => {
+        tbody.innerHTML = slidersCache.map((slider, index) => {
           const rowNumber = offset + index + 1;
-          const initials = (user.name || '?').trim().charAt(0).toUpperCase();
-          const email = user.email
-            ? `<a href="mailto:${escapeHtml(user.email)}" class="text-reset">${escapeHtml(user.email)}</a>`
-            : '<span class="text-secondary">—</span>';
-          const balance = user.balance !== null && user.balance !== undefined
-            ? numberFormatter.format(parseFloat(user.balance))
-            : numberFormatter.format(0);
 
           return `
-            <tr data-user-id="${user.id}">
+            <tr data-slider-id="${slider.id}">
               <td>${numberFormatter.format(rowNumber)}</td>
               <td>
-                <div class="d-flex align-items-center gap-2">
-                  <div class="avatar avatar-sm rounded-circle bg-primary-subtle text-primary-emphasis d-flex align-items-center justify-content-center fw-semibold">${escapeHtml(initials)}</div>
-                  <span>${escapeHtml(user.name || '—')}</span>
-                </div>
+                <img src="${escapeHtml(slider.image_url)}" alt="${escapeHtml(slider.image)}"
+                  class="rounded border" style="height: 48px; width: 96px; object-fit: cover;">
               </td>
-              <td dir="ltr"><span class="text-secondary">${escapeHtml(user.phone_code || '')}</span> ${escapeHtml(user.phone)}</td>
-              <td>${email}</td>
-              <td>${balance}</td>
-              <td>${formatDate(user.created_at)}</td>
+              <td><span class="badge bg-secondary">${numberFormatter.format(slider.order)}</span></td>
+              <td>${formatDate(slider.created_at)}</td>
               <td>
                 <div class="d-flex align-items-center gap-2">
-                  <a href="${showUrlBase.replace(':id:', user.id)}"
-                    class="btn btn-white btn-sm d-inline-flex align-items-center gap-1">
-                    <i class="ti ti-eye"></i>
-                    <span>{{ __('admin.users.view_action') }}</span>
-                  </a>
                   <button type="button" class="btn btn-white btn-sm d-inline-flex align-items-center gap-1 js-edit">
                     <i class="ti ti-pencil"></i>
                     <span>{{ __('admin.content.edit') }}</span>
@@ -319,23 +260,13 @@
         if (!Number.isFinite(page)) return;
 
         currentPage = page;
-        loadUsers();
-      });
-
-      // ---------- Search ----------
-      let searchTimer = null;
-      searchInput.addEventListener('input', () => {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(() => {
-          currentPage = 1;
-          loadUsers();
-        }, 300);
+        loadSliders();
       });
 
       // ---------- Form helpers ----------
       function clearErrors() {
         form.querySelectorAll('.invalid-feedback').forEach((el) => { el.textContent = ''; });
-        form.querySelectorAll('.form-control, .form-select').forEach((el) => el.classList.remove('is-invalid'));
+        form.querySelectorAll('.form-control').forEach((el) => el.classList.remove('is-invalid'));
       }
 
       function showErrors(errors) {
@@ -348,52 +279,63 @@
         });
       }
 
+      function showPreview(src) {
+        if (!src) {
+          imagePreviewWrap.classList.add('d-none');
+          imagePreview.removeAttribute('src');
+          return;
+        }
+        imagePreview.src = src;
+        imagePreviewWrap.classList.remove('d-none');
+      }
+
+      imageInput.addEventListener('change', () => {
+        const file = imageInput.files && imageInput.files[0];
+        showPreview(file ? URL.createObjectURL(file) : null);
+      });
+
       function openCreate() {
         editingId = null;
         clearErrors();
         form.reset();
+        showPreview(null);
         form.querySelector('[name="_method"]').value = 'POST';
         modalTitle.textContent = i18n.addTitle;
-        userModal.show();
+        sliderModal.show();
       }
 
-      function openEdit(user) {
-        editingId = user.id;
+      function openEdit(slider) {
+        editingId = slider.id;
         clearErrors();
         form.reset();
         form.querySelector('[name="_method"]').value = 'PUT';
-        form.elements.name.value = user.name ?? '';
-        form.elements.email.value = user.email ?? '';
-        form.elements.phone_code.value = user.phone_code ?? '';
-        form.elements.phone.value = user.phone ?? '';
-        form.elements.birth_date.value = user.birth_date ?? '';
-        form.elements.balance.value = user.balance ?? '';
-        form.elements.lang.value = user.lang ?? '';
-        form.elements.address_name.value = user.address_name ?? '';
+        orderInput.value = slider.order ?? 0;
+        showPreview(slider.image_url || null);
         modalTitle.textContent = i18n.editTitle;
-        userModal.show();
+        sliderModal.show();
       }
 
-      document.getElementById('addUserBtn').addEventListener('click', openCreate);
+      document.getElementById('addSliderBtn').addEventListener('click', openCreate);
       document.querySelectorAll('.js-open-create').forEach((btn) => btn.addEventListener('click', openCreate));
 
       // ---------- Row actions ----------
       tbody.addEventListener('click', async function (event) {
-        const row = event.target.closest('[data-user-id]');
+        const row = event.target.closest('[data-slider-id]');
         if (!row) return;
 
-        const userId = parseInt(row.getAttribute('data-user-id'), 10);
-        const user = usersCache.find((item) => item.id === userId);
-        if (!user) return;
+        const sliderId = parseInt(row.getAttribute('data-slider-id'), 10);
+        const slider = slidersCache.find((item) => item.id === sliderId);
+        if (!slider) return;
 
         if (event.target.closest('.js-edit')) {
-          openEdit(user);
+          openEdit(slider);
           return;
         }
 
         const deleteBtn = event.target.closest('.js-delete');
         if (!deleteBtn) return;
-                const confirmed = await window.adminConfirm({
+
+        const confirmed = await window.adminConfirm({
           title: i18n.confirmTitle,
           text: deleteBtn.getAttribute('data-confirm'),
           confirmText: i18n.confirmButton,
@@ -402,7 +344,7 @@
 
         deleteBtn.disabled = true;
         try {
-          const { ok, status, payload } = await requestJson(listUrl + '/' + userId, {
+          const { ok, status, payload } = await requestJson(listUrl + '/' + sliderId, {
             method: 'DELETE',
             headers: { ...jsonHeaders, 'X-CSRF-TOKEN': csrfToken },
           });
@@ -411,7 +353,7 @@
             if (window.adminToast) window.adminToast(i18n.sessionExpired, 'danger');
           } else if (ok) {
             if (window.adminToast) window.adminToast(payload?.message || 'OK', 'success');
-            loadUsers();
+            loadSliders();
           } else {
             if (window.adminToast) window.adminToast(payload?.message || i18n.networkError, 'danger');
           }
@@ -450,9 +392,9 @@
           }
           if (ok) {
             if (window.adminToast) window.adminToast(payload?.message || 'OK', 'success');
-            userModal.hide();
-            if (!searchInput.value.trim()) currentPage = 1;
-            loadUsers();
+            sliderModal.hide();
+            currentPage = 1;
+            loadSliders();
           } else {
             if (window.adminToast) window.adminToast(payload?.message || i18n.networkError, 'danger');
           }
@@ -463,7 +405,7 @@
         }
       });
 
-      loadUsers();
+      loadSliders();
     });
   </script>
 @endpush

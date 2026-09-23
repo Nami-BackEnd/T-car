@@ -63,5 +63,14 @@ return [
     'title_max'           => 'يجب ألا يزيد العنوان عن :max حرفاً.',
     'content_required'    => 'حقل المحتوى مطلوب.',
     'content_string'      => 'يجب أن يكون المحتوى نصاً.',
+    'setting_required'    => 'هذا الحقل مطلوب.',
+    'setting_boolean'     => 'القيمة المحددة غير صحيحة.',
+    'setting_integer'     => 'يجب أن يكون هذا الحقل رقماً صحيحاً.',
+    'setting_numeric'     => 'يجب أن يكون هذا الحقل رقماً.',
+    'setting_min'         => 'يجب أن يكون هذا الحقل على الأقل :min.',
+    'setting_percentage_max' => 'يجب ألا تزيد هذه النسبة عن :max.',
+    'logo_image'          => 'يجب أن يكون الشعار صورة.',
+    'logo_mimes'          => 'يجب أن يكون الشعار من نوع: jpg، jpeg، png، webp، svg.',
+    'logo_max'            => 'يجب ألا يزيد حجم الشعار عن :max كيلوبايت.',
 ];
 

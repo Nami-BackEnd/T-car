@@ -24,10 +24,7 @@
 {{-- Fonts --}}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap">
-@if (app()->getLocale() === 'ar')
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap">
-@endif
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap">
 
 {{-- Libs CSS --}}
 <link rel="stylesheet" href="{{ asset('admin/libs/simplebar/simplebar.min.css') }}">
@@ -36,11 +33,11 @@
 {{-- Theme CSS --}}
 @if (app()->getLocale() === 'ar')
 <link rel="stylesheet" href="{{ asset('admin/assets/css/theme.rtl.css?v=2') }}">
-<link rel="stylesheet" href="{{ asset('admin/assets/css/admin-rtl.css') }}">
+<link rel="stylesheet" href="{{ asset('admin/assets/css/admin-rtl.css?v=2') }}">
 @else
 <link rel="stylesheet" href="{{ asset('admin/assets/css/theme.css?v=2') }}">
 @endif
 
 {{-- CKEditor dark mode --}}
 <link rel="stylesheet" href="{{ asset('admin/assets/css/ckeditor-dark.css') }}">
-<link rel="stylesheet" href="{{ asset('admin/assets/css/admin.css?v=1') }}">
+<link rel="stylesheet" href="{{ asset('admin/assets/css/admin.css?v=6') }}">

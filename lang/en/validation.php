@@ -63,4 +63,13 @@ return [
     'title_max'           => 'The title may not be greater than :max characters.',
     'content_required'    => 'The content field is required.',
     'content_string'      => 'The content must be a string.',
+    'setting_required'    => 'This field is required.',
+    'setting_boolean'     => 'The selected value is invalid.',
+    'setting_integer'     => 'This field must be a whole number.',
+    'setting_numeric'     => 'This field must be a number.',
+    'setting_min'         => 'This field must be at least :min.',
+    'setting_percentage_max' => 'This percentage may not be greater than :max.',
+    'logo_image'          => 'The logo must be an image.',
+    'logo_mimes'          => 'The logo must be a file of type: jpg, jpeg, png, webp, svg.',
+    'logo_max'            => 'The logo may not be greater than :max kilobytes.',
 ];

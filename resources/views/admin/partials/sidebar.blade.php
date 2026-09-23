@@ -12,19 +12,23 @@
         ['label' => __('admin.common.dashboard'), 'icon' => 'ti-layout-dashboard', 'route' => 'admin.dashboard', 'active' => request()->routeIs('admin.dashboard')],
       ],
     ];
-    $managementItems = [
+    $userItems = [
       ['label' => __('admin.nav.users'), 'icon' => 'ti-users', 'route' => 'admin.users.index', 'active' => request()->routeIs('admin.users.*')],
-      ['label' => __('admin.nav.drivers'), 'icon' => 'ti-steering-wheel'],
+      ['label' => __('admin.nav.sliders'), 'icon' => 'ti-carousel-horizontal', 'route' => 'admin.sliders.index', 'active' => request()->routeIs('admin.sliders.*')],
+      ['label' => __('admin.nav.join_requests'), 'icon' => 'ti-inbox', 'route' => 'admin.join-us.index', 'active' => request()->routeIs('admin.join-us.*')],
+    ];
+    $companyItems = [
       ['label' => __('admin.nav.companies'), 'icon' => 'ti-building'],
-      ['label' => __('admin.nav.join_requests'), 'icon' => 'ti-inbox'],
-      ['label' => __('admin.nav.wallet'), 'icon' => 'ti-wallet'],
+      ['label' => __('admin.nav.warranty'), 'icon' => 'ti-shield-check', 'route' => 'admin.warranties.index', 'active' => request()->routeIs('admin.warranties.*')],
       ['label' => __('admin.nav.alerts'), 'icon' => 'ti-bell', 'route' => 'admin.alrts.index', 'active' => request()->routeIs('admin.alrts.*')],
     ];
-    $contentItems = [
+    $settingItems = [
+      ['label' => __('admin.nav.settings'), 'icon' => 'ti-settings', 'route' => 'admin.settings.index', 'active' => request()->routeIs('admin.settings.*')],
       ['label' => __('admin.nav.faqs'), 'icon' => 'ti-help-circle', 'route' => 'admin.faqs.index', 'active' => request()->routeIs('admin.faqs.*')],
       ['label' => __('admin.nav.terms'), 'icon' => 'ti-file-text', 'route' => 'admin.terms.index', 'active' => request()->routeIs('admin.terms.*')],
       ['label' => __('admin.nav.about_us'), 'icon' => 'ti-info-circle', 'route' => 'admin.about-us.index', 'active' => request()->routeIs('admin.about-us.*')],
       ['label' => __('admin.nav.privacy'), 'icon' => 'ti-shield-lock', 'route' => 'admin.privacy-policy.index', 'active' => request()->routeIs('admin.privacy-policy.*')],
+      ['label' => __('admin.nav.client_instructions'), 'icon' => 'ti-clipboard-text', 'route' => 'admin.client-instructions.index', 'active' => request()->routeIs('admin.client-instructions.*')],
       ['label' => __('admin.nav.contact_msgs'), 'icon' => 'ti-mail', 'route' => 'admin.contact-us.index', 'active' => request()->routeIs('admin.contact-us.*')],
     ];
 
@@ -43,24 +47,33 @@
           . '</a></li>';
       }
     }
+
+    if (!function_exists('adminSidebarHeading')) {
+      function adminSidebarHeading(string $label): string
+      {
+        return '<li class="nav-item">'
+          . '<div class="nav-heading">' . e($label) . '</div>'
+          . '<hr class="mx-5 nav-line mb-1" />'
+          . '</li>';
+      }
+    }
   @endphp
 
   <ul class="navbar-nav flex-column">
     {!! adminSidebarItem($sections['items'][0]) !!}
 
-    <li class="nav-item">
-      <div class="nav-heading">{{ __('admin.nav.management') }}</div>
-      <hr class="mx-5 nav-line mb-1" />
-    </li>
-    @foreach ($managementItems as $item)
+    {!! adminSidebarHeading(__('admin.nav.users')) !!}
+    @foreach ($userItems as $item)
       {!! adminSidebarItem($item) !!}
     @endforeach
 
-    <li class="nav-item">
-      <div class="nav-heading">{{ __('admin.nav.content') }}</div>
-      <hr class="mx-5 nav-line mb-1" />
-    </li>
-    @foreach ($contentItems as $item)
+    {!! adminSidebarHeading(__('admin.nav.companies')) !!}
+    @foreach ($companyItems as $item)
+      {!! adminSidebarItem($item) !!}
+    @endforeach
+
+    {!! adminSidebarHeading(__('admin.common.settings')) !!}
+    @foreach ($settingItems as $item)
       {!! adminSidebarItem($item) !!}
     @endforeach
 
@@ -82,19 +95,18 @@
     <ul class="navbar-nav flex-column">
       {!! adminSidebarItem($sections['items'][0]) !!}
 
-      <li class="nav-item">
-        <div class="nav-heading">{{ __('admin.nav.management') }}</div>
-        <hr class="mx-5 nav-line mb-1" />
-      </li>
-      @foreach ($managementItems as $item)
+      {!! adminSidebarHeading(__('admin.nav.users')) !!}
+      @foreach ($userItems as $item)
         {!! adminSidebarItem($item) !!}
       @endforeach
 
-      <li class="nav-item">
-        <div class="nav-heading">{{ __('admin.nav.content') }}</div>
-        <hr class="mx-5 nav-line mb-1" />
-      </li>
-      @foreach ($contentItems as $item)
+      {!! adminSidebarHeading(__('admin.nav.companies')) !!}
+      @foreach ($companyItems as $item)
+        {!! adminSidebarItem($item) !!}
+      @endforeach
+
+      {!! adminSidebarHeading(__('admin.common.settings')) !!}
+      @foreach ($settingItems as $item)
         {!! adminSidebarItem($item) !!}
       @endforeach
     </ul>

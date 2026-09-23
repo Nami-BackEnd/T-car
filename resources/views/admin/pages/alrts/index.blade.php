@@ -195,14 +195,12 @@
         tbody.innerHTML = alrtsCache.map((alrt, index) => {
           const rowNumber = offset + index + 1;
           const title = adminLocale === 'ar' ? alrt.title_ar : alrt.title_en;
-          const altTitle = adminLocale === 'ar' ? alrt.title_en : alrt.title_ar;
 
           return `
             <tr data-alrt-id="${alrt.id}">
               <td>${numberFormatter.format(rowNumber)}</td>
               <td style="max-width: 480px;">
                 <div class="text-truncate fw-semibold">${escapeHtml(title)}</div>
-                <div class="text-truncate text-secondary small">${escapeHtml(altTitle)}</div>
               </td>
               <td>${formatDate(alrt.created_at)}</td>
               <td>
