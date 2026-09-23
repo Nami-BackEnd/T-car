@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\SetAdminLocale;
+use App\Http\Middleware\SetCompanyLocale;
 use App\Http\Middleware\SetLocale;
 use App\Traits\ApiResponse;
 use Illuminate\Auth\AuthenticationException;
@@ -26,6 +27,9 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('web')
                 ->group(base_path('routes/admin/web.php'));
 
+            Route::middleware('web')
+                ->group(base_path('routes/company/web.php'));
+
             Route::middleware('api')
                 ->group(base_path('routes/api/user.php'));
 
@@ -43,11 +47,16 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'admin.locale' => SetAdminLocale::class,
+            'company.locale' => SetCompanyLocale::class,
         ]);
 
         // Guests hitting auth-protected web routes go to the admin login page.
         $middleware->redirectGuestsTo(
-            fn (Request $request) => $request->expectsJson() ? null : route('admin.login')
+            fn (Request $request) => $request->expectsJson()
+                ? null
+                : (str_starts_with($request->path(), 'company')
+                    ? route('company.login')
+                    : route('admin.login'))
         );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
