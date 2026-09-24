@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Admin;
-use App\Models\Company;
+use App\Models\CompanyUser;
 use App\Models\User;
 
 return [
@@ -93,7 +93,7 @@ return [
 
         'companies' => [
             'driver' => 'eloquent',
-            'model' => Company::class,
+            'model' => CompanyUser::class,
         ],
     ],
 
