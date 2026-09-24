@@ -6937,6 +6937,26 @@ body.is-scroll-locked {
   gap: 10px;
 }
 
+.holiday-date-range {
+  white-space: nowrap;
+}
+
+.holiday-date-range__item {
+  font-size: 0.88rem;
+  color: #4b5563;
+}
+
+.holiday-date-range__item b {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.holiday-date-range__arrow {
+  margin: 0 6px;
+  font-size: 0.72rem;
+  color: #9ca3af;
+}
+
 .holiday-duration__edit {
   width: 32px;
   height: 32px;

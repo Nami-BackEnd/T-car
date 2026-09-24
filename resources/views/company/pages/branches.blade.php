@@ -29,7 +29,7 @@
                   <i class="bi bi-download"></i> {{ __('company.common.301') }}</button>
                 <ul class="dropdown-menu">
                   <li>
-                    <a class="dropdown-item" href="#"
+                    <a class="dropdown-item" href="{{ route('company.branches.export') }}"
                       ><i class="bi bi-file-earmark-excel"></i> {{ __('company.common.302') }}</a
                     >
                   </li>
@@ -48,13 +48,14 @@
                     class="view-tabs__btn is-active"
                     role="tab"
                     aria-selected="true"
+                    data-status=""
                   >
                     {{ __('company.common.223') }}</button>
-                  <button type="button" class="view-tabs__btn" role="tab" aria-selected="false">
+                  <button type="button" class="view-tabs__btn" role="tab" aria-selected="false" data-status="approved">
                     {{ __('company.common.544') }}</button>
-                  <button type="button" class="view-tabs__btn" role="tab" aria-selected="false">
+                  <button type="button" class="view-tabs__btn" role="tab" aria-selected="false" data-status="reject">
                     {{ __('company.common.455') }}</button>
-                  <button type="button" class="view-tabs__btn" role="tab" aria-selected="false">
+                  <button type="button" class="view-tabs__btn" role="tab" aria-selected="false" data-status="pending">
                     {{ __('company.common.473') }}</button>
                 </div>
               </div>
@@ -84,7 +85,7 @@
                 <thead>
                   <tr>
                     <th>{{ __('company.pages.branches.0') }}</th>
-                    <th>{{ __('company.common.517') }}</th>
+                    <th>{{ __('company.common.217') }}</th>
                     <th>{{ __('company.pages.branches.1') }}</th>
                     <th>{{ __('company.common.394') }}</th>
                     <th>{{ __('company.common.496') }}</th>
@@ -94,255 +95,11 @@
                     <th>{{ __('company.common.76') }}</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td><a href="{{ route('company.office-details') }}" class="office-name">{{ __('company.common.49') }}</a></td>
-                    <td>{{ __('company.common.183') }}</td>
-                    <td>Fares Al-Hattar</td>
-                    <td class="ltr-num">9660553807746+</td>
-                    <td class="cell-fraction">
-                      <b class="ltr-num">28</b> <i class="bi bi-car-front-fill text-secondary"></i>
-                    </td>
-                    <td class="ltr-num">3</td>
-                    <td class="ltr-num">0</td>
-                    <td>
-                      <button
-                        type="button"
-                        class="status-toggle status-toggle--review"
-                        data-status="review"
-                         title="{{ __('company.pages.branches.11') }}"
-                         aria-label="{{ __('company.pages.branches.12') }}"
-                        disabled
-                      >
-                        <i class="bi bi-lock-fill" aria-hidden="true"></i>
-                        {{ __('company.common.473') }}</button>
-                    </td>
-                    <td class="cell-actions">
-                      <div class="action-menu-wrapper">
-                        <a href="{{ route('company.edit-office') }}" class="btn btn-primary btn-sm"  title="{{ __('company.common.309') }}"
-                          ><i class="bi bi-pencil"></i
-                        ></a>
-                        <div class="dropdown action-dropdown">
-                          <button
-                            class="action-menu-btn dropdown-toggle"
-                            type="button"
-                             title="{{ __('company.common.384') }}"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                          >
-                            <i class="bi bi-three-dots"></i>
-                          </button>
-                          <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                              <a href="{{ route('company.office-cars') }}" class="dropdown-item action-menu-item"
-                                ><i class="bi bi-car-front"></i> {{ __('company.pages.branches.4') }}</a
-                              >
-                            </li>
-                            <li>
-                              <a href="{{ route('company.add-car') }}" class="dropdown-item action-menu-item"
-                                ><i class="bi bi-plus-circle"></i> {{ __('company.common.85') }}</a
-                              >
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><a href="{{ route('company.office-details') }}" class="office-name">N2-Al-Olaya</a></td>
-                    <td>{{ __('company.common.183') }}</td>
-                    <td>ALHATTAR</td>
-                    <td class="ltr-num">9660553807746+</td>
-                    <td class="cell-fraction">
-                      <b class="ltr-num">24</b> <i class="bi bi-car-front-fill text-secondary"></i>
-                    </td>
-                    <td class="ltr-num">3</td>
-                    <td class="ltr-num">0</td>
-                    <td>
-                      <button class="status-toggle status-toggle--active" data-status="active">
-                        {{ __('company.common.544') }}</button>
-                    </td>
-                    <td class="cell-actions">
-                      <div class="action-menu-wrapper">
-                        <a href="{{ route('company.edit-office') }}" class="btn btn-primary btn-sm"  title="{{ __('company.common.309') }}"
-                          ><i class="bi bi-pencil"></i
-                        ></a>
-                        <div class="dropdown action-dropdown">
-                          <button
-                            class="action-menu-btn dropdown-toggle"
-                            type="button"
-                             title="{{ __('company.common.384') }}"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                          >
-                            <i class="bi bi-three-dots"></i>
-                          </button>
-                          <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                              <a href="{{ route('company.office-cars') }}" class="dropdown-item action-menu-item"
-                                ><i class="bi bi-car-front"></i> {{ __('company.pages.branches.4') }}</a
-                              >
-                            </li>
-                            <li>
-                              <a href="{{ route('company.add-car') }}" class="dropdown-item action-menu-item"
-                                ><i class="bi bi-plus-circle"></i> {{ __('company.common.85') }}</a
-                              >
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="{{ route('company.office-details') }}" class="office-name"
-                        >N2 Rental Car - Riyadh - Almarwa</a
-                      >
-                    </td>
-                    <td>{{ __('company.common.183') }}</td>
-                    <td>Fares Al-Hattar</td>
-                    <td class="ltr-num">9660553807746+</td>
-                    <td class="cell-fraction">
-                      <b class="ltr-num">16</b> <i class="bi bi-car-front-fill text-secondary"></i>
-                    </td>
-                    <td class="ltr-num">5</td>
-                    <td class="ltr-num">0</td>
-                    <td>
-                      <button class="status-toggle status-toggle--active" data-status="active">
-                        {{ __('company.common.544') }}</button>
-                    </td>
-                    <td class="cell-actions">
-                      <div class="action-menu-wrapper">
-                        <a href="{{ route('company.edit-office') }}" class="btn btn-primary btn-sm"  title="{{ __('company.common.309') }}"
-                          ><i class="bi bi-pencil"></i
-                        ></a>
-                        <div class="dropdown action-dropdown">
-                          <button
-                            class="action-menu-btn dropdown-toggle"
-                            type="button"
-                             title="{{ __('company.common.384') }}"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                          >
-                            <i class="bi bi-three-dots"></i>
-                          </button>
-                          <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                              <a href="{{ route('company.office-cars') }}" class="dropdown-item action-menu-item"
-                                ><i class="bi bi-car-front"></i> {{ __('company.pages.branches.4') }}</a
-                              >
-                            </li>
-                            <li>
-                              <a href="{{ route('company.add-car') }}" class="dropdown-item action-menu-item"
-                                ><i class="bi bi-plus-circle"></i> {{ __('company.common.85') }}</a
-                              >
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="{{ route('company.office-details') }}" class="office-name">N2 Rental Car - Rawdah</a>
-                    </td>
-                    <td>{{ __('company.common.183') }}</td>
-                    <td>Mohamed Elshafiy</td>
-                    <td class="ltr-num">9660533443472+</td>
-                    <td class="cell-fraction">
-                      <b class="ltr-num">27</b> <i class="bi bi-car-front-fill text-secondary"></i>
-                    </td>
-                    <td class="ltr-num">5</td>
-                    <td class="ltr-num">0</td>
-                    <td>
-                      <button class="status-toggle status-toggle--active" data-status="active">
-                        {{ __('company.common.544') }}</button>
-                    </td>
-                    <td class="cell-actions">
-                      <div class="action-menu-wrapper">
-                        <a href="{{ route('company.edit-office') }}" class="btn btn-primary btn-sm"  title="{{ __('company.common.309') }}"
-                          ><i class="bi bi-pencil"></i
-                        ></a>
-                        <div class="dropdown action-dropdown">
-                          <button
-                            class="action-menu-btn dropdown-toggle"
-                            type="button"
-                             title="{{ __('company.common.384') }}"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                          >
-                            <i class="bi bi-three-dots"></i>
-                          </button>
-                          <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                              <a href="{{ route('company.office-cars') }}" class="dropdown-item action-menu-item"
-                                ><i class="bi bi-car-front"></i> {{ __('company.pages.branches.4') }}</a
-                              >
-                            </li>
-                            <li>
-                              <a href="{{ route('company.add-car') }}" class="dropdown-item action-menu-item"
-                                ><i class="bi bi-plus-circle"></i> {{ __('company.common.85') }}</a
-                              >
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="{{ route('company.office-details') }}" class="office-name"
-                        >N2 Rental Car - Riyadh - Al Aziziyah</a
-                      >
-                    </td>
-                    <td>{{ __('company.common.183') }}</td>
-                    <td>Talal Aldawsari</td>
-                    <td class="ltr-num">9660535762361+</td>
-                    <td class="cell-fraction">
-                      <b class="ltr-num">15</b> <i class="bi bi-car-front-fill text-secondary"></i>
-                    </td>
-                    <td class="ltr-num">3</td>
-                    <td class="ltr-num">0</td>
-                    <td>
-                      <button class="status-toggle status-toggle--active" data-status="active">
-                        {{ __('company.common.544') }}</button>
-                    </td>
-                    <td class="cell-actions">
-                      <div class="action-menu-wrapper">
-                        <a href="{{ route('company.edit-office') }}" class="btn btn-primary btn-sm"  title="{{ __('company.common.309') }}"
-                          ><i class="bi bi-pencil"></i
-                        ></a>
-                        <div class="dropdown action-dropdown">
-                          <button
-                            class="action-menu-btn dropdown-toggle"
-                            type="button"
-                             title="{{ __('company.common.384') }}"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                          >
-                            <i class="bi bi-three-dots"></i>
-                          </button>
-                          <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                              <a href="{{ route('company.office-cars') }}" class="dropdown-item action-menu-item"
-                                ><i class="bi bi-car-front"></i> {{ __('company.pages.branches.4') }}</a
-                              >
-                            </li>
-                            <li>
-                              <a href="{{ route('company.add-car') }}" class="dropdown-item action-menu-item"
-                                ><i class="bi bi-plus-circle"></i> {{ __('company.common.85') }}</a
-                              >
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
+                <tbody id="officesTableBody"></tbody>
               </table>
             </div>
 
-            <div class="table-pagination table-pagination-dt">
+            <div class="table-pagination table-pagination-dt" id="officesPagination">
               <div class="table-pagination__size-select">
                 <label for="pageSizeSelect">{{ __('company.common.212') }}</label>
                 <select id="pageSizeSelect">
@@ -351,16 +108,7 @@
                   <option value="50">50</option>
                 </select>
               </div>
-              <div class="table-pagination__pages">
-                <button class="table-pagination__page-btn" disabled>
-                  <i class="bi bi-chevron-right"></i>
-                </button>
-                <button class="table-pagination__page-btn is-active">1</button>
-                <button class="table-pagination__page-btn">2</button>
-                <button class="table-pagination__page-btn">
-                  <i class="bi bi-chevron-left"></i>
-                </button>
-              </div>
+              <div class="table-pagination__pages" id="officesTablePages"></div>
             </div>
           </div>
 @endsection
@@ -619,60 +367,246 @@
 
 @push('scripts')
 <script>
-      document.querySelectorAll('.status-toggle').forEach((button) => {
-        button.addEventListener('click', function () {
-          const currentStatus = this.getAttribute('data-status');
+  document.addEventListener('DOMContentLoaded', function () {
+    var dataUrl = '{{ route('company.branches.data') }}';
+    var deleteUrl = '{{ route('company.branches.destroy', ['branch' => 0]) }}';
+    var detailsUrl = '{{ route('company.office-details') }}';
+    var editUrl = '{{ route('company.edit-office') }}';
+    var officeCarsUrl = '{{ route('company.office-cars') }}';
+    var addCarUrl = '{{ route('company.add-car') }}';
+    var csrf = document.querySelector('meta[name="csrf-token"]');
+    var isAr = window.COMPANY_CONFIG.locale === 'ar';
 
-          if (currentStatus === 'review') return;
+    var statusPending = @json(__('company.branches.status_pending'));
+    var statusApproved = @json(__('company.branches.status_approved'));
+    var statusRejected = @json(__('company.branches.status_rejected'));
+    var noBranches = @json(__('company.branches.no_branches'));
+    var deleteConfirm = @json(__('company.messages.delete_confirm'));
+    var deleteLabel = @json(__('company.branches.delete_label'));
+    var editLabel = @json(__('company.common.309'));
+    var optionsLabel = @json(__('company.common.384'));
+    var branchCarListLabel = @json(__('company.pages.branches.4'));
+    var addCarLabel = @json(__('company.common.85'));
 
-          if (currentStatus === 'active') {
-            this.setAttribute('data-status', 'inactive');
-            this.classList.remove('status-toggle--active');
-            this.classList.add('status-toggle--inactive');
-            this.textContent = 'غير مفعل';
+    var tbody = document.getElementById('officesTableBody');
+    var searchInput = document.getElementById('officesSearchInput');
+    var pageSizeSelect = document.getElementById('pageSizeSelect');
+    var pagesWrap = document.getElementById('officesTablePages');
+    var paginationWrap = document.getElementById('officesPagination');
+
+    var state = { search: '', status: '', page: 1, per_page: 10 };
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, function (c) {
+        return {
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+        }[c];
+      });
+    }
+
+    function branchName(b) {
+      return (isAr ? b.name_ar : b.name_en) || b.name_ar || b.name_en || '—';
+    }
+
+    function statusMeta(status) {
+      var meta = {
+        pending: { cls: 'status-toggle--review', label: statusPending, lock: true },
+        approved: { cls: 'status-toggle--active', label: statusApproved, lock: false },
+        reject: { cls: 'status-toggle--inactive', label: statusRejected, lock: false },
+      };
+      return meta[status] || { cls: '', label: status, lock: false };
+    }
+
+    function load() {
+      var params = new URLSearchParams({
+        search: state.search,
+        page: state.page,
+        per_page: state.per_page,
+      });
+      if (state.status) params.set('status', state.status);
+
+      var url = dataUrl + '?' + params.toString();
+
+      return fetch(url, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+      })
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (res) {
+          var rows = res.data || [];
+          var pagination = res.pagination || {};
+
+          if (rows.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="9" class="text-center py-4">' + escapeHtml(noBranches) + '</td></tr>';
           } else {
-            this.setAttribute('data-status', 'active');
-            this.classList.remove('status-toggle--inactive');
-            this.classList.add('status-toggle--active');
-            this.textContent = 'مفعل';
+            tbody.innerHTML = rows
+              .map(function (b, i) {
+                var status = statusMeta(b.status);
+                var name = branchName(b);
+                var phone = ((b.phone_code || '') + (b.phone_number || '')).replace('++', '+');
+
+                return (
+                  '<tr>' +
+                  '<td><a href="' + detailsUrl + '/?id=' + b.id + '" class="office-name">' +
+                  escapeHtml(name) + '</a></td>' +
+                  '<td class="cell-secondary">' + escapeHtml(b.address || '—') + '</td>' +
+                  '<td>' + escapeHtml(b.person_name || '—') + '</td>' +
+                  '<td class="ltr-num">' + escapeHtml(phone || '—') + '</td>' +
+                  '<td class="cell-fraction"><b class="ltr-num">—</b> <i class="bi bi-car-front-fill text-secondary"></i></td>' +
+                  '<td class="ltr-num">—</td>' +
+                  '<td class="ltr-num">—</td>' +
+                  '<td><span class="status-toggle ' + status.cls + '" data-status="' + b.status + '"' +
+                  (status.lock ? ' disabled' : '') + '>' +
+                  (status.lock ? '<i class="bi bi-lock-fill" aria-hidden="true"></i> ' : '') +
+                  escapeHtml(status.label) + '</span></td>' +
+                  '<td class="cell-actions">' +
+                  '<div class="action-menu-wrapper">' +
+                  '<a href="' + editUrl + '/?id=' + b.id + '" class="btn btn-primary btn-sm" title="' + escapeHtml(editLabel) + '"><i class="bi bi-pencil"></i></a>' +
+                  '<div class="dropdown action-dropdown">' +
+                  '<button class="action-menu-btn dropdown-toggle" type="button" title="' + escapeHtml(optionsLabel) + '" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots"></i></button>' +
+                  '<ul class="dropdown-menu dropdown-menu-end">' +
+                  '<li><a href="' + officeCarsUrl + '/?id=' + b.id + '" class="dropdown-item action-menu-item"><i class="bi bi-car-front"></i> ' + escapeHtml(branchCarListLabel) + '</a></li>' +
+                  '<li><a href="' + addCarUrl + '/?id=' + b.id + '" class="dropdown-item action-menu-item"><i class="bi bi-plus-circle"></i> ' + escapeHtml(addCarLabel) + '</a></li>' +
+                  '<li><hr class="dropdown-divider" /></li>' +
+                  '<li><a href="#" class="dropdown-item action-menu-item text-danger" data-delete="' + b.id + '" data-name="' + escapeHtml(name) + '"><i class="bi bi-trash"></i> ' + escapeHtml(deleteLabel) + '</a></li>' +
+                  '</ul>' +
+                  '</div>' +
+                  '</div>' +
+                  '</td>' +
+                  '</tr>'
+                );
+              })
+              .join('');
           }
+
+          renderPagination(pagination);
+        });
+    }
+
+    function renderPagination(pagination) {
+      if (!pagesWrap) return;
+      var last = pagination.last_page || 1;
+      var current = pagination.current_page || 1;
+      state.page = current;
+
+      if (pagination.total === undefined || pagination.total > state.per_page) {
+        paginationWrap.style.display = '';
+      } else {
+        paginationWrap.style.display = 'none';
+        return;
+      }
+
+      var html = '';
+
+      html +=
+        '<button type="button" class="table-pagination__page-btn"' +
+        (current <= 1 ? ' disabled' : '') + ' data-page="' + (current - 1) + '">' +
+        '<i class="bi bi-chevron-right"></i></button>';
+
+      var from = Math.max(1, current - 2);
+      var to = Math.min(last, from + 4);
+      for (var p = from; p <= to; p++) {
+        html +=
+          '<button type="button" class="table-pagination__page-btn' +
+          (p === current ? ' is-active' : '') + '" data-page="' + p + '">' + p + '</button>';
+      }
+
+      html +=
+        '<button type="button" class="table-pagination__page-btn"' +
+        (current >= last ? ' disabled' : '') + ' data-page="' + (current + 1) + '">' +
+        '<i class="bi bi-chevron-left"></i></button>';
+
+      pagesWrap.innerHTML = html;
+
+      pagesWrap.querySelectorAll('[data-page]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (this.classList.contains('disabled')) return;
+          state.page = parseInt(this.getAttribute('data-page'), 10) || 1;
+          load();
         });
       });
+    }
 
-      // View Tabs Filter
-      document.querySelectorAll('.view-tabs__btn').forEach((tab) => {
-        tab.addEventListener('click', function () {
-          document.querySelectorAll('.view-tabs__btn').forEach((t) => {
-            t.classList.remove('is-active');
-            t.setAttribute('aria-selected', 'false');
-          });
-          this.classList.add('is-active');
-          this.setAttribute('aria-selected', 'true');
-
-          const filterValue = this.textContent.trim();
-          const tableRows = document.querySelectorAll('#officesTable tbody tr');
-
-          tableRows.forEach((row) => {
-            const statusToggle = row.querySelector('.status-toggle');
-            if (!statusToggle) return;
-
-            const currentStatus = statusToggle.getAttribute('data-status');
-
-            if (filterValue === 'الكل') {
-              row.style.display = '';
-            } else if (filterValue === 'مفعل' && currentStatus === 'active') {
-              row.style.display = '';
-            } else if (filterValue === 'غير مفعل' && currentStatus === 'inactive') {
-              row.style.display = '';
-            } else if (filterValue === 'قيد المراجعة' && currentStatus === 'review') {
-              row.style.display = '';
-            } else {
-              row.style.display = 'none';
-            }
-          });
-        });
+    // Search (debounced)
+    var searchTimer = null;
+    if (searchInput) {
+      searchInput.addEventListener('input', function () {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function () {
+          state.search = searchInput.value.trim();
+          state.page = 1;
+          load();
+        }, 400);
       });
+    }
 
+    // Page size
+    if (pageSizeSelect) {
+      pageSizeSelect.addEventListener('change', function () {
+        state.per_page = parseInt(this.value, 10) || 10;
+        state.page = 1;
+        load();
+      });
+    }
+
+    // View tabs -> status filter
+    document.querySelectorAll('.view-tabs__btn').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        document.querySelectorAll('.view-tabs__btn').forEach(function (t) {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        this.classList.add('is-active');
+        this.setAttribute('aria-selected', 'true');
+        state.status = this.getAttribute('data-status') || '';
+        state.page = 1;
+        load();
+      });
+    });
+
+    // Delete
+    tbody.addEventListener('click', function (e) {
+      var link = e.target.closest('[data-delete]');
+      if (!link) return;
+      e.preventDefault();
+
+      if (!window.confirm(decodeConfirm(deleteConfirm, link.getAttribute('data-name')))) return;
+
+      fetch(deleteUrl.replace('/0', '/' + link.getAttribute('data-delete')), {
+        method: 'DELETE',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-TOKEN': csrf.content,
+          'Accept': 'application/json',
+        },
+      })
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (res) {
+          if (res.code && res.code >= 400) {
+            window.alert(res.message || '');
+            return;
+          }
+          load();
+        })
+        .catch(function () {});
+    });
+
+    function decodeConfirm(template, name) {
+      var fn = new Function('name', 'return `' + template + '`;');
+      return fn(name);
+    }
+
+    load();
+  });
+</script>
+@endpush
+
+@push('scripts')
+<script>
       // Office Filter Modal Multi-select Logic
       document.addEventListener('DOMContentLoaded', function () {
         /* ---- Generic helper: keeps the filter modal a fixed size no matter

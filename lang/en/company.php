@@ -615,7 +615,10 @@ return [
         'login_success' => 'Signed in successfully.',
         'logout_success' => 'Signed out successfully.',
         'lang_switched' => 'Language switched.',
-    ],
+        'delete_confirm' => 'Are you sure you want to delete "${name}"? This action cannot be undone.',
+    
+        'load_error' => 'Failed to load branch data.',
+],
 
     'validation' => [
         'email' => 'email',
@@ -1506,5 +1509,36 @@ return [
             '28' => 'Request actions',
             '29' => 'Trending requests pagination',
         ],
+    ],
+
+    'branches' => [
+        'created' => 'Branch submitted and sent for review.',
+        'updated' => 'Branch updated and sent for review again.',
+        'deleted' => 'Branch deleted.',
+        'delete_label' => 'Delete',
+        'no_branches' => 'No branches yet.',
+        'status_pending' => 'Pending review',
+        'status_approved' => 'Active',
+        'status_rejected' => 'Rejected',
+        'validation' => [
+            'branch_type_in' => 'The branch type is invalid.',
+            'name_max' => 'The branch name must not exceed 255 characters.',
+            'email_invalid' => 'The email is invalid.',
+            'latitude_between' => 'Latitude must be between -90 and 90.',
+            'longitude_between' => 'Longitude must be between -180 and 180.',
+        ],
+    ],
+
+    'holidays' => [
+        'toggled' => 'Holiday updated.',
+        'duration_updated' => 'Holiday duration updated.',
+        'activation_hint' => 'Only activated holidays appear in the add branch page.',
+        'column_name' => 'Holiday name',
+        'column_date' => 'Date',
+        'column_duration' => 'Duration',
+        'column_status' => 'Status',
+        'days_one' => 'day',
+        'days_many' => 'days',
+        'no_active' => 'No holidays yet.',
     ],
 ];

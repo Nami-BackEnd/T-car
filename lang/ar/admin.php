@@ -1,6 +1,29 @@
 <?php
 
 return [
+    'branches' => [
+    'table_branch' => 'الفرع',
+    'table_company' => 'الشركة',
+    'table_person' => 'المسؤول',
+    'table_phone' => 'الهاتف',
+    'table_address' => 'العنوان',
+    'table_type' => 'النوع',
+    'table_submitted' => 'تاريخ التقديم',
+    'table_status' => 'الحالة',
+    'type_branch' => 'فرع',
+    'type_withdrawal' => 'مركز استلام',
+    'status_pending' => 'قيد المراجعة',
+    'status_approved' => 'مفعل',
+    'status_reject' => 'مرفوض',
+    'approve' => 'تفعيل',
+    'reject' => 'رفض',
+    'approve_confirm' => 'هل تريد تفعيل هذا الفرع؟',
+    'reject_confirm' => 'هل تريد رفض هذا الفرع؟',
+    'empty_title' => 'لا توجد طلبات فروع',
+    'empty_text' => 'عندما يرسل العملاء فروعها للمراجعة ستظهر هنا.',
+    'placeholder_search' => 'ابحث عن فرع أو شركة...',
+    'no_results' => 'لا توجد نتائج مطابقة',
+    ],
     /*
     |--------------------------------------------------------------------------
     | لوحة تحكم الأدمن - العربية
@@ -46,6 +69,8 @@ return [
         'users'         => 'المستخدمين',
         'drivers'       => 'الكباتن',
         'companies'     => 'الشركات',
+        'branch_management' => 'إدارة الفروع',
+        'branch_requests' => 'طلبات الفروع',
         'join_requests' => 'طلبات الانضمام',
         'sliders'       => 'السلايدر',
         'wallet'        => 'معاملات المحفظة',
@@ -115,6 +140,9 @@ return [
         'created_success'     => 'تمت إضافة :entity بنجاح.',
         'updated_success'     => 'تم تحديث :entity بنجاح.',
         'deleted_success'     => 'تم حذف :entity بنجاح.',
+        'branch_approved' => 'تم تفعيل الفرع بنجاح.',
+        'branch_rejected' => 'تم رفض الفرع بنجاح.',
+    
     ],
 
     'content' => [

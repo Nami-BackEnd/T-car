@@ -3,12 +3,14 @@
 use App\Http\Controllers\Admin\AboutUsController;
 use App\Http\Controllers\Admin\AlrtController;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\ClientInstructionsController;
 use App\Http\Controllers\Admin\ContactUsController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DropdownController;
 use App\Http\Controllers\Admin\FaqController;
-use App\Http\Controllers\Admin\PrivacyPolicyController;
 use App\Http\Controllers\Admin\JoinUsController;
+use App\Http\Controllers\Admin\PrivacyPolicyController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\TermController;
@@ -52,6 +54,11 @@ Route::middleware(['auth:admin', 'admin.locale'])->prefix('admin')->name('admin.
     // Warranties management (AJAX CRUD)
     Route::resource('warranties', WarrantyController::class)->except(['show', 'create', 'edit']);
 
+    // Branch requests (approve / reject)
+    Route::get('branches', [BranchController::class, 'index'])->name('branches.index');
+    Route::post('branches/{branch}/approve', [BranchController::class, 'approve'])->name('branches.approve');
+    Route::post('branches/{branch}/reject', [BranchController::class, 'reject'])->name('branches.reject');
+
     // Sliders management (AJAX CRUD)
     Route::resource('sliders', SliderController::class)->except(['show', 'create', 'edit']);
 
@@ -78,6 +85,14 @@ Route::middleware(['auth:admin', 'admin.locale'])->prefix('admin')->name('admin.
     // App settings (singleton)
     Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+
+    // Setup lists (dropdowns) management — AJAX CRUD
+    Route::prefix('lookups')->name('lookups.')->group(function () {
+        Route::get('{entity}', [DropdownController::class, 'index'])->name('index');
+        Route::post('{entity}', [DropdownController::class, 'store'])->name('store');
+        Route::put('{entity}/{lookup}', [DropdownController::class, 'update'])->name('update');
+        Route::delete('{entity}/{lookup}', [DropdownController::class, 'destroy'])->name('destroy');
+    });
 });
 
 Route::middleware(['auth:admin', 'admin.locale'])

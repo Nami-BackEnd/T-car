@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Company\AuthController;
+use App\Http\Controllers\Company\BranchController;
 use App\Http\Controllers\Company\DashboardController;
+use App\Http\Controllers\Company\HolidayController;
 use App\Http\Controllers\Company\PageController;
 use Illuminate\Support\Facades\Route;
 
@@ -52,9 +54,21 @@ Route::middleware(['auth:company', 'company.locale'])->prefix('company')->name('
 
     // Branches
     Route::get('branches', [PageController::class, 'show'])->defaults('page', 'branches')->name('branches');
-    Route::get('official-holidays', [PageController::class, 'show'])->defaults('page', 'official-holidays')->name('official-holidays');
+    Route::get('branches/data', [BranchController::class, 'index'])->name('branches.data');
+    Route::get('branches/export', [BranchController::class, 'export'])->name('branches.export');
+    Route::post('add-office', [BranchController::class, 'store'])->name('add-office.store');
+    Route::get('add-office/options', [BranchController::class, 'options'])->name('add-office.options');
+    Route::put('edit-office/{branch}', [BranchController::class, 'update'])->name('edit-office.update');
+    Route::get('edit-office/{branch}', [BranchController::class, 'show'])->name('edit-office.show');
+    Route::delete('branches/{branch}', [BranchController::class, 'destroy'])->name('branches.destroy');
     Route::get('add-office', [PageController::class, 'show'])->defaults('page', 'add-office')->name('add-office');
-    Route::get('edit-office', [PageController::class, 'show'])->defaults('page', 'edit-office')->name('edit-office');
+    Route::get('edit-office', [PageController::class, 'show'])->defaults('page', 'add-office')->name('edit-office');
+
+    // Official holidays (admin adds, company activates)
+    Route::get('official-holidays', [PageController::class, 'show'])->defaults('page', 'official-holidays')->name('official-holidays');
+    Route::get('official-holidays/data', [HolidayController::class, 'index'])->name('official-holidays.data');
+    Route::post('official-holidays/{vacation}/toggle', [HolidayController::class, 'toggle'])->name('official-holidays.toggle');
+    Route::post('official-holidays/{vacation}/duration', [HolidayController::class, 'updateDuration'])->name('official-holidays.duration');
     Route::get('office-cars', [PageController::class, 'show'])->defaults('page', 'office-cars')->name('office-cars');
     Route::get('office-details', [PageController::class, 'show'])->defaults('page', 'office-details')->name('office-details');
 

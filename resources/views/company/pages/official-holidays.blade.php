@@ -14,10 +14,10 @@
                 <span class="current"> {{ __('company.common.144') }}</span>
               </nav>
             </div>
-            
+
           </div>
 
-          
+
           <div class="table-card mb-4">
             <div class="table-toolbar">
               <div class="table-search">
@@ -29,148 +29,16 @@
               <table class="data-table" id="holidaysTable">
                 <thead>
                   <tr>
-                    <th>{{ __('company.pages.official-holidays.0') }}</th>
-                    <th>{{ __('company.common.157') }}</th>
-                    <th>{{ __('company.common.228') }}</th>
-                    <th>{{ __('company.common.145') }}</th>
+                    <th>{{ __('company.holidays.column_name') }}</th>
+                    <th>{{ __('company.holidays.column_date') }}</th>
+                    <th>{{ __('company.holidays.column_duration') }}</th>
+                    <th>{{ __('company.holidays.column_status') }}</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td class="cell-primary">{{ __('company.pages.official-holidays.1') }}</td>
-                    <td class="ltr-num">01/05/2026</td>
-                    <td class="ltr-num">
-                      <div class="holiday-duration">
-                        <span class="holiday-duration__text">{{ __('company.common.34') }}</span>
-                        <button
-                          type="button"
-                          class="btn btn-primary btn-sm holiday-duration__edit"
-                          data-bs-toggle="modal"
-                          data-bs-target="#editHolidayDurationModal"
-                          data-holiday-name="عيد الفطر"
-                          data-days="4"
-                           title="{{ __('company.pages.official-holidays.8') }}"
-                           aria-label="{{ __('company.pages.official-holidays.6') }}"
-                        >
-                          <i class="bi bi-pencil"></i>
-                        </button>
-                      </div>
-                    </td>
-                    <td class="cell-actions">
-                      <div class="toggle-switch">
-                        <input
-                          type="checkbox"
-                          id="holidayToggle1"
-                          class="toggle-switch__input"
-                          checked
-                        />
-                        <label for="holidayToggle1" class="toggle-switch__label">
-                          <span class="toggle-switch__slider"></span>
-                        </label>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="cell-primary">{{ __('company.pages.official-holidays.2') }}</td>
-                    <td class="ltr-num">10/06/2026</td>
-                    <td class="ltr-num">
-                      <div class="holiday-duration">
-                        <span class="holiday-duration__text">{{ __('company.common.37') }}</span>
-                        <button
-                          type="button"
-                          class="btn btn-primary btn-sm holiday-duration__edit"
-                          data-bs-toggle="modal"
-                          data-bs-target="#editHolidayDurationModal"
-                          data-holiday-name="عيد الأضحى"
-                          data-days="5"
-                           title="{{ __('company.pages.official-holidays.8') }}"
-                           aria-label="{{ __('company.pages.official-holidays.6') }}"
-                        >
-                          <i class="bi bi-pencil"></i>
-                        </button>
-                      </div>
-                    </td>
-                    <td class="cell-actions">
-                      <div class="toggle-switch">
-                        <input
-                          type="checkbox"
-                          id="holidayToggle2"
-                          class="toggle-switch__input"
-                          checked
-                        />
-                        <label for="holidayToggle2" class="toggle-switch__label">
-                          <span class="toggle-switch__slider"></span>
-                        </label>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="cell-primary">{{ __('company.pages.official-holidays.3') }}</td>
-                    <td class="ltr-num">23/09/2026</td>
-                    <td class="ltr-num">
-                      <div class="holiday-duration">
-                        <span class="holiday-duration__text">{{ __('company.pages.official-holidays.4') }}</span>
-                        <button
-                          type="button"
-                          class="btn btn-primary btn-sm holiday-duration__edit"
-                          data-bs-toggle="modal"
-                          data-bs-target="#editHolidayDurationModal"
-                          data-holiday-name="اليوم الوطني"
-                          data-days="1"
-                           title="{{ __('company.pages.official-holidays.8') }}"
-                           aria-label="{{ __('company.pages.official-holidays.6') }}"
-                        >
-                          <i class="bi bi-pencil"></i>
-                        </button>
-                      </div>
-                    </td>
-                    <td class="cell-actions">
-                      <div class="toggle-switch">
-                        <input
-                          type="checkbox"
-                          id="holidayToggle3"
-                          class="toggle-switch__input"
-                          checked
-                        />
-                        <label for="holidayToggle3" class="toggle-switch__label">
-                          <span class="toggle-switch__slider"></span>
-                        </label>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="cell-primary">{{ __('company.pages.official-holidays.5') }}</td>
-                    <td class="ltr-num">01/01/2027</td>
-                    <td class="ltr-num">
-                      <div class="holiday-duration">
-                        <span class="holiday-duration__text">{{ __('company.pages.official-holidays.4') }}</span>
-                        <button
-                          type="button"
-                          class="btn btn-primary btn-sm holiday-duration__edit"
-                          data-bs-toggle="modal"
-                          data-bs-target="#editHolidayDurationModal"
-                          data-holiday-name="رأس السنة الهجرية"
-                          data-days="1"
-                           title="{{ __('company.pages.official-holidays.8') }}"
-                           aria-label="{{ __('company.pages.official-holidays.6') }}"
-                        >
-                          <i class="bi bi-pencil"></i>
-                        </button>
-                      </div>
-                    </td>
-                    <td class="cell-actions">
-                      <div class="toggle-switch">
-                        <input type="checkbox" id="holidayToggle4" class="toggle-switch__input" />
-                        <label for="holidayToggle4" class="toggle-switch__label">
-                          <span class="toggle-switch__slider"></span>
-                        </label>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
+                <tbody id="holidaysTableBody"></tbody>
               </table>
             </div>
-            <div class="table-pagination table-pagination-dt">
+            <div class="table-pagination table-pagination-dt" id="holidaysPagination">
               <div class="table-pagination__size-select">
                 <label for="pageSizeSelect">{{ __('company.common.212') }}</label>
                 <select id="pageSizeSelect">
@@ -184,7 +52,6 @@
                   <i class="bi bi-chevron-right"></i>
                 </button>
                 <button class="table-pagination__page-btn is-active">1</button>
-                <button class="table-pagination__page-btn">2</button>
                 <button class="table-pagination__page-btn">
                   <i class="bi bi-chevron-left"></i>
                 </button>
@@ -195,10 +62,9 @@
 
 @push('modals')
 </main>
-        
-      
 
-    
+
+
     <div
       class="modal fade"
       id="editHolidayDurationModal"
@@ -246,6 +112,192 @@
       </div>
     </div>
 
-    
+
 @endpush
 
+@push('scripts')
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var dataUrl = '{{ route('company.official-holidays.data') }}';
+    var toggleRoute = '{{ route('company.official-holidays.toggle', ['vacation' => 0]) }}';
+    var durationRoute = '{{ route('company.official-holidays.duration', ['vacation' => 0]) }}';
+    var csrf = document.querySelector('meta[name="csrf-token"]');
+    var isAr = window.COMPANY_CONFIG.locale === 'ar';
+    var daysOne = @json(__('company.holidays.days_one'));
+    var daysMany = @json(__('company.holidays.days_many'));
+    var noActive = @json(__('company.holidays.no_active'));
+
+    var body = document.getElementById('holidaysTableBody');
+    var search = document.getElementById('holidaysSearchInput');
+    var pagination = document.getElementById('holidaysPagination');
+    var durationInput = document.getElementById('editHolidayDurationInput');
+    var durationName = document.getElementById('editHolidayDurationName');
+    var saveBtn = document.getElementById('saveHolidayDurationBtn');
+    var editModalEl = document.getElementById('editHolidayDurationModal');
+
+    var holidays = [];
+    var currentId = null;
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, function (c) {
+        return {
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+        }[c];
+      });
+    }
+
+    function holidayLabel(h) {
+      return (isAr ? h.name_ar : h.name_en) || h.name_ar || h.name_en || '';
+    }
+
+    function daysLabel(count) {
+      return count + ' ' + (parseInt(count, 10) === 1 ? daysOne : daysMany);
+    }
+
+    function render() {
+      var q = (search.value || '').trim().toLowerCase();
+      var visible = holidays.filter(function (h) {
+        if (!q) return true;
+        return holidayLabel(h).toLowerCase().indexOf(q) !== -1;
+      });
+
+      if (visible.length === 0) {
+        body.innerHTML = '<tr><td colspan="4" class="text-center py-4">' + escapeHtml(noActive) + '</td></tr>';
+      } else {
+        body.innerHTML = visible.map(function (h) {
+          return (
+            '<tr>' +
+            '<td class="cell-primary">' + escapeHtml(holidayLabel(h)) + '</td>' +
+            '<td class="holiday-date-range">' +
+            '<span class="holiday-date-range__item">' + @json(__('company.common.555')) + ' <b class="ltr-num">' + escapeHtml(h.date || '') + '</b></span>' +
+            '<i class="bi bi-arrow-left holiday-date-range__arrow" aria-hidden="true"></i>' +
+            '<span class="holiday-date-range__item">' + @json(__('company.common.96')) + ' <b class="ltr-num">' + escapeHtml(h.end_date || '') + '</b></span>' +
+            '</td>' +
+            '<td class="ltr-num">' +
+            '<div class="holiday-duration">' +
+            '<span class="holiday-duration__text">' + escapeHtml(daysLabel(h.day_count)) + '</span>' +
+            '<button type="button" class="btn btn-primary btn-sm holiday-duration__edit" data-id="' + h.id + '"' +
+            (h.active ? '' : ' style="display:none"') +
+            ' title="{{ __('company.pages.official-holidays.8') }}" aria-label="{{ __('company.pages.official-holidays.6') }}">' +
+            '<i class="bi bi-pencil"></i>' +
+            '</button>' +
+            '</div>' +
+            '</td>' +
+            '<td class="cell-actions">' +
+            '<div class="toggle-switch">' +
+            '<input type="checkbox" id="holidayToggle-' + h.id + '" data-id="' + h.id + '" class="toggle-switch__input"' + (h.active ? ' checked' : '') + ' />' +
+            '<label for="holidayToggle-' + h.id + '" class="toggle-switch__label"><span class="toggle-switch__slider"></span></label>' +
+            '</div>' +
+            '</td>' +
+            '</tr>'
+          );
+        }).join('');
+      }
+
+      if (pagination) pagination.style.display = visible.length > 10 ? '' : 'none';
+
+      body.querySelectorAll('.toggle-switch__input[data-id]').forEach(function (cb) {
+        cb.addEventListener('change', onToggle);
+      });
+      body.querySelectorAll('.holiday-duration__edit[data-id]').forEach(function (btn) {
+        btn.addEventListener('click', onEditDuration);
+      });
+    }
+
+    function onToggle() {
+      var cb = this;
+      var id = cb.getAttribute('data-id');
+      var params = new URLSearchParams({ active: cb.checked ? '1' : '0' });
+
+      fetch(toggleRoute.replace('/0/toggle', '/' + id + '/toggle'), {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-TOKEN': csrf.content,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params,
+      })
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (res) {
+          if (res.code && res.code >= 400) {
+            cb.checked = !cb.checked;
+          }
+          reload();
+        })
+        .catch(function () {
+          cb.checked = !cb.checked;
+        });
+    }
+
+    function onEditDuration() {
+      var id = this.getAttribute('data-id');
+      var holiday = holidays.find(function (h) {
+        return String(h.id) === id;
+      });
+      if (!holiday) return;
+      currentId = id;
+      durationName.textContent = holidayLabel(holiday);
+      durationInput.value = holiday.day_count || 1;
+      new bootstrap.Modal(editModalEl).show();
+    }
+
+    saveBtn.addEventListener('click', function () {
+      if (!currentId) return;
+      var params = new URLSearchParams({ day_count: durationInput.value });
+
+      fetch(durationRoute.replace('/0/duration', '/' + currentId + '/duration'), {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-TOKEN': csrf.content,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params,
+      })
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (res) {
+          if (res.code && res.code >= 400) {
+            window.alert(res.message || '');
+            return;
+          }
+          bootstrap.Modal.getInstance(editModalEl)?.hide();
+          reload();
+        })
+        .catch(function () {});
+    });
+
+    search.addEventListener('input', render);
+
+    fetch(dataUrl, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    })
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (res) {
+        holidays = res.data || [];
+        render();
+      });
+
+    window.reload = reload;
+
+    function reload() {
+      return fetch(dataUrl, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      })
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (res) {
+          holidays = res.data || [];
+          render();
+        });
+    }
+  });
+</script>
+@endpush

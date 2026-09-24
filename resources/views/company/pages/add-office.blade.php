@@ -78,15 +78,16 @@
                   </div>
                   <div class="col-md-6">
                     <div class="form-field">
-                      <label class="form-field__label">{{ __('company.common.136') }}</label>
-                      <input type="text" class="form-field__input"  placeholder="{{ __('company.common.53') }}" />
+                      <label class="form-field__label">{{ __('company.common.136') }}<span class="text-danger">*</span></label>
+                      <input type="text" id="officeNameAr" class="form-field__input"  placeholder="{{ __('company.common.53') }}" />
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-field">
-                      <label class="form-field__label">{{ __('company.common.137') }}</label>
+                      <label class="form-field__label">{{ __('company.common.137') }}<span class="text-danger">*</span></label>
                       <input
                         type="text"
+                        id="officeNameEn"
                         class="form-field__input"
                          placeholder="{{ __('company.common.54') }}"
                       />
@@ -96,7 +97,8 @@
                     <div class="form-field">
                       <label class="form-field__label">{{ __('company.common.134') }}</label>
                       <input
-                        type="text                                                                   "
+                        type="text"
+                        id="officePersonName"
                         class="form-field__input"
                          placeholder="{{ __('company.common.52') }}"
                       />
@@ -105,7 +107,7 @@
                   <div class="col-md-6">
                     <div class="form-field">
                       <label class="form-field__label">{{ __('company.common.250') }}</label>
-                      <input type="text" class="form-field__input"  placeholder="{{ __('company.common.58') }}" />
+                      <input type="text" id="officePersonEmail" class="form-field__input"  placeholder="{{ __('company.common.58') }}" />
                     </div>
                   </div>
                   <div class="col-md-6">
@@ -207,6 +209,7 @@
                         </div>
                         <input
                           type="text"
+                          id="officePhoneNumber"
                           class="form-field__input ltr-num"
                            placeholder="{{ __('company.common.59') }}"
                         />
@@ -312,6 +315,7 @@
                         </div>
                         <input
                           type="text"
+                          id="officeGeneralPhoneNumber"
                           class="form-field__input ltr-num"
                            placeholder="{{ __('company.common.60') }}"
                         />
@@ -390,32 +394,7 @@
                       </div>
                       <label class="branch-select__option is-all">
                         <input type="checkbox" id="airportSelectAll" /> {{ __('company.common.480') }}</label>
-                      <div id="airportOptionsList">
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="ruh" /> {{ __('company.common.533') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="jed" /> {{ __('company.common.534') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="dmm" /> {{ __('company.common.535') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="med" /> {{ __('company.common.531') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="aha" /> {{ __('company.common.529') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="taif" /> {{ __('company.common.532') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="ela" /> {{ __('company.common.530') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="tuu" /> {{ __('company.common.536') }}</label
-                        >
-                      </div>
+                      <div id="airportOptionsList"></div>
                     </div>
                   </div>
                 </div>
@@ -445,32 +424,7 @@
                       </div>
                       <label class="branch-select__option is-all">
                         <input type="checkbox" id="trainSelectAll" /> {{ __('company.common.479') }}</label>
-                      <div id="trainOptionsList">
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="riyadh" /> {{ __('company.common.500') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="jeddah" /> {{ __('company.common.504') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="makkah" /> {{ __('company.common.507') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="madinah" /> {{ __('company.common.502') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="kaec" /> {{ __('company.common.506') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="dammam" /> {{ __('company.common.499') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="hofuf" /> {{ __('company.common.503') }}</label
-                        >
-                        <label class="branch-select__option"
-                          ><input type="checkbox" value="qassim" /> {{ __('company.common.501') }}</label
-                        >
-                      </div>
+                      <div id="trainOptionsList"></div>
                     </div>
                   </div>
                 </div>
@@ -553,6 +507,7 @@
                       </div>
                       <div
                         class="text-editor__content"
+                        id="officeNotesEn"
                         contenteditable="true"
                          placeholder="{{ __('company.common.56') }}"
                       ></div>
@@ -597,6 +552,7 @@
                       </div>
                       <div
                         class="text-editor__content"
+                        id="officeNotesAr"
                         contenteditable="true"
                          placeholder="{{ __('company.common.57') }}"
                       ></div>
@@ -894,74 +850,15 @@
                 <p class="edit-office-card__desc mb-3">
                   {{ __('company.common.178') }}</p>
 
-                <div class="holiday-row">
-                  <label class="checkbox-option">
-                    <input type="checkbox" />
-                    <span class="checkbox-custom"></span>
-                    <span class="checkbox-label">{{ __('company.common.74') }}</span>
-                  </label>
-                  <div class="holiday-row__dates">
-                    <span class="holiday-row__date"
-                      ><i class="bi bi-calendar-event"></i> {{ __('company.common.555') }}<b class="ltr-num">2025-03-20</b></span
-                    >
-                    <span class="holiday-row__date"
-                      ><i class="bi bi-calendar-x"></i> {{ __('company.common.96') }}<b class="ltr-num">2025-03-25</b></span
-                    >
-                  </div>
-                </div>
-
-                <div class="holiday-row">
-                  <label class="checkbox-option">
-                    <input type="checkbox" checked />
-                    <span class="checkbox-custom"></span>
-                    <span class="checkbox-label">{{ __('company.common.73') }}</span>
-                  </label>
-                  <div class="holiday-row__dates">
-                    <span class="holiday-row__date"
-                      ><i class="bi bi-calendar-event"></i> {{ __('company.common.555') }}<b class="ltr-num">2026-05-26</b></span
-                    >
-                    <span class="holiday-row__date"
-                      ><i class="bi bi-calendar-x"></i> {{ __('company.common.96') }}<b class="ltr-num">2026-06-01</b></span
-                    >
-                  </div>
-                </div>
-
-                <div class="holiday-row">
-                  <label class="checkbox-option">
-                    <input type="checkbox" />
-                    <span class="checkbox-custom"></span>
-                    <span class="checkbox-label">{{ __('company.common.72') }}</span>
-                  </label>
-                  <div class="holiday-row__dates">
-                    <span class="holiday-row__date"
-                      ><i class="bi bi-calendar-event"></i> {{ __('company.common.555') }}<b class="ltr-num">2024-09-23</b></span
-                    >
-                    <span class="holiday-row__date"
-                      ><i class="bi bi-calendar-x"></i> {{ __('company.common.96') }}<b class="ltr-num">2024-09-23</b></span
-                    >
-                  </div>
-                </div>
-
-                <div class="holiday-row">
-                  <label class="checkbox-option">
-                    <input type="checkbox" />
-                    <span class="checkbox-custom"></span>
-                    <span class="checkbox-label">{{ __('company.common.75') }}</span>
-                  </label>
-                  <div class="holiday-row__dates">
-                    <span class="holiday-row__date"
-                      ><i class="bi bi-calendar-event"></i> {{ __('company.common.555') }}<b class="ltr-num">2024-09-23</b></span
-                    >
-                    <span class="holiday-row__date"
-                      ><i class="bi bi-calendar-x"></i> {{ __('company.common.96') }}<b class="ltr-num">2024-09-23</b></span
-                    >
-                  </div>
-                </div>
+                <div id="officeHolidaysList"></div>
               </div>
             </div>
 
             
             <div class="eo-savebar">
+              <div class="eo-savebar__status">
+                <div class="alert d-none mb-0" id="officeFormStatus" role="alert"></div>
+              </div>
               <button type="button" class="btn btn-outline">
                 <i class="bi bi-x-lg"></i> {{ __('company.common.95') }}</button>
               <button type="submit" class="btn btn-primary">
@@ -990,6 +887,33 @@
         var sections = navLinks.map(function (a) {
           return document.querySelector(a.getAttribute('href'));
         });
+
+        var OPTIONS_URL = '{{ route('company.add-office.options') }}';
+        var STORE_URL = '{{ route('company.add-office.store') }}';
+        var csrfToken = document.querySelector('meta[name="csrf-token"]');
+        var optionState = { airports: [], train_stations: [], vacations: [] };
+
+        /* ============================================================
+         Edit mode — opening the page with ?id=<branchId> turns the form
+         into a pre-filled editor that saves via PUT.
+      ============================================================= */
+        var EDIT_ID = new URLSearchParams(window.location.search).get('id') || null;
+        var SHOW_URL = EDIT_ID
+          ? '{{ route('company.edit-office.show', ['branch' => 0]) }}'.replace('/0', '/' + EDIT_ID)
+          : null;
+        var EDIT_URL = EDIT_ID
+          ? '{{ route('company.edit-office.update', ['branch' => 0]) }}'.replace('/0', '/' + EDIT_ID)
+          : null;
+        var branchPrefill = null;
+
+        if (EDIT_ID) {
+          var editPageTitle = @json(__('company.pages.edit-office.0'));
+          var pageTitleEl = document.querySelector('.page-header__title');
+          var pageCurrentEl = document.querySelector('.page-header__breadcrumb .current');
+          if (pageTitleEl) pageTitleEl.textContent = editPageTitle;
+          if (pageCurrentEl) pageCurrentEl.textContent = editPageTitle;
+          document.title = 'T-Car — ' + editPageTitle;
+        }
 
         navLinks.forEach(function (link) {
           link.addEventListener('click', function (e) {
@@ -1331,7 +1255,9 @@
         var distanceTable = document.getElementById('distancePricingTable');
 
         function wireDeleteRow(row) {
-          row.querySelector('.distance-pricing-row__delete').addEventListener('click', function () {
+          var btn = row.querySelector('.distance-pricing-row__delete');
+          if (!btn) return;
+          btn.addEventListener('click', function () {
             row.remove();
           });
         }
@@ -1389,30 +1315,38 @@
         var crInput = document.getElementById('crFileUpload');
         var crFileNameLabel = document.getElementById('crFileNameLabel');
         var crPreview = document.getElementById('crFilePreview');
-        crInput.addEventListener('change', function () {
-          var file = this.files[0];
-          if (!file) return;
-          crFileNameLabel.textContent = file.name;
-          if (file.type.startsWith('image/')) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-              crPreview.innerHTML = '<img src="' + e.target.result + '" alt="cr preview">';
-            };
-            reader.readAsDataURL(file);
-          }
-        });
+        if (crInput && crFileNameLabel && crPreview) {
+          crInput.addEventListener('change', function () {
+            var file = this.files[0];
+            if (!file) return;
+            crFileNameLabel.textContent = file.name;
+            if (file.type.startsWith('image/')) {
+              var reader = new FileReader();
+              reader.onload = function (e) {
+                crPreview.innerHTML = '<img src="' + e.target.result + '" alt="cr preview">';
+              };
+              reader.readAsDataURL(file);
+            }
+          });
 
-        document.querySelector('.file-action-link--remove').addEventListener('click', function () {
-          crInput.value = '';
-          crFileNameLabel.textContent = 'لم يتم اختيار أي ملف';
-          crPreview.innerHTML = '<i class="bi bi-file-earmark-pdf"></i>';
-        });
-
-        document.querySelector('.file-action-link--view').addEventListener('click', function () {
-          if (crInput.files[0]) {
-            window.open(URL.createObjectURL(crInput.files[0]), '_blank');
+          var removeLink = document.querySelector('.file-action-link--remove');
+          if (removeLink) {
+            removeLink.addEventListener('click', function () {
+              crInput.value = '';
+              crFileNameLabel.textContent = 'لم يتم اختيار أي ملف';
+              crPreview.innerHTML = '<i class="bi bi-file-earmark-pdf"></i>';
+            });
           }
-        });
+
+          var viewLink = document.querySelector('.file-action-link--view');
+          if (viewLink) {
+            viewLink.addEventListener('click', function () {
+              if (crInput.files[0]) {
+                window.open(URL.createObjectURL(crInput.files[0]), '_blank');
+              }
+            });
+          }
+        }
 
         /* ============================================================
          فرع التأجير في المطار / محطة القطار: إظهار قائمة اختيار متعددة
@@ -1493,29 +1427,140 @@
           updateLabel();
         }
 
-        initLocationAmenitySelect({
-          checkboxId: 'airportOfficeCheckbox',
-          panelId: 'airportOfficeAmenity',
-          allId: 'airportSelectAll',
-          listId: 'airportOptionsList',
-          labelId: 'airportSelectLabel',
-          searchId: 'airportSearchInput',
-          emptyLabel: 'اختر المطارات',
-          allLabel: 'كل المطارات',
-          countSuffix: 'مطارات محددة',
-        });
+        function populateOptions(listId, items) {
+          var list = document.getElementById(listId);
+          if (!list) return;
+          list.innerHTML = items
+            .map(function (item) {
+              var label = isArabic ? item.title_ar : item.title_en;
+              if (!label) label = item.title_ar || item.title_en || '';
+              return (
+                '<label class="branch-select__option">' +
+                '<input type="checkbox" value="' + item.id + '" /> ' +
+                escapeOptionLabel(label) +
+                '</label>'
+              );
+            })
+            .join('');
+        }
 
-        initLocationAmenitySelect({
-          checkboxId: 'trainStationCheckbox',
-          panelId: 'trainStationAmenity',
-          allId: 'trainSelectAll',
-          listId: 'trainOptionsList',
-          labelId: 'trainSelectLabel',
-          searchId: 'trainSearchInput',
-          emptyLabel: 'اختر محطات القطار',
-          allLabel: 'كل المحطات',
-          countSuffix: 'محطات محددة',
-        });
+        function escapeOptionLabel(value) {
+          return String(value)
+            .replace(/[&<>"']/g, function (c) {
+              return {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+              }[c];
+            })
+            .replace(/\s+/g, ' ');
+        }
+
+        var isArabic = window.COMPANY_CONFIG.locale === 'ar';
+
+        function renderOfficeHolidays() {
+          var container = document.getElementById('officeHolidaysList');
+          if (!container) return;
+          if (optionState.vacations.length === 0) {
+            container.innerHTML =
+              '<p class="text-muted"><i class="bi bi-info-circle"></i> ' + escapeOptionLabel(@json(__('company.holidays.activation_hint'))) + '</p>';
+            return;
+          }
+          container.innerHTML = optionState.vacations
+            .map(function (v) {
+              var name = (isArabic ? v.name_ar : v.name_en) || v.name_ar || v.name_en || '';
+              return (
+                '<div class="holiday-row">' +
+                '<label class="checkbox-option">' +
+                '<input type="checkbox" data-id="' + v.id + '" />' +
+                '<span class="checkbox-custom"></span>' +
+                '<span class="checkbox-label">' + escapeOptionLabel(name) + '</span>' +
+                '</label>' +
+                '<div class="holiday-row__dates">' +
+                '<span class="holiday-row__date"><i class="bi bi-calendar-event"></i> ' +
+                @json(__('company.common.555')) + ' <b class="ltr-num">' + escapeOptionLabel(v.date || '') + '</b></span>' +
+                '<span class="holiday-row__date"><i class="bi bi-calendar-x"></i> ' +
+                @json(__('company.common.96')) + ' <b class="ltr-num">' + escapeOptionLabel(v.end_date || '') + '</b></span>' +
+                '</div>' +
+                '</div>'
+              );
+            })
+            .join('');
+        }
+
+        function loadOptions(res) {
+          var opts = res && res.data ? res.data.options || res.data : res || {};
+
+          optionState.airports = opts.airports || [];
+          optionState.train_stations = opts.train_stations || [];
+          optionState.vacations = opts.vacations || [];
+
+          populateOptions('airportOptionsList', optionState.airports);
+          populateOptions('trainOptionsList', optionState.train_stations);
+          renderOfficeHolidays();
+
+          initLocationAmenitySelect({
+            checkboxId: 'airportOfficeCheckbox',
+            panelId: 'airportOfficeAmenity',
+            allId: 'airportSelectAll',
+            listId: 'airportOptionsList',
+            labelId: 'airportSelectLabel',
+            searchId: 'airportSearchInput',
+            emptyLabel: 'اختر المطارات',
+            allLabel: 'كل المطارات',
+            countSuffix: 'مطارات محددة',
+          });
+
+          initLocationAmenitySelect({
+            checkboxId: 'trainStationCheckbox',
+            panelId: 'trainStationAmenity',
+            allId: 'trainSelectAll',
+            listId: 'trainOptionsList',
+            labelId: 'trainSelectLabel',
+            searchId: 'trainSearchInput',
+            emptyLabel: 'اختر محطات القطار',
+            allLabel: 'كل المحطات',
+            countSuffix: 'محطات محددة',
+          });
+        }
+
+        if (EDIT_ID && SHOW_URL) {
+          fetch(SHOW_URL, {
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'Accept': 'application/json',
+            },
+          })
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (res) {
+              var data = res.data || {};
+              loadOptions({ data: data.options });
+              if (data.branch && data.branch.id) {
+                branchPrefill = data.branch;
+                applyBranchPrefill();
+              }
+            })
+            .catch(function () {
+              showFormStatus('alert-danger', @json(__('company.messages.load_error')));
+            });
+        } else {
+          fetch(OPTIONS_URL, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+          })
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (res) {
+              loadOptions(res);
+            })
+            .catch(function () {
+              showFormStatus('alert-danger', @json(__('company.messages.load_error')));
+            });
+        }
 
         /* ============================================================
          خريطة موقع الفرع — Pin قابل للسحب + Reverse Geocoding
@@ -1537,6 +1582,9 @@
           var savedLat = parseFloat(wrapper.getAttribute('data-lat')) || 24.7136;
           var savedLng = parseFloat(wrapper.getAttribute('data-lng')) || 46.6753;
 
+          if (latField && !latField.value) latField.value = savedLat;
+          if (lngField && !lngField.value) lngField.value = savedLng;
+
           var map = L.map(mapEl).setView([savedLat, savedLng], 15);
 
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1545,6 +1593,9 @@
           }).addTo(map);
 
           var marker = L.marker([savedLat, savedLng], { draggable: true }).addTo(map);
+
+          window.__tcOfficeMap = map;
+          window.__tcOfficeMarker = marker;
 
           var geocodeTimeout = null;
           function reverseGeocode(lat, lng) {
@@ -1609,10 +1660,472 @@
         })();
 
         /* ============================================================
-         Form submit (demo only)
+         Submit: جمع بيانات الفورم وإرسالها لتسجيل الفرع
       ============================================================= */
+        var DAY_FULL = {
+          sun: 'sunday',
+          mon: 'monday',
+          tue: 'tuesday',
+          wed: 'wednesday',
+          thu: 'thursday',
+          fri: 'friday',
+          sat: 'saturday',
+        };
+
+        /* ============================================================
+         Edit mode: fill the form with an existing branch's data
+      ============================================================= */
+        var KEY_TO_SHORT = {
+          sunday: 'sun',
+          monday: 'mon',
+          tuesday: 'tue',
+          wednesday: 'wed',
+          thursday: 'thu',
+          friday: 'fri',
+          saturday: 'sat',
+        };
+
+        function setInputValue(id, value) {
+          var el = document.getElementById(id);
+          if (el) el.value = value == null ? '' : String(value);
+          return el;
+        }
+
+        function setPhoneCode(selectId, code) {
+          var select = document.getElementById(selectId);
+          if (!select || !code) return;
+          var matches = Array.prototype.slice
+            .call(select.options)
+            .filter(function (o) {
+              return o.value === code;
+            });
+          if (matches.length === 0) return;
+          select.value = code;
+          var dropdown = select.closest('.custom-dropdown');
+          if (dropdown) {
+            var text = dropdown.querySelector('.custom-dropdown__text');
+            if (text) text.textContent = code;
+            dropdown.querySelectorAll('.custom-dropdown__option').forEach(function (opt) {
+              if (opt.getAttribute('data-value') === code) {
+                opt.setAttribute('data-selected', 'true');
+              } else {
+                opt.removeAttribute('data-selected');
+              }
+            });
+          }
+        }
+
+        function setRichText(id, value) {
+          var el = document.getElementById(id);
+          if (el) el.textContent = value == null ? '' : String(value);
+        }
+
+        function setServiceState(checkboxId, present, values) {
+          var checkbox = document.getElementById(checkboxId);
+          if (!checkbox) return;
+          checkbox.checked = !!present;
+          var action = checkbox
+            .closest('.additional-service-item')
+            .querySelector('.service-action');
+          if (!action) return;
+          action.style.display = present ? 'block' : 'none';
+          if (present) {
+            action.querySelectorAll('.price-input-wrapper input').forEach(function (input, i) {
+              if (values && values[i] != null && values[i] !== '') {
+                input.value = String(values[i]);
+              }
+            });
+          }
+        }
+
+        function buildExtraRange(fromVal, toVal) {
+          var extra = document.createElement('div');
+          extra.className = 'schedule-row schedule-extra-row';
+          extra.innerHTML =
+            '<div class="schedule-row__time"><label>من</label>' +
+            buildTimePicker(fromVal, 'bi-sun') +
+            '</div>' +
+            '<span class="schedule-row__sep"><i class="bi bi-arrow-left"></i></span>' +
+            '<div class="schedule-row__time"><label>إلى</label>' +
+            buildTimePicker(toVal, 'bi-moon-stars') +
+            '</div>' +
+            '<div class="schedule-row__actions">' +
+            '<button type="button" class="schedule-icon-btn schedule-icon-btn--danger" data-remove-range title="حذف هذه الفترة"><i class="bi bi-dash-lg"></i></button>' +
+            '</div>';
+          extra.querySelector('[data-remove-range]').addEventListener('click', function () {
+            extra.remove();
+          });
+          return extra;
+        }
+
+        function presetSchedule(tableEl, hours, defaults) {
+          if (!tableEl || !defaults) return;
+          var byDay = {};
+          (hours || []).forEach(function (h) {
+            var key = KEY_TO_SHORT[h.day] || String(h.day);
+            (byDay[key] = byDay[key] || []).push(h);
+          });
+
+          tableEl.innerHTML = '';
+          DAYS.forEach(function (day) {
+            var rows = byDay[day.key];
+            var primary = rows ? rows[0] : null;
+            var enabled = primary ? Boolean(primary.is_open) : true;
+            var fromVal = primary ? primary.from : defaults[day.key][0];
+            var toVal = primary ? primary.to : defaults[day.key][1];
+
+            tableEl.appendChild(buildScheduleRow(day, fromVal || '', toVal || '', enabled));
+
+            if (rows) {
+              for (var i = 1; i < rows.length; i++) {
+                tableEl.appendChild(
+                  buildExtraRange(rows[i].from || '', rows[i].to || ''),
+                );
+              }
+            }
+          });
+          wireAddRange(tableEl);
+        }
+
+        function setPrivateDeliveryRange(value) {
+          var select = document.getElementById('privateDeliveryRange');
+          var dropdown = document.getElementById('privateDeliveryRangeDropdown');
+          if (!select) return;
+          var target = null;
+          if (dropdown) {
+            target = dropdown.querySelector(
+              '.custom-dropdown__option[data-value="' + String(value) + '"]',
+            );
+          }
+          select.value = target ? String(value) : '';
+          if (!dropdown) return;
+          var text = dropdown.querySelector('.custom-dropdown__text');
+          if (text) {
+            text.textContent = target
+              ? target.querySelector('.custom-dropdown__option-text').textContent
+              : @json(__('company.common.117'));
+          }
+          dropdown.querySelectorAll('.custom-dropdown__option').forEach(function (opt) {
+            if (target && opt === target) opt.setAttribute('data-selected', 'true');
+            else opt.removeAttribute('data-selected');
+          });
+        }
+
+        function checkAmenityCheckbox(checkboxId, checked) {
+          var checkbox = document.getElementById(checkboxId);
+          if (!checkbox) return;
+          checkbox.checked = !!checked;
+          checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        function checkOptionIds(listId, ids) {
+          var list = document.getElementById(listId);
+          if (!list) return;
+          var wanted = {};
+          (ids || []).forEach(function (id) {
+            wanted[String(id)] = true;
+          });
+          list.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
+            if (wanted[String(checkbox.value)]) {
+              checkbox.checked = true;
+              checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+          });
+        }
+
+        function applyBranchPrefill() {
+          if (!branchPrefill) return;
+          var b = branchPrefill;
+
+          setInputValue('officeNameAr', b.name_ar);
+          setInputValue('officeNameEn', b.name_en);
+          setInputValue('officePersonName', b.person_name);
+          setInputValue('officePersonEmail', b.person_email);
+          setInputValue('officePhoneNumber', b.phone_number);
+          setInputValue('officeGeneralPhoneNumber', b.general_phone_number);
+          setInputValue('officeAddressInput', b.address);
+          setInputValue('officeLat', b.latitude);
+          setInputValue('officeLng', b.longitude);
+          setPhoneCode('countryCodeSelect', b.phone_code);
+          setPhoneCode('countryCodeGeneralSelect', b.general_phone_code);
+          setRichText('officeNotesAr', b.notes_ar);
+          setRichText('officeNotesEn', b.notes_en);
+
+          var branchType = document.querySelector(
+            'input[name="branchType"][value="' + (b.branch_type || 'branch') + '"]',
+          );
+          if (branchType) branchType.checked = true;
+
+          checkAmenityCheckbox('airportOfficeCheckbox', b.is_airport_branch);
+          checkAmenityCheckbox('trainStationCheckbox', b.is_train_station_branch);
+          checkOptionIds('airportOptionsList', b.airports);
+          checkOptionIds('trainOptionsList', b.train_stations);
+
+          presetSchedule(workHoursTable, b.working_hours, workDefaults);
+          presetSchedule(deliveryHoursTable, b.delivery_hours, deliveryDefaults);
+
+          var drv = b.driver_service || {};
+          setServiceState('driverService', !!b.driver_service, [
+            drv.day_price,
+            drv.week_price,
+            drv.month_price,
+          ]);
+
+          var child = b.child_seat_service || {};
+          setServiceState('childSeatService', !!b.child_seat_service, [
+            child.day_price,
+            child.week_price,
+            child.month_price,
+          ]);
+
+          var airport = b.airport_fast_delivery || {};
+          setServiceState('airportDelivery', !!b.airport_fast_delivery, [airport.price]);
+
+          var special = b.special_delivery_service || {};
+          setServiceState('additionalService1', !!b.special_delivery_service, [special.price]);
+          if (b.special_delivery_service && b.special_delivery_service.distance != null) {
+            setPrivateDeliveryRange(b.special_delivery_service.distance);
+          }
+
+          var deliveryOnlyCheckbox = document.getElementById('deliveryOnlyService');
+          var deliveryOnlyAction = document.getElementById('deliveryOnlyServiceAction');
+          var prices = b.delivery_only_prices || [];
+          if (prices.length > 0 && deliveryOnlyCheckbox && deliveryOnlyAction) {
+            deliveryOnlyCheckbox.checked = true;
+            deliveryOnlyAction.style.display = 'block';
+            distanceTable.innerHTML = prices
+              .map(function (row) {
+                return (
+                  '<div class="distance-pricing-row">' +
+                  '<input type="text" class="form-field__input ltr-num" value="' +
+                  escapeOptionLabel(row.distance) +
+                  '" readonly />' +
+                  '<input type="text" class="form-field__input ltr-num" value="' +
+                  escapeOptionLabel(row.price) +
+                  '" />' +
+                  '<button type="button" class="distance-pricing-row__delete" title="حذف النطاق"><i class="bi bi-trash3"></i></button>' +
+                  '</div>'
+                );
+              })
+              .join('');
+            distanceTable.querySelectorAll('.distance-pricing-row').forEach(wireDeleteRow);
+          } else if (deliveryOnlyCheckbox && deliveryOnlyAction) {
+            deliveryOnlyCheckbox.checked = false;
+            deliveryOnlyAction.style.display = 'none';
+          }
+
+          var vacationWanted = {};
+          (b.vacations || []).forEach(function (id) {
+            vacationWanted[String(id)] = true;
+          });
+          document
+            .querySelectorAll('#officeHolidaysList input[type="checkbox"]')
+            .forEach(function (checkbox) {
+              if (vacationWanted[String(checkbox.getAttribute('data-id'))]) {
+                checkbox.checked = true;
+              }
+            });
+
+          if (b.latitude != null && b.longitude != null) {
+            var map = window.__tcOfficeMap;
+            var marker = window.__tcOfficeMarker;
+            var wrapper = document.getElementById('officeMapWrapper');
+            if (marker) marker.setLatLng([b.latitude, b.longitude]);
+            if (map) map.setView([b.latitude, b.longitude], 15);
+            if (wrapper) {
+              wrapper.setAttribute('data-lat', b.latitude);
+              wrapper.setAttribute('data-lng', b.longitude);
+            }
+            setTimeout(function () {
+              if (map) map.invalidateSize();
+            }, 200);
+          }
+        }
+
+        function collectSchedule(containerId) {
+          var table = document.getElementById(containerId);
+          if (!table) return [];
+          var schedule = [];
+          var currentDay = null;
+
+          table.querySelectorAll('.schedule-row').forEach(function (row) {
+            if (row.getAttribute('data-day')) {
+              currentDay = row.getAttribute('data-day');
+            }
+            if (!currentDay) return;
+
+            var dayToggle = row.querySelector('[data-day-toggle]');
+            var isOpen = dayToggle ? dayToggle.checked : true;
+            var values = Array.prototype.slice
+              .call(row.querySelectorAll('.time-picker__value'))
+              .map(function (el) {
+                return el.textContent.trim();
+              });
+
+            schedule.push({
+              day: DAY_FULL[currentDay] || currentDay,
+              is_open: isOpen,
+              from: isOpen && values[0] ? values[0] : null,
+              to: isOpen && values[1] ? values[1] : null,
+            });
+          });
+
+          return schedule;
+        }
+
+        function collectServicePrices(containerId) {
+          var container = document.getElementById(containerId);
+          if (!container) return [];
+          return Array.prototype.slice
+            .call(container.querySelectorAll('.price-input-wrapper input'))
+            .map(function (input) {
+              return input.value.trim();
+            });
+        }
+
+        function collectDistanceRows() {
+          var table = document.getElementById('distancePricingTable');
+          if (!table) return [];
+          return Array.prototype.slice
+            .call(table.querySelectorAll('.distance-pricing-row'))
+            .map(function (row) {
+              var inputs = row.querySelectorAll('input');
+              return {
+                distance: inputs[0] ? inputs[0].value.trim() : null,
+                price: inputs[1] ? inputs[1].value.trim() : null,
+              };
+            });
+        }
+
+        function checkedValues(listId) {
+          var list = document.getElementById(listId);
+          if (!list) return [];
+          return Array.prototype.slice
+            .call(list.querySelectorAll('input[type="checkbox"]:checked'))
+            .map(function (cb) {
+              return cb.value;
+            });
+        }
+
+        var officeFormStatus = document.getElementById('officeFormStatus');
+
+        function showFormStatus(type, message) {
+          if (!officeFormStatus) {
+            window.alert(message);
+            return;
+          }
+          officeFormStatus.textContent = message;
+          officeFormStatus.className = 'alert ' + type + ' mt-3';
+          officeFormStatus.classList.remove('d-none');
+        }
+
         document.getElementById('editOfficeForm').addEventListener('submit', function (e) {
           e.preventDefault();
+
+          var submitBtn = this.querySelector('button[type="submit"]');
+          submitBtn.disabled = true;
+
+          var payload = {
+            branch_type: (this.querySelector('input[name="branchType"]:checked') || {}).value || 'branch',
+            name_ar: document.getElementById('officeNameAr').value.trim(),
+            name_en: document.getElementById('officeNameEn').value.trim(),
+            person_name: document.getElementById('officePersonName').value.trim() || null,
+            person_email: document.getElementById('officePersonEmail').value.trim() || null,
+            phone_code: document.getElementById('countryCodeSelect').value,
+            phone_number: document.getElementById('officePhoneNumber').value.trim() || null,
+            general_phone_code: document.getElementById('countryCodeGeneralSelect').value,
+            general_phone_number: document.getElementById('officeGeneralPhoneNumber').value.trim() || null,
+            address: document.getElementById('officeAddressInput').value.trim() || null,
+            latitude: document.getElementById('officeLat').value || null,
+            longitude: document.getElementById('officeLng').value || null,
+            is_airport_branch: document.getElementById('airportOfficeCheckbox').checked,
+            is_train_station_branch: document.getElementById('trainStationCheckbox').checked,
+            airports: checkedValues('airportOptionsList'),
+            train_stations: checkedValues('trainOptionsList'),
+            notes_ar: document.getElementById('officeNotesAr').textContent.trim() || null,
+            notes_en: document.getElementById('officeNotesEn').textContent.trim() || null,
+            working_hours: collectSchedule('workHoursTable'),
+            delivery_hours: collectSchedule('deliveryHoursTable'),
+          };
+
+          if (document.getElementById('driverService').checked) {
+            var d = collectServicePrices('driverServiceAction');
+            payload.driver_service = {
+              day_price: d[0] || 0,
+              week_price: d[1] || 0,
+              month_price: d[2] || 0,
+            };
+          }
+
+          if (document.getElementById('childSeatService').checked) {
+            var c = collectServicePrices('childSeatServiceAction');
+            payload.child_seat_service = {
+              day_price: c[0] || 0,
+              week_price: c[1] || 0,
+              month_price: c[2] || 0,
+            };
+          }
+
+          if (document.getElementById('airportDelivery').checked) {
+            var a = collectServicePrices('airportDeliveryAction');
+            payload.airport_fast_delivery = { price: a[0] || 0 };
+          }
+
+          if (document.getElementById('additionalService1').checked) {
+            var s = collectServicePrices('additionalService1Action');
+            payload.special_delivery_service = {
+              price: s[0] || 0,
+              distance: document.getElementById('privateDeliveryRange').value || null,
+            };
+          }
+
+          if (document.getElementById('deliveryOnlyService').checked) {
+            payload.delivery_only_prices = collectDistanceRows();
+          }
+
+          payload.vacations = Array.prototype.slice
+            .call(document.querySelectorAll('#officeHolidaysList input[type="checkbox"]:checked'))
+            .map(function (cb) {
+              return cb.getAttribute('data-id');
+            });
+
+          fetch(EDIT_ID && EDIT_URL ? EDIT_URL : STORE_URL, {
+            method: EDIT_ID ? 'PUT' : 'POST',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'X-CSRF-TOKEN': csrfToken.content,
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          })
+            .then(function (r) {
+              return r.json().then(function (data) {
+                return { ok: r.ok, data: data };
+              });
+            })
+            .then(function (res) {
+              submitBtn.disabled = false;
+
+              if (res.data && (res.data.code >= 400 || res.data.errors)) {
+                var firstError = res.data.errors
+                  ? Object.values(res.data.errors)[0][0]
+                  : res.data.message;
+                showFormStatus('alert-danger', firstError || res.data.message || '');
+                return;
+              }
+
+              if (res.ok) {
+                showFormStatus('alert-success', res.data.message || '');
+                setTimeout(function () {
+                  window.location.href = '{{ route('company.branches') }}';
+                }, 900);
+              }
+            })
+            .catch(function () {
+              submitBtn.disabled = false;
+              showFormStatus('alert-danger', '');
+            });
         });
       });
     </script>
