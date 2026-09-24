@@ -44,6 +44,7 @@
           <tr>
             <th>#</th>
             <th>{{ __('admin.faqs.table_question') }}</th>
+            <th>{{ __('admin.faqs.table_answer') }}</th>
             <th>{{ __('admin.content.table_type') }}</th>
             <th>{{ __('admin.content.table_date') }}</th>
             <th>{{ __('admin.common.actions') }}</th>
@@ -231,7 +232,7 @@
         if (currentType !== 'all') params.set('type', currentType);
         if (searchInput.value.trim()) params.set('search', searchInput.value.trim());
 
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-secondary py-4">${escapeHtml(i18n.loading)}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-secondary py-4">${escapeHtml(i18n.loading)}</td></tr>`;
 
         try {
           const { ok, status, payload } = await requestJson(`${listUrl}?${params}`, { headers: jsonHeaders });
@@ -270,9 +271,11 @@
           return `
             <tr data-faq-id="${faq.id}">
               <td>${numberFormatter.format(rowNumber)}</td>
-              <td style="max-width: 480px;">
+              <td style="max-width: 320px;">
                 <div class="text-truncate fw-semibold">${escapeHtml(question)}</div>
-                <div class="text-truncate text-secondary small">${escapeHtml(answer)}</div>
+              </td>
+              <td style="max-width: 360px;">
+                <div class="text-truncate text-secondary">${escapeHtml(answer)}</div>
               </td>
               <td><span class="${escapeHtml(badge.classes)}">${escapeHtml(badge.text)}</span></td>
               <td>${formatDate(faq.created_at)}</td>

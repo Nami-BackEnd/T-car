@@ -32,13 +32,22 @@
   };
 
   const showToast = (message, type = 'success') => {
+    const icons = {
+      success: 'ti-circle-check',
+      danger: 'ti-alert-circle',
+      warning: 'ti-alert-triangle',
+      info: 'ti-info-circle',
+    };
+
     const container = document.createElement('div');
-    container.className = `toast-container position-fixed bottom-0 ${document.dir === 'rtl' ? 'start-0' : 'end-0'} p-3`;
+    container.className = `toast-container position-fixed top-0 ${document.dir === 'rtl' ? 'start-0' : 'end-0'} p-3`;
+    container.style.zIndex = 1090;
     container.innerHTML = `
-      <div class="toast align-items-center text-bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
+      <div class="toast admin-toast" role="alert" aria-live="assertive" aria-atomic="true" data-type="${type}">
+        <div class="d-flex align-items-center gap-2">
+          <span class="admin-toast-icon"><i class="ti ${icons[type] || icons.info}"></i></span>
           <div class="toast-body">${message}</div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
       </div>`;
     document.body.appendChild(container);
@@ -49,18 +58,24 @@
   };
   window.adminToast = showToast;
 
-  // ---------- Language switcher ----------
-  document.querySelectorAll('[data-lang-switch]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
+  // ---------- Language switcher (slide toggle) ----------
+  document.querySelectorAll('[data-lang-toggle]').forEach((toggle) => {
+    toggle.addEventListener('click', async (event) => {
       if (!config.routes.langSwitch) return;
-      btn.disabled = true;
+
+      const option = event.target.closest('[data-lang]');
+      const target = option ? option.getAttribute('data-lang') : (config.locale === 'ar' ? 'en' : 'ar');
+      const current = toggle.getAttribute('data-active');
+
+      if (!target || target === current || toggle.hasAttribute('data-disabled')) return;
+
+      toggle.setAttribute('data-disabled', '');
       try {
-        const { payload } = await postJson(config.routes.langSwitch, {
-          locale: btn.getAttribute('data-lang-switch'),
-        });
+        await postJson(config.routes.langSwitch, { locale: target });
         window.location.reload();
-      } finally {
-        btn.disabled = false;
+      } catch (e) {
+        toggle.removeAttribute('data-disabled');
+        showToast(config.messages.networkError || 'Network error', 'danger');
       }
     });
   });

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -45,5 +46,10 @@ class User extends Authenticatable
     public function licenses(): hasOne
     {
         return $this->hasOne(UserLicense::class);
+    }
+
+    public function walletTransactions(): HasMany
+    {
+        return $this->hasMany(UserWalletTransaction::class);
     }
 }

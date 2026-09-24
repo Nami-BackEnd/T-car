@@ -10,6 +10,7 @@
     },
     messages: {
       sessionExpired: @json(__('admin.messages.session_expired')),
+      networkError: @json(__('admin.common.network_error')),
     },
   };
 </script>
@@ -21,7 +22,7 @@
 {{-- Theme JS --}}
 <script src="{{ asset('admin/assets/js/vendors/sidebarnav.js') }}"></script>
 <script src="{{ asset('admin/assets/js/main.js') }}"></script>
-<script src="{{ asset('admin/assets/js/admin.js?v=2') }}"></script>
+<script src="{{ asset('admin/assets/js/admin.js?v=5') }}"></script>
 <script src="{{ asset('admin/assets/js/admin-confirm.js') }}"></script>
 
 @stack('scripts')

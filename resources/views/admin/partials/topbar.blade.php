@@ -30,29 +30,13 @@
     
       {{-- Language switcher --}}
       <li>
-        <div class="dropdown">
-          <button class="btn btn-ghost btn-icon rounded-circle d-flex align-items-center" type="button"
-            data-bs-toggle="dropdown" aria-expanded="false" aria-label="{{ __('admin.common.language') }}"
-            data-bs-title="{{ __('admin.common.language') }}" data-bs-toggle-tooltip="tooltip">
-            <i class="ti ti-world lh-1 fs-5"></i>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow">
-            <li>
-              <button type="button"
-                class="dropdown-item d-flex align-items-center {{ app()->getLocale() === 'ar' ? 'active' : '' }}"
-                data-lang-switch="ar">
-                <span class="me-2">🇪🇬</span> العربية
-              </button>
-            </li>
-            <li>
-              <button type="button"
-                class="dropdown-item d-flex align-items-center {{ app()->getLocale() === 'en' ? 'active' : '' }}"
-                data-lang-switch="en">
-                <span class="me-2">🇬🇧</span> English
-              </button>
-            </li>
-          </ul>
-        </div>
+        <button type="button" class="lang-toggle" data-lang-toggle
+          data-active="{{ app()->getLocale() }}"
+          aria-label="{{ __('admin.common.language') }}">
+          <span class="lang-thumb" aria-hidden="true"></span>
+          <span class="lang-opt" data-lang="en">{{ __('admin.common.english') }}</span>
+          <span class="lang-opt" data-lang="ar">{{ __('admin.common.arabic') }}</span>
+        </button>
       </li>
 
       {{-- Light / Dark mode --}}
@@ -264,7 +248,7 @@
           </li>
           <li class="list-group-item px-0">
             <a href="#!" class="d-flex align-items-center gap-2 text-inherit py-2">
-              <i class="ti ti-steering-wheel"></i> {{ __('admin.nav.drivers') }}
+              <i class="ti ti-building"></i> {{ __('admin.nav.companies') }}
             </a>
           </li>
           <li class="list-group-item px-0">

@@ -1,7 +1,12 @@
 /* Arabic / RTL adjustments on top of theme.rtl.css */
 
+:root {
+  --ds-font-sans-serif: "IBM Plex Sans Arabic", sans-serif;
+  --ds-body-font-family: "IBM Plex Sans Arabic", sans-serif;
+}
+
 [dir='rtl'] body {
-  font-family: 'Cairo', 'Public Sans', sans-serif;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
 }
 
 [dir='rtl'] h1,
@@ -16,7 +21,7 @@
 [dir='rtl'] .h4,
 [dir='rtl'] .h5,
 [dir='rtl'] .h6 {
-  font-family: 'Cairo', 'Public Sans', sans-serif;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
 }
 
 /* keep latin numerals readable inside badges/tables */

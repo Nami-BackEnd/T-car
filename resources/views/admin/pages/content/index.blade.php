@@ -10,6 +10,12 @@
 @section('title', $config['entity'] . ' | ' . __('admin.panel_name'))
 
 @section('content')
+  <style>
+    #contentForm .ck-editor__editable_inline {
+      min-height: 300px;
+    }
+  </style>
+
   <form action="{{ route($config['routeBase'] . '.update') }}" method="POST" id="contentForm">
     @csrf
     @method('PUT')
@@ -59,6 +65,7 @@
               </div>
 
               {{-- Titles --}}
+              @if ($config['with_titles'] ?? true)
               <div class="row g-4">
                 <div class="col-md-6">
                   <label class="form-label" for="{{ $audience }}TitleAr">{{ __('admin.content.field_title_ar') }}</label>
@@ -81,6 +88,7 @@
                   @enderror
                 </div>
               </div>
+              @endif
 
               {{-- Rich contents --}}
               <div class="row g-4">

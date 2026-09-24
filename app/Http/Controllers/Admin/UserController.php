@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Admin\UserRequest;
 use App\Models\User;
+use App\Models\UserWalletTransaction;
 use App\Services\Admin\UserService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -60,6 +61,36 @@ class UserController extends Controller
         $this->service->destroy($user);
 
         return $this->success(message: __('admin.messages.deleted_success', ['entity' => self::config()['entity']]));
+    }
+
+    public function wallet(User $user): JsonResponse
+    {
+        $transactions = $user->walletTransactions()
+            ->orderByDesc('id')
+            ->get()
+            ->map(fn (UserWalletTransaction $transaction) => [
+                'id'         => $transaction->id,
+                'value'      => (float) $transaction->value,
+                'type'       => $transaction->type->value,
+                'status'     => $transaction->status,
+                'order_id'   => $transaction->order_id,
+                'created_at' => $transaction->created_at?->toISOString(),
+            ]);
+
+        return $this->success(['transactions' => $transactions]);
+    }
+
+    public function show(User $user)
+    {
+        $transactions = $user->walletTransactions()
+            ->orderByDesc('id')
+            ->get();
+
+        return view('admin.pages.users.show', [
+            'config'       => self::config(),
+            'user'         => $user,
+            'transactions' => $transactions,
+        ]);
     }
 
     private function exposedFields(): array
