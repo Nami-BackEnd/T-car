@@ -14962,11 +14962,11 @@ input:checked + .toggle-switch__track::before {
       flex-direction: column;
       gap: 1px;
     }
-    .fleet-matrix__type {
+    /* .fleet-matrix__type {
       font-size: 0.68rem;
       font-weight: 600;
       color: var(--bs-secondary, #8a94a6);
-    }
+    } */
 
     /* ---- Row total: the branch's own fleet size, pinned to the far side. ---- */
     .fleet-matrix__row-total {
