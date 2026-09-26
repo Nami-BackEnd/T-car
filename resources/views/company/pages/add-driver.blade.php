@@ -88,60 +88,9 @@
                             {{ __('company.common.223') }}</label>
                         </div>
                       </li>
-                      <li>
+                      <li id="branchOptionsList">
                         <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <input type="checkbox" data-branch="utaik" data-label="N2 فرع العتيق" />
-                            <span class="checkbox-custom"></span>
-                            {{ __('company.common.49') }}</label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <input type="checkbox" data-branch="olaya" data-label="N2-Al-Olaya" />
-                            <span class="checkbox-custom"></span>
-                            N2-Al-Olaya
-                          </label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <input
-                              type="checkbox"
-                              data-branch="rawdah"
-                              data-label="N2 Rental Car - Rawdah"
-                            />
-                            <span class="checkbox-custom"></span>
-                            N2 Rental Car - Rawdah
-                          </label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <input
-                              type="checkbox"
-                              data-branch="aziziyah"
-                              data-label="N2 Rental Car - Riyadh - Al Aziziyah"
-                            />
-                            <span class="checkbox-custom"></span>
-                            N2 Rental Car - Riyadh - Al Aziziyah
-                          </label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <input
-                              type="checkbox"
-                              data-branch="awali"
-                              data-label="N2 Rental Car - Riyadh - Exit 27, Al-Awali"
-                            />
-                            <span class="checkbox-custom"></span>
-                            N2 Rental Car - Riyadh - Exit 27, Al-Awali
-                          </label>
+                          <span class="text-muted small">{{ __('company.drivers.loading') }}</span>
                         </div>
                       </li>
                     </ul>
@@ -168,54 +117,36 @@
                         >
                         <i class="bi bi-chevron-down"></i>
                       </button>
-                      <ul class="dropdown-menu w-100" aria-labelledby="countryCodeBtn">
+                      <ul class="dropdown-menu w-100" aria-labelledby="countryCodeBtn" id="countryCodeList">
                         <li>
-                          <a class="dropdown-item ltr-num" href="#" data-value="966+"
-                            >{{ __('company.common.44') }}</a
-                          >
-                        </li>
-                        <li>
-                          <a class="dropdown-item ltr-num" href="#" data-value="971+"
-                            >{{ __('company.common.46') }}</a
-                          >
-                        </li>
-                        <li>
-                          <a class="dropdown-item ltr-num" href="#" data-value="973+"
-                            >{{ __('company.common.47') }}</a
-                          >
-                        </li>
-                        <li>
-                          <a class="dropdown-item ltr-num" href="#" data-value="965+"
-                            >{{ __('company.common.43') }}</a
-                          >
-                        </li>
-                        <li>
-                          <a class="dropdown-item ltr-num" href="#" data-value="968+">{{ __('company.common.45') }}</a>
-                        </li>
-                        <li>
-                          <a class="dropdown-item ltr-num" href="#" data-value="974+">{{ __('company.common.48') }}</a>
+                          <div class="dropdown-item">
+                            <span class="text-muted small">{{ __('company.drivers.loading') }}</span>
+                          </div>
                         </li>
                       </ul>
                     </div>
                     <span class="form-field__error">{{ __('company.common.179') }}</span>
                   </div>
 
-                  <div class="form-field">
-                    <label class="form-field__label">{{ __('company.common.181') }}</label>
+                  <div class="form-field" data-required>
+                    <label class="form-field__label"
+                      >{{ __('company.common.181') }}<span class="text-danger">*</span></label
+                    >
                     <input
                       type="text"
                       class="form-field__input ltr-num"
                       id="driverPhoneNumber"
                       placeholder="5XXXXXXXX"
                     />
+                    <span class="form-field__error">{{ __('company.drivers.errors.phone_required') }}</span>
                   </div>
                 </div>
 
                 
                 <div class="form-grid">
-                  <div class="form-field">
+                  <div class="form-field" data-required>
                     <label for="licenseExpiryInput" class="form-field__label"
-                      >{{ __('company.common.295') }}</label
+                      >{{ __('company.common.295') }}<span class="text-danger">*</span></label
                     >
                     <div class="date-field-wrap">
                       <input
@@ -233,15 +164,20 @@
                         <i class="bi bi-calendar3"></i>
                       </button>
                     </div>
+                    <span class="form-field__error">{{ __('company.drivers.errors.license_required') }}</span>
                   </div>
 
-                  <div class="form-field">
-                    <label class="form-field__label">{{ __('company.common.402') }}</label>
+                  <div class="form-field" data-required>
+                    <label class="form-field__label"
+                      >{{ __('company.common.402') }}<span class="text-danger">*</span></label
+                    >
                     <input
                       type="text"
                       class="form-field__input ltr-num"
-                       placeholder="{{ __('company.pages.add-driver.3') }}"
+                      id="driverIdentityNumber"
+                      placeholder="{{ __('company.pages.add-driver.3') }}"
                     />
+                    <span class="form-field__error">{{ __('company.drivers.errors.identity_required') }}</span>
                   </div>
                 </div>
 
@@ -311,7 +247,6 @@
               </div>
             </div>
 
-            
             <div class="eo-savebar">
               <button type="button" class="btn btn-outline" id="cancelDriverBtn">
                 <i class="bi bi-x-lg"></i> {{ __('company.common.95') }}</button>
@@ -398,10 +333,54 @@
         var branchSelectValue = document.getElementById('branchSelectValue');
         var branchDropdownMenu = document.getElementById('branchDropdownMenu');
         var branchSearchInput = document.getElementById('branchSearchInput');
+        var branchSelectAll = document.getElementById('branchSelectAll');
+        var branchPlaceholder = @json(__('company.common.110'));
+
+        function syncAllChecked() {
+          if (!branchSelectAll) return;
+          var allCheckboxes = branchDropdownMenu.querySelectorAll(
+            'input[type="checkbox"][data-branch]',
+          );
+          branchSelectAll.checked =
+            allCheckboxes.length > 0 &&
+            Array.from(allCheckboxes).every(function (cb) {
+              return cb.checked;
+            });
+        }
+
+        function bindBranchCheckboxes() {
+          branchDropdownMenu
+            .querySelectorAll('input[type="checkbox"][data-branch]')
+            .forEach(function (cb) {
+              cb.onchange = function () {
+                var branch = this.getAttribute('data-branch');
+                var label = this.getAttribute('data-label');
+                if (this.checked) {
+                  if (
+                    !selectedBranches.some(function (o) {
+                      return o.value === branch;
+                    })
+                  ) {
+                    selectedBranches.push({ value: branch, label: label });
+                  }
+                } else {
+                  selectedBranches = selectedBranches.filter(function (o) {
+                    return o.value !== branch;
+                  });
+                }
+                syncAllChecked();
+                updateMultiSelectDisplay(
+                  selectedBranches,
+                  branchSelectBtn,
+                  branchSelectValue,
+                  branchPlaceholder,
+                );
+              };
+            });
+        }
 
         if (branchDropdownMenu) {
           // Select All functionality
-          var branchSelectAll = document.getElementById('branchSelectAll');
           if (branchSelectAll) {
             branchSelectAll.addEventListener('change', function () {
               var isChecked = this.checked;
@@ -429,55 +408,19 @@
                 selectedBranches,
                 branchSelectBtn,
                 branchSelectValue,
-                'اختر الفرع',
+                branchPlaceholder,
               );
             });
           }
 
-          branchDropdownMenu
-            .querySelectorAll('input[type="checkbox"][data-branch]')
-            .forEach(function (cb) {
-              cb.addEventListener('change', function () {
-                var branch = this.getAttribute('data-branch');
-                var label = this.getAttribute('data-label');
-                if (this.checked) {
-                  if (
-                    !selectedBranches.some(function (o) {
-                      return o.value === branch;
-                    })
-                  ) {
-                    selectedBranches.push({ value: branch, label: label });
-                  }
-                } else {
-                  selectedBranches = selectedBranches.filter(function (o) {
-                    return o.value !== branch;
-                  });
-                }
-                // Update Select All checkbox state
-                if (branchSelectAll) {
-                  var allCheckboxes = branchDropdownMenu.querySelectorAll(
-                    'input[type="checkbox"][data-branch]',
-                  );
-                  var allChecked = Array.from(allCheckboxes).every(function (cb) {
-                    return cb.checked;
-                  });
-                  branchSelectAll.checked = allChecked;
-                }
-                updateMultiSelectDisplay(
-                  selectedBranches,
-                  branchSelectBtn,
-                  branchSelectValue,
-                  'اختر الفرع',
-                );
-              });
-            });
+          bindBranchCheckboxes();
 
           function updateBranchDisplay() {
             updateMultiSelectDisplay(
               selectedBranches,
               branchSelectBtn,
               branchSelectValue,
-              'اختر الفرع',
+              branchPlaceholder,
             );
           }
 
@@ -526,27 +469,6 @@
         });
 
         /* ============================================================
-       Generate a strong random password into both password fields
-    ============================================================= */
-        document.getElementById('generatePasswordBtn').addEventListener('click', function () {
-          var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
-          var pwd = '';
-          for (var i = 0; i < 12; i++) {
-            pwd += chars.charAt(Math.floor(Math.random() * chars.length));
-          }
-
-          var pass1 = document.getElementById('driverPassword');
-          var pass2 = document.getElementById('driverPasswordConfirm');
-          [pass1, pass2].forEach(function (input) {
-            input.value = pwd;
-            input.type = 'text';
-            var toggleBtn = input.parentElement.querySelector('[data-toggle-password]');
-            if (toggleBtn) toggleBtn.querySelector('i').className = 'bi bi-eye-slash';
-            input.closest('.form-field').classList.remove('is-invalid');
-          });
-        });
-
-        /* ============================================================
        Open the native date picker when the calendar icon is clicked
            ============================================================= */
         document.getElementById('licenseExpiryIconBtn').addEventListener('click', function () {
@@ -559,57 +481,268 @@
         });
 
         /* ============================================================
-       Lightweight validation + submit
-           ============================================================= */
+       Load options (branches + phone codes) from the database
+    ============================================================= */
+        var optionsUrl = '{{ route('company.add-driver.options') }}';
+        var storeUrl = '{{ route('company.drivers.store') }}';
+        var csrf = document.querySelector('meta[name="csrf-token"]');
+        var isAr = @json(app()->getLocale() === 'ar');
+
+        var selectedPhoneCode = @json('+966');
+        var noBranches = @json(__('company.drivers.no_branches_available'));
+
+        function escapeHtml(value) {
+          return String(value).replace(/[&<>"']/g, function (c) {
+            return {
+              '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+            }[c];
+          });
+        }
+
+        function renderBranches(branches) {
+          var list = document.getElementById('branchOptionsList');
+          if (!list) return;
+
+          if (!branches.length) {
+            list.innerHTML =
+              '<div class="dropdown-item"><span class="text-muted small">' +
+              escapeHtml(noBranches) +
+              '</span></div>';
+            return;
+          }
+
+          list.innerHTML = branches
+            .map(function (branch) {
+              var label = (isAr ? branch.name_ar : branch.name_en) || branch.name_ar || branch.name_en;
+
+              return (
+                '<div class="dropdown-item">' +
+                '<label class="checkbox-option">' +
+                '<input type="checkbox" data-branch="' + branch.id + '" data-label="' +
+                escapeHtml(label) + '" />' +
+                '<span class="checkbox-custom"></span>' + escapeHtml(label) + '</label></div>'
+              );
+            })
+            .join('');
+
+          // Re-bind after the list is rebuilt.
+          bindBranchCheckboxes();
+        }
+
+        function renderPhoneCodes(countries) {
+          var list = document.getElementById('countryCodeList');
+          if (!list) return;
+
+          list.innerHTML = countries
+            .map(function (country) {
+              var label = (isAr ? country.title_ar : country.title_en) || country.title_en;
+
+              return (
+                '<li><a class="dropdown-item ltr-num" href="#" data-value="' +
+                escapeHtml(country.phone_code) + '">' + escapeHtml(label) + '</a></li>'
+              );
+            })
+            .join('');
+
+          list.querySelectorAll('a[data-value]').forEach(function (link) {
+            link.addEventListener('click', function (e) {
+              e.preventDefault();
+              selectedPhoneCode = this.getAttribute('data-value');
+              document.getElementById('countryCodeValue').textContent = selectedPhoneCode;
+            });
+          });
+        }
+
+        function loadOptions() {
+          return fetch(optionsUrl, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+          })
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (res) {
+              var data = res.data || {};
+              renderBranches(data.branches || []);
+              renderPhoneCodes(data.phone_codes || []);
+            })
+            .catch(function () {
+              renderBranches([]);
+              renderPhoneCodes([]);
+            });
+        }
+
+        /* ============================================================
+       Validation + submit
+    ============================================================= */
         var form = document.getElementById('addDriverForm');
         var successBanner = document.getElementById('saveSuccessBanner');
+
+        var messages = {
+          name: @json(__('company.drivers.errors.name_required')),
+          phone: @json(__('company.drivers.errors.phone_required')),
+          identity: @json(__('company.drivers.errors.identity_required')),
+          license: @json(__('company.drivers.errors.license_required')),
+          email: @json(__('company.drivers.errors.email_invalid')),
+          passwordShort: @json(__('company.drivers.errors.password_short')),
+          passwordMismatch: @json(__('company.drivers.errors.password_mismatch')),
+          branches: @json(__('company.drivers.errors.branches_required')),
+          saveFailed: @json(__('company.drivers.errors.save_failed')),
+        };
+
+        function setError(el, message) {
+          var field = el.closest('.form-field');
+          if (!field) return false;
+          field.classList.add('is-invalid');
+          var slot = field.querySelector('.form-field__error');
+          if (slot && message) slot.textContent = message;
+          return false;
+        }
+
+        function clearError(el) {
+          var field = el.closest('.form-field');
+          if (field) field.classList.remove('is-invalid');
+          return true;
+        }
 
         function validateForm() {
           var isValid = true;
 
-          function markField(el, ok) {
-            var field = el.closest('.form-field');
-            field.classList.toggle('is-invalid', !ok);
-            if (!ok) isValid = false;
+          function check(id, ok, message) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            if (ok) {
+              clearError(el);
+            } else {
+              isValid = setError(el, message);
+            }
           }
 
-          markField(
-            document.getElementById('driverFullName'),
-            document.getElementById('driverFullName').value.trim().length > 0,
+          check('driverFullName', getValue('driverFullName').length > 0, messages.name);
+          check('driverPhoneNumber', getValue('driverPhoneNumber').length > 0, messages.phone);
+          check('driverIdentityNumber', getValue('driverIdentityNumber').length > 0, messages.identity);
+          check('licenseExpiryInput', getValue('licenseExpiryInput').length > 0, messages.license);
+
+          var emailEl = document.getElementById('driverEmail');
+          var emailVal = emailEl ? emailEl.value.trim() : '';
+          var emailOk = emailVal === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
+          check('driverEmail', emailOk, messages.email);
+
+          var pass1 = getValue('driverPassword');
+          var pass2 = getValue('driverPasswordConfirm');
+          var passwordLengthOk = pass1.length >= 8;
+          var passwordsMatch = pass1 === pass2;
+
+          check('driverPassword', passwordLengthOk, messages.passwordShort);
+          check(
+            'driverPasswordConfirm',
+            passwordLengthOk && passwordsMatch,
+            messages.passwordMismatch,
           );
 
-          var branchChosen = selectedBranches.length > 0;
-          markField(document.getElementById('branchSelectBtn'), branchChosen);
-
-          markField(document.getElementById('countryCodeBtn'), true); // has a default value already
-
-          var emailVal = document.getElementById('driverEmail').value.trim();
-          var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
-          markField(document.getElementById('driverEmail'), emailOk);
-
-          var pass1 = document.getElementById('driverPassword').value;
-          var pass2 = document.getElementById('driverPasswordConfirm').value;
-          markField(document.getElementById('driverPassword'), pass1.length >= 6);
-          markField(
-            document.getElementById('driverPasswordConfirm'),
-            pass2.length >= 6 && pass2 === pass1,
-          );
+          var branchBtn = document.getElementById('branchSelectBtn');
+          if (selectedBranches.length === 0) {
+            isValid = setError(branchBtn, messages.branches);
+          } else {
+            clearError(branchBtn);
+          }
 
           return isValid;
+        }
+
+        function getValue(id) {
+          var el = document.getElementById(id);
+          return el ? el.value.trim() : '';
         }
 
         form.addEventListener('submit', function (e) {
           e.preventDefault();
           successBanner.classList.remove('is-visible');
 
-          if (validateForm()) {
-            successBanner.classList.add('is-visible');
-            successBanner.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          } else {
+          if (!validateForm()) {
             var firstInvalid = form.querySelector('.form-field.is-invalid');
             if (firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
           }
+
+          var payload = {
+            name: getValue('driverFullName'),
+            phone_code: selectedPhoneCode,
+            phone: getValue('driverPhoneNumber'),
+            license_expiration_date: getValue('licenseExpiryInput'),
+            identity_number: getValue('driverIdentityNumber'),
+            email: getValue('driverEmail') || null,
+            password: getValue('driverPassword'),
+            password_confirmation: getValue('driverPasswordConfirm'),
+            assigned_to_all_branches: false,
+            is_active: true,
+            branches: selectedBranches.map(function (b) {
+              return parseInt(b.value, 10);
+            }),
+          };
+
+          var submitBtn = form.querySelector('button[type="submit"]');
+          if (submitBtn) submitBtn.disabled = true;
+
+          fetch(storeUrl, {
+            method: 'POST',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'X-CSRF-TOKEN': csrf.content,
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          })
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (res) {
+              if (res.code && res.code >= 400) {
+                applyServerErrors(res.data && res.data.errors);
+                window.alert((res.data && res.data.message) || messages.saveFailed);
+                return;
+              }
+
+              // Laravel validation failures resolve with HTTP 422 and no
+              // `code` field, so surface the field errors instead of the
+              // generic success path.
+              if (res.errors) {
+                applyServerErrors(res.errors);
+                window.alert(messages.saveFailed);
+                return;
+              }
+
+              window.location.href = '{{ route('company.drivers') }}';
+            })
+            .catch(function () {
+              window.alert(messages.saveFailed);
+            })
+            .then(function () {
+              if (submitBtn) submitBtn.disabled = false;
+            });
         });
+
+        function applyServerErrors(errors) {
+          if (!errors) return;
+
+          var map = {
+            name: 'driverFullName',
+            phone: 'driverPhoneNumber',
+            identity_number: 'driverIdentityNumber',
+            license_expiration_date: 'licenseExpiryInput',
+            email: 'driverEmail',
+            password: 'driverPassword',
+            branches: 'branchSelectBtn',
+          };
+
+          Object.keys(map).forEach(function (key) {
+            if (!errors[key]) return;
+            var el = document.getElementById(map[key]);
+            if (el) setError(el, errors[key][0]);
+          });
+        }
+
+        loadOptions();
 
         document.getElementById('cancelDriverBtn').addEventListener('click', function () {
           window.location.href = '{{ route('company.drivers') }}';
@@ -617,4 +750,3 @@
       });
     </script>
 @endpush
-

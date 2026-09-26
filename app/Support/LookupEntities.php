@@ -9,6 +9,7 @@ use App\Models\CarModel;
 use App\Models\CarType;
 use App\Models\City;
 use App\Models\CompanyAdditionalService;
+use App\Models\Country;
 use App\Models\Feature;
 use App\Models\PaymentMethod;
 use App\Models\TrainStation;
@@ -24,22 +25,42 @@ class LookupEntities
     public static function all(): array
     {
         return [
+            'countries' => [
+                'label' => 'lookups.countries',
+                'iconBi' => 'bi-globe2',
+                'iconTi' => 'ti-world',
+                'model' => Country::class,
+                'searchFields' => ['title_ar', 'title_en', 'phone_code'],
+                'columns' => [
+                    ['key' => 'title_ar', 'label' => 'lookups.title_ar'],
+                    ['key' => 'title_en', 'label' => 'lookups.title_en'],
+                    ['key' => 'phone_code', 'label' => 'lookups.phone_code'],
+                ],
+                'fields' => [
+                    ['name' => 'title_ar', 'type' => 'text', 'label' => 'lookups.title_ar', 'placeholder' => 'lookups.placeholder_ar', 'dir' => 'rtl', 'col' => 6],
+                    ['name' => 'title_en', 'type' => 'text', 'label' => 'lookups.title_en', 'placeholder' => 'lookups.placeholder_en', 'dir' => 'ltr', 'col' => 6],
+                    ['name' => 'phone_code', 'type' => 'text', 'label' => 'lookups.phone_code', 'placeholder' => 'lookups.placeholder_phone_code', 'dir' => 'ltr', 'col' => 6],
+                ],
+            ],
             'cities' => [
                 'label' => 'lookups.cities',
                 'iconBi' => 'bi-pin-map',
                 'iconTi' => 'ti-map-pin',
                 'model' => City::class,
                 'map' => true,
+                'with' => ['country'],
                 'searchFields' => ['title_ar', 'title_en'],
                 'columns' => [
                     ['key' => 'title_ar', 'label' => 'lookups.title_ar'],
                     ['key' => 'title_en', 'label' => 'lookups.title_en'],
+                    ['key' => 'country_id', 'label' => 'lookups.country', 'relation' => 'country', 'relationKey' => 'title_ar'],
                     ['key' => 'latitude', 'label' => 'lookups.latitude'],
                     ['key' => 'longitude', 'label' => 'lookups.longitude'],
                 ],
                 'fields' => [
                     ['name' => 'title_ar', 'type' => 'text', 'label' => 'lookups.title_ar', 'placeholder' => 'lookups.placeholder_ar', 'dir' => 'rtl', 'col' => 6],
                     ['name' => 'title_en', 'type' => 'text', 'label' => 'lookups.title_en', 'placeholder' => 'lookups.placeholder_en', 'dir' => 'ltr', 'col' => 6],
+                    ['name' => 'country_id', 'type' => 'select', 'label' => 'lookups.country', 'options' => 'countries', 'empty' => 'lookups.select_country', 'col' => 6],
                     ['name' => 'latitude', 'type' => 'number', 'label' => 'lookups.latitude', 'step' => 'any', 'col' => 6],
                     ['name' => 'longitude', 'type' => 'number', 'label' => 'lookups.longitude', 'step' => 'any', 'col' => 6],
                 ],

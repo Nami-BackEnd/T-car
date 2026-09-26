@@ -46,6 +46,11 @@ class Branch extends Model
         return $this->belongsTo(CompanyUser::class, 'company_id');
     }
 
+    public function drivers(): BelongsToMany
+    {
+        return $this->belongsToMany(Driver::class, 'driver_branches', 'branch_id', 'driver_id');
+    }
+
     public function airports(): BelongsToMany
     {
         return $this->belongsToMany(Airport::class, 'branch_airports');

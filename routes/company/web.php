@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\Company\AuthController;
 use App\Http\Controllers\Company\BranchController;
+use App\Http\Controllers\Company\CarController;
 use App\Http\Controllers\Company\DashboardController;
+use App\Http\Controllers\Company\DriverController;
 use App\Http\Controllers\Company\HolidayController;
 use App\Http\Controllers\Company\PageController;
+use App\Http\Controllers\Company\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -69,22 +72,38 @@ Route::middleware(['auth:company', 'company.locale'])->prefix('company')->name('
     Route::get('official-holidays/data', [HolidayController::class, 'index'])->name('official-holidays.data');
     Route::post('official-holidays/{vacation}/toggle', [HolidayController::class, 'toggle'])->name('official-holidays.toggle');
     Route::post('official-holidays/{vacation}/duration', [HolidayController::class, 'updateDuration'])->name('official-holidays.duration');
-    Route::get('office-cars', [PageController::class, 'show'])->defaults('page', 'office-cars')->name('office-cars');
     Route::get('office-details', [PageController::class, 'show'])->defaults('page', 'office-details')->name('office-details');
 
     // Cars
-    Route::get('car-availability', [PageController::class, 'show'])->defaults('page', 'car-availability')->name('car-availability');
-    Route::get('license-plates', [PageController::class, 'show'])->defaults('page', 'license-plates')->name('license-plates');
+    Route::get('car-availability', [CarController::class, 'availability'])->name('car-availability');
+    Route::put('car-availability/{car}/stock', [CarController::class, 'updateAvailabilityStock'])->name('car-availability.stock');
+    Route::post('car-availability/{car}/toggle', [CarController::class, 'toggleAvailability'])->name('car-availability.toggle');
+    Route::get('license-plates', [CarController::class, 'licensePlates'])->name('license-plates');
+    Route::get('office-cars', [CarController::class, 'index'])->name('office-cars');
+    Route::put('office-cars/{car}/stocks', [CarController::class, 'updateStocks'])->name('office-cars.stocks');
+    Route::delete('edit-car/{car}', [CarController::class, 'destroy'])->name('edit-car.destroy');
     Route::get('add-car', [PageController::class, 'show'])->defaults('page', 'add-car')->name('add-car');
     Route::get('edit-car', [PageController::class, 'show'])->defaults('page', 'edit-car')->name('edit-car');
+    Route::get('add-car/options', [CarController::class, 'options'])->name('add-car.options');
+    Route::post('add-car', [CarController::class, 'store'])->name('add-car.store');
+    Route::get('edit-car/{car}', [CarController::class, 'show'])->name('edit-car.show');
+    Route::put('edit-car/{car}', [CarController::class, 'update'])->name('edit-car.update');
 
     // Users
     Route::get('managers-employees', [PageController::class, 'show'])->defaults('page', 'managers-employees')->name('managers-employees');
     Route::get('add-company-manager', [PageController::class, 'show'])->defaults('page', 'add-company-manager')->name('add-company-manager');
     Route::get('edit-company-manager', [PageController::class, 'show'])->defaults('page', 'edit-company-manager')->name('edit-company-manager');
     Route::get('drivers', [PageController::class, 'show'])->defaults('page', 'drivers')->name('drivers');
+    Route::get('drivers/data', [DriverController::class, 'index'])->name('drivers.data');
+    Route::get('drivers/export', [DriverController::class, 'export'])->name('drivers.export');
+    Route::get('drivers/{driver}', [DriverController::class, 'show'])->name('drivers.show');
+    Route::post('drivers', [DriverController::class, 'store'])->name('drivers.store');
+    Route::patch('drivers/{driver}/status', [DriverController::class, 'toggleStatus'])->name('drivers.status');
+    Route::delete('drivers/{driver}', [DriverController::class, 'destroy'])->name('drivers.destroy');
     Route::get('add-driver', [PageController::class, 'show'])->defaults('page', 'add-driver')->name('add-driver');
-    Route::get('edit-driver', [PageController::class, 'show'])->defaults('page', 'edit-driver')->name('edit-driver');
+    Route::get('add-driver/options', [DriverController::class, 'options'])->name('add-driver.options');
+    Route::get('edit-driver/{driver}', [PageController::class, 'show'])->defaults('page', 'edit-driver')->name('edit-driver');
+    Route::put('edit-driver/{driver}', [DriverController::class, 'update'])->name('edit-driver.update');
 
     // Bookings
     Route::get('create-booking', [PageController::class, 'show'])->defaults('page', 'create-booking')->name('create-booking');
@@ -94,6 +113,7 @@ Route::middleware(['auth:company', 'company.locale'])->prefix('company')->name('
 
     // Profile & system
     Route::get('edit-profile', [PageController::class, 'show'])->defaults('page', 'edit-profile')->name('edit-profile');
-    Route::get('settings', [PageController::class, 'show'])->defaults('page', 'settings')->name('settings');
+    Route::get('settings', [SettingsController::class, 'edit'])->name('settings');
+    Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::get('support', [PageController::class, 'show'])->defaults('page', 'support')->name('support');
 });

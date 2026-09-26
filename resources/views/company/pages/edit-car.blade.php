@@ -10,12 +10,34 @@
               <nav class="page-header__breadcrumb" aria-label="Breadcrumb">
                 <a href="{{ route('company.dashboard') }}">{{ __('company.common.176') }}</a>
                 <i class="bi bi-chevron-right"></i>
-                <span>{{ __('company.common.202') }}</span>
-                <i class="bi bi-chevron-right"></i>
-                <a href="{{ route('company.license-plates') }}"> {{ __('company.common.472') }}</a>
+                <a href="{{ route('company.office-cars', request()->only('branch')) }}">{{ __('company.cars.list_title') }}</a>
                 <i class="bi bi-chevron-right"></i>
                 <span class="current">{{ __('company.pages.edit-car.0') }}</span>
               </nav>
+            </div>
+            <div class="page-header__actions">
+              {{--
+                Delete is a real form POST with method=DELETE so it navigates and
+                redirects back to the list; script only supplies the confirmation.
+              --}}
+              <form
+                method="POST"
+                action="{{ route('company.edit-car.destroy', ['car' => request('car') ?: 0]) }}"
+                data-confirm="{{ __('company.cars.delete_confirm') }}"
+                class="d-inline"
+              >
+                @csrf
+                @method('DELETE')
+                @if (request('branch'))
+                  <input type="hidden" name="branch" value="{{ request('branch') }}" />
+                @endif
+                <button type="submit" class="btn btn-outline">
+                  <i class="bi bi-trash"></i> {{ __('company.common.370') }}
+                </button>
+              </form>
+              <a href="{{ route('company.office-cars', request()->only('branch')) }}" class="btn btn-primary">
+                <i class="bi bi-list-ul"></i> {{ __('company.cars.list_title') }}
+              </a>
             </div>
           </div>
 
@@ -45,7 +67,14 @@
             </ul>
           </div>
 
-          <form id="editCarForm">
+          <form
+            id="editCarForm"
+            data-car-form
+            data-options-url="{{ route('company.add-car.options') }}"
+            data-show-url="{{ route('company.edit-car.show', ['car' => 0]) }}"
+            data-update-url="{{ route('company.edit-car.update', ['car' => 0]) }}"
+            enctype="multipart/form-data"
+          >
             
             <div class="edit-car-card" id="sec-car-details">
               <div class="edit-car-card__header">
@@ -53,190 +82,6 @@
               </div>
               <div class="edit-car-card__body">
                 <div class="form-grid">
-                  <div class="form-field">
-                    <label class="form-field__label"
-                      >{{ __('company.common.207') }}<span class="text-danger">*</span></label
-                    >
-                    <div class="custom-dropdown" id="makeDropdown">
-                      <select id="makeSelect" style="display: none">
-                        <option value="">{{ __('company.common.108') }}</option>
-                        <option value="toyota" selected>{{ __('company.common.354') }}</option>
-                        <option value="nissan">{{ __('company.common.575') }}</option>
-                        <option value="hyundai">{{ __('company.common.586') }}</option>
-                        <option value="kia">{{ __('company.common.488') }}</option>
-                        <option value="suzuki">{{ __('company.common.428') }}</option>
-                        <option value="honda">{{ __('company.common.581') }}</option>
-                        <option value="ford">{{ __('company.common.468') }}</option>
-                        <option value="chevrolet">{{ __('company.common.434') }}</option>
-                        <option value="bmw">{{ __('company.common.272') }}</option>
-                        <option value="mercedes">{{ __('company.common.520') }}</option>
-                        <option value="audi">{{ __('company.common.71') }}</option>
-                        <option value="mazda">{{ __('company.common.494') }}</option>
-                        <option value="volkswagen">{{ __('company.common.469') }}</option>
-                        <option value="mitsubishi">{{ __('company.common.560') }}</option>
-                      </select>
-                      <button type="button" class="custom-dropdown__trigger" aria-expanded="false">
-                        <span class="custom-dropdown__selected">
-                          <span class="custom-dropdown__icon"
-                            ><i class="bi bi-car-front-fill"></i
-                          ></span>
-                          <span class="custom-dropdown__text">{{ __('company.common.354') }}</span>
-                        </span>
-                        <i class="bi bi-chevron-down custom-dropdown__chevron"></i>
-                      </button>
-                      <div class="custom-dropdown__menu">
-                        <div class="custom-dropdown__search">
-                          <i class="bi bi-search"></i>
-                          <input
-                            type="text"
-                             placeholder="{{ __('company.common.256') }}"
-                            class="custom-dropdown__search-input"
-                          />
-                        </div>
-                        <div class="custom-dropdown__options">
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="toyota"
-                            data-selected="true"
-                          >
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.354') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="nissan">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.575') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="hyundai"
-                          >
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.586') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="kia">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.488') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="suzuki">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.428') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="honda">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.581') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="ford">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.468') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="chevrolet"
-                          >
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.434') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="bmw">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.272') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="mercedes"
-                          >
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.520') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="audi">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.71') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="mazda">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.494') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="volkswagen"
-                          >
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.469') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="mitsubishi"
-                          >
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.560') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="form-field">
-                    <label class="form-field__label" for="carTypeSelect">
-                      {{ __('company.common.571') }}<span class="text-danger">*</span>
-                      
-                    </label>
-                    <select
-                      id="carTypeSelect"
-                      class="form-field__input"
-                      data-car-type-select
-                      data-current-type-id="suv"
-                      data-allow-inactive-current
-                      required
-                    ></select>
-                  </div>
-
                   <div class="form-field car-image-field">
                     <label class="form-field__label" for="carImageInput">{{ __('company.common.436') }}</label>
                     <div
@@ -300,18 +145,13 @@
                       >{{ __('company.common.221') }}<span class="text-danger">*</span></label
                     >
                     <div class="custom-dropdown" id="branchesDropdown">
-                      <select id="branchesSelect" style="display: none" multiple>
-                        <option value="all">{{ __('company.common.223') }}</option>
-                        <option value="branch1" selected>{{ __('company.common.461') }}</option>
-                        <option value="branch2" selected>{{ __('company.common.464') }}</option>
-                        <option value="branch3">{{ __('company.common.463') }}</option>
-                        <option value="branch4">{{ __('company.common.462') }}</option>
-                        <option value="branch5">{{ __('company.common.459') }}</option>
+                      <select id="branchesSelect" name="branch_ids[]" style="display: none" multiple>
+                        <option value="all" selected>{{ __('company.common.223') }}</option>
                       </select>
                       <button type="button" class="custom-dropdown__trigger" aria-expanded="false">
                         <span class="custom-dropdown__selected">
                           <span class="custom-dropdown__icon"><i class="bi bi-buildings"></i></span>
-                          <span class="custom-dropdown__text">{{ __('company.pages.edit-car.3') }}</span>
+                          <span class="custom-dropdown__text">{{ __('company.common.223') }}</span>
                         </span>
                         <i class="bi bi-chevron-down custom-dropdown__chevron"></i>
                       </button>
@@ -324,53 +164,78 @@
                             class="custom-dropdown__search-input"
                           />
                         </div>
-                        <div class="custom-dropdown__options">
-                          <button type="button" class="custom-dropdown__option" data-value="all">
+                        <div class="custom-dropdown__options" data-branch-options>
+                          <button
+                            type="button"
+                            class="custom-dropdown__option"
+                            data-value="all"
+                            data-selected="true"
+                          >
                             <span class="custom-dropdown__option-text">{{ __('company.common.223') }}</span>
                             <i class="bi bi-check2 custom-dropdown__option-check"></i>
                           </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="branch1"
-                            data-selected="true"
-                          >
-                            <span class="custom-dropdown__option-text">{{ __('company.common.461') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="branch2"
-                            data-selected="true"
-                          >
-                            <span class="custom-dropdown__option-text">{{ __('company.common.464') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="branch3"
-                          >
-                            <span class="custom-dropdown__option-text">{{ __('company.common.463') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="branch4"
-                          >
-                            <span class="custom-dropdown__option-text">{{ __('company.common.462') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="branch5"
-                          >
-                            <span class="custom-dropdown__option-text">{{ __('company.common.459') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="form-field__label"
+                      >{{ __('company.common.207') }}<span class="text-danger">*</span></label
+                    >
+                    <div class="custom-dropdown" id="makeDropdown">
+                      <select id="makeSelect" name="car_brand_id" style="display: none" required>
+                        <option value="">{{ __('company.common.108') }}</option>
+                      </select>
+                      <button type="button" class="custom-dropdown__trigger" aria-expanded="false">
+                        <span class="custom-dropdown__selected">
+                          <span class="custom-dropdown__icon"
+                            ><i class="bi bi-car-front-fill"></i
+                          ></span>
+                          <span class="custom-dropdown__text">{{ __('company.common.108') }}</span>
+                        </span>
+                        <i class="bi bi-chevron-down custom-dropdown__chevron"></i>
+                      </button>
+                      <div class="custom-dropdown__menu">
+                        <div class="custom-dropdown__search">
+                          <i class="bi bi-search"></i>
+                          <input
+                            type="text"
+                             placeholder="{{ __('company.common.256') }}"
+                            class="custom-dropdown__search-input"
+                          />
+                        </div>
+                        <div class="custom-dropdown__options" data-options="brands">
+                          <span class="custom-dropdown__loading">{{ __('company.messages.loading') }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-field">
+                    <label class="form-field__label"
+                      >{{ __('company.common.571') }}<span class="text-danger">*</span></label
+                    >
+                    <div class="custom-dropdown" id="carTypeDropdown">
+                      <select id="carTypeSelect" style="display: none" required></select>
+                      <button type="button" class="custom-dropdown__trigger" aria-expanded="false">
+                        <span class="custom-dropdown__selected">
+                          <span class="custom-dropdown__icon"><i class="bi bi-tag"></i></span>
+                          <span class="custom-dropdown__text">{{ __('company.pages.add-car.0') }}</span>
+                        </span>
+                        <i class="bi bi-chevron-down custom-dropdown__chevron"></i>
+                      </button>
+                      <div class="custom-dropdown__menu">
+                        <div class="custom-dropdown__search">
+                          <i class="bi bi-search"></i>
+                          <input
+                            type="text"
+                             placeholder="{{ __('company.common.263') }}"
+                            class="custom-dropdown__search-input"
+                          />
+                        </div>
+                        <div class="custom-dropdown__options" data-options="car_types">
+                          <span class="custom-dropdown__loading">{{ __('company.messages.loading') }}</span>
                         </div>
                       </div>
                     </div>
@@ -381,16 +246,8 @@
                       >{{ __('company.common.241') }}<span class="text-danger">*</span></label
                     >
                     <div class="custom-dropdown" id="modelDropdown">
-                      <select id="modelSelect" style="display: none">
+                      <select id="modelSelect" name="car_model_id" style="display: none" required>
                         <option value="">{{ __('company.common.116') }}</option>
-                        <option value="camry" selected>{{ __('company.common.474') }}</option>
-                        <option value="corolla">{{ __('company.common.487') }}</option>
-                        <option value="yaris">{{ __('company.common.589') }}</option>
-                        <option value="rava4">{{ __('company.common.388') }}</option>
-                        <option value="highlander">{{ __('company.common.578') }}</option>
-                        <option value="landcruiser">{{ __('company.common.493') }}</option>
-                        <option value="prius">{{ __('company.common.266') }}</option>
-                        <option value="avalon">{{ __('company.common.67') }}</option>
                       </select>
                       <button type="button" class="custom-dropdown__trigger" aria-expanded="false">
                         <span class="custom-dropdown__selected">
@@ -408,80 +265,8 @@
                             class="custom-dropdown__search-input"
                           />
                         </div>
-                        <div class="custom-dropdown__options">
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="camry"
-                            data-selected="true"
-                          >
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.474') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="corolla"
-                          >
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.487') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="yaris">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.589') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="rava4">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.388') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="highlander"
-                          >
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.578') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="landcruiser"
-                          >
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.493') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="prius">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.266') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="avalon">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-car-front"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.67') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
+                        <div class="custom-dropdown__options" data-options="car_models">
+                          <span class="custom-dropdown__loading">{{ __('company.messages.loading') }}</span>
                         </div>
                       </div>
                     </div>
@@ -490,18 +275,8 @@
                   <div class="form-field">
                     <label class="form-field__label">{{ __('company.common.201') }}</label>
                     <div class="custom-dropdown" id="yearDropdown">
-                      <select id="yearSelect" style="display: none">
+                      <select id="yearSelect" name="year" style="display: none">
                         <option value="" selected>{{ __('company.common.107') }}</option>
-                        <option value="2026">2026</option>
-                        <option value="2025">2025</option>
-                        <option value="2024">2024</option>
-                        <option value="2023">2023</option>
-                        <option value="2022">2022</option>
-                        <option value="2021">2021</option>
-                        <option value="2020">2020</option>
-                        <option value="2019">2019</option>
-                        <option value="2018">2018</option>
-                        <option value="2017">2017</option>
                       </select>
                       <button type="button" class="custom-dropdown__trigger" aria-expanded="false">
                         <span class="custom-dropdown__selected">
@@ -519,47 +294,8 @@
                             class="custom-dropdown__search-input"
                           />
                         </div>
-                        <div class="custom-dropdown__options">
-                          <button type="button" class="custom-dropdown__option" data-value="2026">
-                            <span class="custom-dropdown__option-text">2026</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="2025">
-                            <span class="custom-dropdown__option-text">2025</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="2024">
-                            <span class="custom-dropdown__option-text">2024</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="2023">
-                            <span class="custom-dropdown__option-text">2023</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="2022">
-                            <span class="custom-dropdown__option-text">2022</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="2021">
-                            <span class="custom-dropdown__option-text">2021</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="2020">
-                            <span class="custom-dropdown__option-text">2020</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="2019">
-                            <span class="custom-dropdown__option-text">2019</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="2018">
-                            <span class="custom-dropdown__option-text">2018</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="2017">
-                            <span class="custom-dropdown__option-text">2017</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
+                        <div class="custom-dropdown__options" data-options="years">
+                          <span class="custom-dropdown__loading">{{ __('company.messages.loading') }}</span>
                         </div>
                       </div>
                     </div>
@@ -592,7 +328,7 @@
                           >{{ __('company.common.191') }}<span class="text-danger">*</span></label
                         >
                         <div class="price-input-wrapper">
-                          <input type="text" class="form-field__input ltr-num" placeholder="0" />
+                          <input type="text" class="form-field__input ltr-num" data-pricing="day_price" placeholder="0" />
                           <span class="price-suffix">{{ __('company.common.406') }}</span>
                         </div>
                       </div>
@@ -601,7 +337,7 @@
                           >{{ __('company.common.196') }}<span class="text-danger">*</span></label
                         >
                         <div class="price-input-wrapper">
-                          <input type="text" class="form-field__input ltr-num" value="0" />
+                          <input type="text" class="form-field__input ltr-num" data-pricing="day_lowest_price" value="0" />
                           <span class="price-suffix">{{ __('company.common.406') }}</span>
                         </div>
                       </div>
@@ -617,7 +353,7 @@
                           >{{ __('company.common.191') }}<span class="text-danger">*</span></label
                         >
                         <div class="price-input-wrapper">
-                          <input type="text" class="form-field__input ltr-num" placeholder="0" />
+                          <input type="text" class="form-field__input ltr-num" data-pricing="week_price" placeholder="0" />
                           <span class="price-suffix">{{ __('company.common.406') }}</span>
                         </div>
                       </div>
@@ -626,7 +362,32 @@
                           >{{ __('company.common.196') }}<span class="text-danger">*</span></label
                         >
                         <div class="price-input-wrapper">
-                          <input type="text" class="form-field__input ltr-num" value="0" />
+                          <input type="text" class="form-field__input ltr-num" data-pricing="week_lowest_price" value="0" />
+                          <span class="price-suffix">{{ __('company.common.406') }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  
+                  <div class="price-block">
+                    <h6 class="price-block__title">{{ __('company.cars.free_km') }}</h6>
+                    <div class="price-block__grid">
+                      <div class="form-field">
+                        <label class="form-field__label"
+                          >{{ __('company.cars.free_km') }}<span class="text-danger">*</span></label
+                        >
+                        <div class="price-input-wrapper">
+                          <input type="text" class="form-field__input ltr-num" data-pricing="free_km" value="0" />
+                          <span class="price-suffix">{{ __('company.cars.unit_km') }}</span>
+                        </div>
+                      </div>
+                      <div class="form-field">
+                        <label class="form-field__label"
+                          >{{ __('company.cars.free_km_price') }}<span class="text-danger">*</span></label
+                        >
+                        <div class="price-input-wrapper">
+                          <input type="text" class="form-field__input ltr-num" data-pricing="free_km_price" value="0" />
                           <span class="price-suffix">{{ __('company.common.406') }}</span>
                         </div>
                       </div>
@@ -652,7 +413,7 @@
                             >{{ __('company.common.191') }}<span class="text-danger">*</span></label
                           >
                           <div class="price-input-wrapper">
-                            <input type="text" class="form-field__input ltr-num" placeholder="0" />
+                            <input type="text" class="form-field__input ltr-num" data-pricing="month_price" placeholder="0" />
                             <span class="price-suffix">{{ __('company.common.406') }}</span>
                           </div>
                         </div>
@@ -661,7 +422,7 @@
                             >{{ __('company.common.196') }}<span class="text-danger">*</span></label
                           >
                           <div class="price-input-wrapper">
-                            <input type="text" class="form-field__input ltr-num" value="0" />
+                            <input type="text" class="form-field__input ltr-num" data-pricing="month_lowest_price" value="0" />
                             <span class="price-suffix">{{ __('company.common.406') }}</span>
                           </div>
                         </div>
@@ -702,18 +463,6 @@
                           <div class="custom-dropdown" data-duration-dropdown>
                             <select style="display: none" data-duration-select>
                               <option value="">{{ __('company.common.112') }}</option>
-                              <option value="1">{{ __('company.pages.edit-car.4') }}</option>
-                              <option value="2">{{ __('company.common.432') }}</option>
-                              <option value="3">{{ __('company.common.22') }}</option>
-                              <option value="4">{{ __('company.common.35') }}</option>
-                              <option value="5">{{ __('company.common.38') }}</option>
-                              <option value="6">{{ __('company.common.39') }}</option>
-                              <option value="7">{{ __('company.common.40') }}</option>
-                              <option value="8">{{ __('company.common.41') }}</option>
-                              <option value="9">{{ __('company.common.42') }}</option>
-                              <option value="10">{{ __('company.common.10') }}</option>
-                              <option value="11">{{ __('company.common.11') }}</option>
-                              <option value="12">{{ __('company.common.12') }}</option>
                             </select>
                             <button
                               type="button"
@@ -729,103 +478,8 @@
                               <i class="bi bi-chevron-down custom-dropdown__chevron"></i>
                             </button>
                             <div class="custom-dropdown__menu">
-                              <div class="custom-dropdown__options">
-                                <button
-                                  type="button"
-                                  class="custom-dropdown__option"
-                                  data-value="1"
-                                >
-                                  <span class="custom-dropdown__option-text">{{ __('company.pages.edit-car.4') }}</span>
-                                  <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                                </button>
-                                <button
-                                  type="button"
-                                  class="custom-dropdown__option"
-                                  data-value="2"
-                                >
-                                  <span class="custom-dropdown__option-text">{{ __('company.common.432') }}</span>
-                                  <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                                </button>
-                                <button
-                                  type="button"
-                                  class="custom-dropdown__option"
-                                  data-value="3"
-                                >
-                                  <span class="custom-dropdown__option-text">{{ __('company.common.22') }}</span>
-                                  <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                                </button>
-                                <button
-                                  type="button"
-                                  class="custom-dropdown__option"
-                                  data-value="4"
-                                >
-                                  <span class="custom-dropdown__option-text">{{ __('company.common.35') }}</span>
-                                  <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                                </button>
-                                <button
-                                  type="button"
-                                  class="custom-dropdown__option"
-                                  data-value="5"
-                                >
-                                  <span class="custom-dropdown__option-text">{{ __('company.common.38') }}</span>
-                                  <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                                </button>
-                                <button
-                                  type="button"
-                                  class="custom-dropdown__option"
-                                  data-value="6"
-                                >
-                                  <span class="custom-dropdown__option-text">{{ __('company.common.39') }}</span>
-                                  <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                                </button>
-                                <button
-                                  type="button"
-                                  class="custom-dropdown__option"
-                                  data-value="7"
-                                >
-                                  <span class="custom-dropdown__option-text">{{ __('company.common.40') }}</span>
-                                  <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                                </button>
-                                <button
-                                  type="button"
-                                  class="custom-dropdown__option"
-                                  data-value="8"
-                                >
-                                  <span class="custom-dropdown__option-text">{{ __('company.common.41') }}</span>
-                                  <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                                </button>
-                                <button
-                                  type="button"
-                                  class="custom-dropdown__option"
-                                  data-value="9"
-                                >
-                                  <span class="custom-dropdown__option-text">{{ __('company.common.42') }}</span>
-                                  <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                                </button>
-                                <button
-                                  type="button"
-                                  class="custom-dropdown__option"
-                                  data-value="10"
-                                >
-                                  <span class="custom-dropdown__option-text">{{ __('company.common.10') }}</span>
-                                  <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                                </button>
-                                <button
-                                  type="button"
-                                  class="custom-dropdown__option"
-                                  data-value="11"
-                                >
-                                  <span class="custom-dropdown__option-text">{{ __('company.common.11') }}</span>
-                                  <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                                </button>
-                                <button
-                                  type="button"
-                                  class="custom-dropdown__option"
-                                  data-value="12"
-                                >
-                                  <span class="custom-dropdown__option-text">{{ __('company.common.12') }}</span>
-                                  <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                                </button>
+                              <div class="custom-dropdown__options" data-duration-options>
+                                <span class="custom-dropdown__loading">{{ __('company.messages.loading') }}</span>
                               </div>
                             </div>
                           </div>
@@ -888,92 +542,12 @@
                       </div>
                     </div>
                   </div>
-                  <div class="checkbox-list">
-                    <div class="checkbox-option-wrap">
-                      <label class="checkbox-option">
-                        <input type="checkbox" id="addDriverToggle" />
-                        <span class="checkbox-custom"></span>
-                        <span class="checkbox-label"> {{ __('company.common.84') }}</span>
-                      </label>
-                      <div
-                        class="price-input-wrapper checkbox-inline-price"
-                        id="addDriverPriceField"
-                        style="display: none"
-                      >
-                        <input
-                          type="text"
-                          class="form-field__input ltr-num"
-                          id="addDriverPrice"
-                          placeholder="0"
-                        />
-                        <span class="price-suffix">{{ __('company.common.406') }}</span>
-                      </div>
-                    </div>
-                    <div class="checkbox-option-wrap">
-                      <label class="checkbox-option">
-                        <input type="checkbox" id="unlimitedKmToggle" />
-                        <span class="checkbox-custom"></span>
-                        <span class="checkbox-label">{{ __('company.common.483') }}</span>
-                      </label>
-                      <div
-                        class="price-input-wrapper checkbox-inline-price"
-                        id="unlimitedKmPriceField"
-                        style="display: none"
-                      >
-                        <input
-                          type="text"
-                          class="form-field__input ltr-num"
-                          id="unlimitedKmPrice"
-                          placeholder="0"
-                        />
-                        <span class="price-suffix">{{ __('company.common.406') }}</span>
-                      </div>
-                    </div>
-                    <div class="checkbox-option-wrap">
-                      <label class="checkbox-option">
-                        <input type="checkbox" id="cdwToggle" />
-                        <span class="checkbox-custom"></span>
-                        <span class="checkbox-label">CDW</span>
-                      </label>
-                      <div
-                        class="price-input-wrapper checkbox-inline-price"
-                        id="cdwPriceField"
-                        style="display: none"
-                      >
-                        <input
-                          type="text"
-                          class="form-field__input ltr-num"
-                          id="cdwPrice"
-                          placeholder="0"
-                        />
-                        <span class="price-suffix">{{ __('company.common.406') }}</span>
-                      </div>
-                    </div>
-                    <div class="checkbox-option-wrap">
-                      <label class="checkbox-option">
-                        <input type="checkbox" id="nonSmokingToggle" />
-                        <span class="checkbox-custom"></span>
-                        <span class="checkbox-label">{{ __('company.common.429') }}</span>
-                      </label>
-                      <div
-                        class="price-input-wrapper checkbox-inline-price"
-                        id="nonSmokingPriceField"
-                        style="display: none"
-                      >
-                        <input
-                          type="text"
-                          class="form-field__input ltr-num"
-                          id="nonSmokingPrice"
-                          placeholder="0"
-                        />
-                        <span class="price-suffix">{{ __('company.common.406') }}</span>
-                      </div>
-                    </div>
+                  <div class="checkbox-list" data-car-services>
+                    <span class="custom-dropdown__loading">{{ __('company.messages.loading') }}</span>
                   </div>
                 </div>
               </div>
             </div>
-
             
             <div class="edit-car-card mt-4" id="sec-specs">
               <div class="edit-car-card__header">
@@ -985,12 +559,8 @@
                   <div class="form-field">
                     <label class="form-field__label">{{ __('company.common.213') }}</label>
                     <div class="custom-dropdown" id="fuelDropdown">
-                      <select id="fuelSelect" style="display: none">
-                        <option value="diesel" selected>{{ __('company.common.386') }}</option>
-                        <option value="petrol">{{ __('company.common.271') }}</option>
-                        <option value="hybrid">{{ __('company.common.579') }}</option>
-                        <option value="electric">{{ __('company.common.485') }}</option>
-                        <option value="gas">{{ __('company.common.453') }}</option>
+                      <select id="fuelSelect" name="power" style="display: none">
+                        <option value="">{{ __('company.common.386') }}</option>
                       </select>
                       <button type="button" class="custom-dropdown__trigger" aria-expanded="false">
                         <span class="custom-dropdown__selected">
@@ -1002,51 +572,8 @@
                         <i class="bi bi-chevron-down custom-dropdown__chevron"></i>
                       </button>
                       <div class="custom-dropdown__menu">
-                        <div class="custom-dropdown__options">
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="diesel"
-                            data-selected="true"
-                          >
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-fuel-pump-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.386') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="petrol">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-fuel-pump-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.271') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="hybrid">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-lightning-charge-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.579') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="electric"
-                          >
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-lightning-fill"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.485') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="gas">
-                            <span class="custom-dropdown__option-icon"
-                              ><i class="bi bi-fire"></i
-                            ></span>
-                            <span class="custom-dropdown__option-text">{{ __('company.common.453') }}</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
+                        <div class="custom-dropdown__options" data-options="power_labels">
+                          <span class="custom-dropdown__loading">{{ __('company.messages.loading') }}</span>
                         </div>
                       </div>
                     </div>
@@ -1054,44 +581,21 @@
                   <div class="form-field">
                     <label class="form-field__label">{{ __('company.common.440') }}</label>
                     <div class="custom-dropdown" id="doorsDropdown">
-                      <select id="doorsSelect" style="display: none">
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5" selected>5</option>
+                      <select id="doorsSelect" name="door_count" style="display: none">
+                        <option value="">{{ __('company.common.440') }}</option>
                       </select>
                       <button type="button" class="custom-dropdown__trigger" aria-expanded="false">
                         <span class="custom-dropdown__selected">
                           <span class="custom-dropdown__icon"
                             ><i class="bi bi-door-closed-fill"></i
                           ></span>
-                          <span class="custom-dropdown__text">5</span>
+                          <span class="custom-dropdown__text">{{ __('company.common.440') }}</span>
                         </span>
                         <i class="bi bi-chevron-down custom-dropdown__chevron"></i>
                       </button>
                       <div class="custom-dropdown__menu">
-                        <div class="custom-dropdown__options">
-                          <button type="button" class="custom-dropdown__option" data-value="2">
-                            <span class="custom-dropdown__option-text">2</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="3">
-                            <span class="custom-dropdown__option-text">3</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button type="button" class="custom-dropdown__option" data-value="4">
-                            <span class="custom-dropdown__option-text">4</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
-                          <button
-                            type="button"
-                            class="custom-dropdown__option"
-                            data-value="5"
-                            data-selected="true"
-                          >
-                            <span class="custom-dropdown__option-text">5</span>
-                            <i class="bi bi-check2 custom-dropdown__option-check"></i>
-                          </button>
+                        <div class="custom-dropdown__options" data-options="door_counts">
+                          <span class="custom-dropdown__loading">{{ __('company.messages.loading') }}</span>
                         </div>
                       </div>
                     </div>
@@ -1100,37 +604,37 @@
 
                 <div class="checkbox-list">
                   <label class="checkbox-option">
-                    <input type="checkbox" />
+                    <input type="checkbox" name="has_navigation" value="1" />
                     <span class="checkbox-custom"></span>
                     <span class="checkbox-label">{{ __('company.common.549') }}</span>
                   </label>
                   <label class="checkbox-option">
-                    <input type="checkbox" />
+                    <input type="checkbox" name="has_bluetooth" value="1" />
                     <span class="checkbox-custom"></span>
                     <span class="checkbox-label">{{ __('company.common.270') }}</span>
                   </label>
                   <label class="checkbox-option">
-                    <input type="checkbox" />
+                    <input type="checkbox" name="has_panorama" value="1" />
                     <span class="checkbox-custom"></span>
                     <span class="checkbox-label">{{ __('company.common.252') }}</span>
                   </label>
                   <label class="checkbox-option">
-                    <input type="checkbox" />
+                    <input type="checkbox" name="has_usp" value="1" />
                     <span class="checkbox-custom"></span>
                     <span class="checkbox-label">{{ __('company.common.593') }}</span>
                   </label>
                   <label class="checkbox-option">
-                    <input type="checkbox" />
+                    <input type="checkbox" name="has_background_camera" value="1" />
                     <span class="checkbox-custom"></span>
                     <span class="checkbox-label">{{ __('company.common.475') }}</span>
                   </label>
                   <label class="checkbox-option">
-                    <input type="checkbox" />
+                    <input type="checkbox" name="has_sensors" value="1" />
                     <span class="checkbox-custom"></span>
                     <span class="checkbox-label">{{ __('company.common.373') }}</span>
                   </label>
                   <label class="checkbox-option">
-                    <input type="checkbox" />
+                    <input type="checkbox" name="has_apple_play" value="1" />
                     <span class="checkbox-custom"></span>
                     <span class="checkbox-label">{{ __('company.common.101') }}</span>
                   </label>
@@ -1179,7 +683,8 @@
                     <textarea
                       class="form-field__input"
                       rows="3"
-                      placeholder="Notes in English..."
+                      name="note_en"
+                      placeholder="{{ __('company.cars.note_en_placeholder') }}"
                     ></textarea>
                   </div>
                   <div class="form-field">
@@ -1187,7 +692,8 @@
                     <textarea
                       class="form-field__input"
                       rows="3"
-                       placeholder="{{ __('company.common.57') }}"
+                      name="note_ar"
+                      placeholder="{{ __('company.cars.note_ar_placeholder') }}"
                     ></textarea>
                   </div>
                 </div>
@@ -1208,22 +714,28 @@
           </form>
 @endsection
 
+@include('company.partials.success-modal')
+
 @push('modals')
 </main>
-        
-      
-
-    
 @endpush
 
 @push('libs')
-<script src="{{ asset('company/js/car-types.js?v=3') }}"></script>
 <script src="{{ asset('company/js/car-images.js?v=3') }}"></script>
 @endpush
 
 @push('scripts')
 <script>
       document.addEventListener('DOMContentLoaded', function () {
+        /* The delete button is a plain form post, so it only needs a guard. */
+        document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+          form.addEventListener('submit', function (event) {
+            if (!window.confirm(this.getAttribute('data-confirm'))) {
+              event.preventDefault();
+            }
+          });
+        });
+
         /* Quick-nav: smooth scroll + scrollspy */
         var navLinks = Array.from(document.querySelectorAll('#ecQuickNav a'));
         var sections = navLinks.map(function (a) {
@@ -1271,52 +783,16 @@
           });
         });
 
-        /* Simulate fetching matched car units for the chosen make/model */
-        setTimeout(function () {
-          var loadingEl = document.getElementById('carUnitsLoading');
-          var listEl = document.getElementById('carUnitsList');
-          if (loadingEl) loadingEl.style.display = 'none';
-          if (listEl) listEl.style.display = 'block';
-        }, 900);
-
         /* Enable/disable the daily+weekly pricing blocks with the toggle */
         var dwToggle = document.getElementById('dailyWeeklyToggle');
         var dwBlocks = document.getElementById('dailyWeeklyBlocks');
-        function syncDW() {
-          dwBlocks.style.display = dwToggle.checked ? '' : 'none';
-        }
-        dwToggle.addEventListener('change', syncDW);
-        syncDW();
-
-        /* إضافة سائق: show the price field only when the checkbox is checked */
-        var addDriverToggle = document.getElementById('addDriverToggle');
-        var addDriverPriceField = document.getElementById('addDriverPriceField');
-        var addDriverPriceInput = document.getElementById('addDriverPrice');
-        function syncAddDriverPrice() {
-          addDriverPriceField.style.display = addDriverToggle.checked ? '' : 'none';
-          if (!addDriverToggle.checked) {
-            addDriverPriceInput.value = '';
+        if (dwToggle && dwBlocks) {
+          function syncDW() {
+            dwBlocks.style.display = dwToggle.checked ? '' : 'none';
           }
+          dwToggle.addEventListener('change', syncDW);
+          syncDW();
         }
-        addDriverToggle.addEventListener('change', syncAddDriverPrice);
-        syncAddDriverPrice();
-
-        /* كم لا محدود / CDW / سيارات غير مدخنين: show price field when checked */
-        function bindTogglePrice(toggleId, fieldId, inputId) {
-          var toggle = document.getElementById(toggleId);
-          var field = document.getElementById(fieldId);
-          var input = document.getElementById(inputId);
-          if (!toggle || !field) return;
-          function sync() {
-            field.style.display = toggle.checked ? '' : 'none';
-            if (!toggle.checked && input) input.value = '';
-          }
-          toggle.addEventListener('change', sync);
-          sync();
-        }
-        bindTogglePrice('unlimitedKmToggle', 'unlimitedKmPriceField', 'unlimitedKmPrice');
-        bindTogglePrice('cdwToggle', 'cdwPriceField', 'cdwPrice');
-        bindTogglePrice('nonSmokingToggle', 'nonSmokingPriceField', 'nonSmokingPrice');
 
         /* Custom Dropdown Menus (Manufacturer / Model / Year / Subscription duration...) */
         function initCustomDropdown(dropdown) {
@@ -1325,166 +801,9 @@
 
           var trigger = dropdown.querySelector('.custom-dropdown__trigger');
           var menu = dropdown.querySelector('.custom-dropdown__menu');
-          var select = dropdown.querySelector('select');
-          var options = dropdown.querySelectorAll('.custom-dropdown__option');
           var searchInput = dropdown.querySelector('.custom-dropdown__search-input');
 
-          // Special handling for branches dropdown (multi-select with "All")
-          if (dropdown.id === 'branchesDropdown') {
-            // Select option
-            options.forEach(function (option) {
-              option.addEventListener('click', function (e) {
-                e.stopPropagation();
-                var value = this.getAttribute('data-value');
-
-                if (value === 'all') {
-                  var allOption = dropdown.querySelector(
-                    '.custom-dropdown__option[data-value="all"]',
-                  );
-                  var isAllSelected = allOption.hasAttribute('data-selected');
-
-                  if (isAllSelected) {
-                    // Deselect all
-                    options.forEach(function (opt) {
-                      opt.removeAttribute('data-selected');
-                      var optValue = opt.getAttribute('data-value');
-                      if (optValue !== 'all') {
-                        var selectOption = select.querySelector('option[value="' + optValue + '"]');
-                        if (selectOption) selectOption.selected = false;
-                      }
-                    });
-                    var allSelectOptionOff = select.querySelector('option[value="all"]');
-                    if (allSelectOptionOff) allSelectOptionOff.selected = false;
-                    dropdown.querySelector('.custom-dropdown__text').textContent = '0 فروع';
-                  } else {
-                    // Select all
-                    options.forEach(function (opt) {
-                      opt.setAttribute('data-selected', 'true');
-                      var optValue = opt.getAttribute('data-value');
-                      if (optValue !== 'all') {
-                        var selectOption = select.querySelector('option[value="' + optValue + '"]');
-                        if (selectOption) selectOption.selected = true;
-                      }
-                    });
-                    // ملاحظة: في <select multiple> إسناد value يلغي تحديد الباقي،
-                    // لذلك نحدد خيار "الكل" وحده دون المساس ببقية الفروع.
-                    var allSelectOption = select.querySelector('option[value="all"]');
-                    if (allSelectOption) allSelectOption.selected = true;
-                    dropdown.querySelector('.custom-dropdown__text').textContent = 'الكل';
-                  }
-                } else {
-                  // Toggle individual selection
-                  var isSelected = this.hasAttribute('data-selected');
-                  var selectOption = select.querySelector('option[value="' + value + '"]');
-                  if (isSelected) {
-                    this.removeAttribute('data-selected');
-                    if (selectOption) selectOption.selected = false;
-                  } else {
-                    this.setAttribute('data-selected', 'true');
-                    if (selectOption) selectOption.selected = true;
-                  }
-
-                  // Check if all are selected
-                  var allSelected = true;
-                  var anySelected = false;
-                  options.forEach(function (opt) {
-                    var optValue = opt.getAttribute('data-value');
-                    if (optValue !== 'all') {
-                      if (!opt.hasAttribute('data-selected')) {
-                        allSelected = false;
-                      } else {
-                        anySelected = true;
-                      }
-                    }
-                  });
-
-                  if (allSelected && anySelected) {
-                    options.forEach(function (opt) {
-                      opt.setAttribute('data-selected', 'true');
-                    });
-                    var allSelectOpt = select.querySelector('option[value="all"]');
-                    if (allSelectOpt) allSelectOpt.selected = true;
-                    dropdown.querySelector('.custom-dropdown__text').textContent = 'الكل';
-                  } else {
-                    var selectedCount = 0;
-                    options.forEach(function (opt) {
-                      if (
-                        opt.hasAttribute('data-selected') &&
-                        opt.getAttribute('data-value') !== 'all'
-                      ) {
-                        selectedCount++;
-                      }
-                    });
-                    dropdown.querySelector('.custom-dropdown__text').textContent =
-                      selectedCount + ' فروع';
-                    var allOption2 = dropdown.querySelector(
-                      '.custom-dropdown__option[data-value="all"]',
-                    );
-                    if (allOption2) allOption2.removeAttribute('data-selected');
-                    var allSelectOption2 = select.querySelector('option[value="all"]');
-                    if (allSelectOption2) allSelectOption2.selected = false;
-                  }
-                }
-
-                // Don't close dropdown - keep it open for multi-selection
-              });
-            });
-
-            // Toggle dropdown
-            trigger.addEventListener('click', function (e) {
-              e.stopPropagation();
-              var isOpen = menu.classList.contains('is-visible');
-
-              document.querySelectorAll('.custom-dropdown__menu.is-visible').forEach(function (m) {
-                if (m !== menu) {
-                  m.classList.remove('is-visible');
-                  m.closest('.custom-dropdown')
-                    .querySelector('.custom-dropdown__trigger')
-                    .setAttribute('aria-expanded', 'false');
-                  m.closest('.custom-dropdown')
-                    .querySelector('.custom-dropdown__trigger')
-                    .classList.remove('is-open');
-                }
-              });
-
-              menu.classList.toggle('is-visible');
-              trigger.setAttribute('aria-expanded', !isOpen);
-              trigger.classList.toggle('is-open', !isOpen);
-            });
-
-            if (searchInput) {
-              searchInput.addEventListener('click', function (e) {
-                e.stopPropagation();
-              });
-
-              searchInput.addEventListener('focus', function (e) {
-                e.stopPropagation();
-              });
-
-              var searchContainer = dropdown.querySelector('.custom-dropdown__search');
-              if (searchContainer) {
-                searchContainer.addEventListener('click', function (e) {
-                  e.stopPropagation();
-                });
-              }
-
-              searchInput.addEventListener('input', function () {
-                var searchTerm = this.value.toLowerCase();
-                options.forEach(function (option) {
-                  var text = option
-                    .querySelector('.custom-dropdown__option-text')
-                    .textContent.toLowerCase();
-                  if (text.includes(searchTerm)) {
-                    option.style.display = 'flex';
-                  } else {
-                    option.style.display = 'none';
-                  }
-                });
-              });
-            }
-
-            return; // Skip the rest for branches dropdown
-          }
+          if (!trigger || !menu) return;
 
           // Toggle dropdown
           trigger.addEventListener('click', function (e) {
@@ -1509,65 +828,25 @@
             trigger.classList.toggle('is-open', !isOpen);
           });
 
-          // Select option
-          options.forEach(function (option) {
-            option.addEventListener('click', function (e) {
-              e.stopPropagation();
-              var value = this.getAttribute('data-value');
-              var text = this.querySelector('.custom-dropdown__option-text').textContent;
-              var iconElement = this.querySelector('.custom-dropdown__option-icon');
-              var icon = iconElement ? iconElement.innerHTML : '';
-
-              // Update select value
-              select.value = value;
-
-              // Update trigger display
-              dropdown.querySelector('.custom-dropdown__text').textContent = text;
-              var triggerIcon = dropdown.querySelector('.custom-dropdown__icon');
-              if (triggerIcon && icon) {
-                triggerIcon.innerHTML = icon;
-              }
-
-              // Update selected state
-              options.forEach(function (opt) {
-                opt.removeAttribute('data-selected');
-              });
-              this.setAttribute('data-selected', 'true');
-
-              // Close dropdown
-              menu.classList.remove('is-visible');
-              trigger.setAttribute('aria-expanded', 'false');
-              trigger.classList.remove('is-open');
-            });
-          });
-
-          // Search functionality
+          // Search — queried at event time so options filled from the API are covered too
           if (searchInput) {
             searchInput.addEventListener('input', function () {
               var searchTerm = this.value.toLowerCase();
-              options.forEach(function (option) {
-                var text = option
-                  .querySelector('.custom-dropdown__option-text')
-                  .textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                  option.style.display = 'flex';
-                } else {
-                  option.style.display = 'none';
-                }
+              dropdown.querySelectorAll('.custom-dropdown__option').forEach(function (option) {
+                var node = option.querySelector('.custom-dropdown__option-text');
+                var text = node ? node.textContent.toLowerCase() : '';
+                option.style.display = text.indexOf(searchTerm) !== -1 ? 'flex' : 'none';
               });
             });
 
-            // Prevent dropdown from closing when clicking on search input
             searchInput.addEventListener('click', function (e) {
               e.stopPropagation();
             });
 
-            // Prevent dropdown from closing when focusing on search input
             searchInput.addEventListener('focus', function (e) {
               e.stopPropagation();
             });
 
-            // Prevent dropdown from closing when clicking on search container
             var searchContainer = dropdown.querySelector('.custom-dropdown__search');
             if (searchContainer) {
               searchContainer.addEventListener('click', function (e) {
@@ -1682,11 +961,14 @@
             input.setAttribute('data-branch-unit-input', '');
             input.name = 'branch_units[' + branch.id + ']';
             input.value = String(toCount(state[branch.id]));
-            input.setAttribute('aria-label', 'عدد السيارات المتاحة في ' + branch.name);
+            input.setAttribute(
+              'aria-label',
+              @json(__('company.cars.branch_stock_aria')).replace(':branch', branch.name),
+            );
 
             var suffix = document.createElement('span');
             suffix.className = 'branch-units__suffix';
-            suffix.textContent = 'سيارة';
+            suffix.textContent = @json(__('company.cars.unit_car'));
 
             field.appendChild(input);
             field.appendChild(suffix);
@@ -1777,6 +1059,8 @@
           init();
 
           return {
+            // لتعبئة الأعداد المحفوظة في صفحة تعديل السيارة:
+            // BranchUnits.setValues({ branch1: 4, branch2: 2 });
             setValues: function (values) {
               Object.keys(values || {}).forEach(function (id) {
                 state[id] = toCount(values[id]);
@@ -1790,10 +1074,6 @@
         })();
 
         window.TCarBranchUnits = BranchUnits;
-
-        /* تعبئة الأعداد المحفوظة للسيارة الحالية.
-           استبدل هذا الكائن ببيانات الباك إند عند ربط الصفحة. */
-        BranchUnits.setValues({ branch1: 4, branch2: 2 });
 
         /* ============================================================
          Subscription tiers (الاشتراكات): show/hide + add/remove rows
@@ -1820,7 +1100,11 @@
         function bindTierRow(row) {
           // Re-init its (freshly cloned) custom dropdown
           var dd = row.querySelector('[data-duration-dropdown]');
-          if (dd) initCustomDropdown(dd);
+          if (dd) {
+            initCustomDropdown(dd);
+            // Options are cloned after they were bound, so rebind them too
+            if (window.TCarForm) window.TCarForm.bindSingleOptions(dd);
+          }
 
           var removeBtn = row.querySelector('[data-remove-tier]');
           removeBtn.addEventListener('click', function () {
@@ -1843,8 +1127,11 @@
           delete clonedDropdown.dataset.ddInit; // allow re-init on the cloned dropdown
           clonedDropdown.querySelectorAll('.custom-dropdown__option').forEach(function (opt) {
             opt.removeAttribute('data-selected');
+            delete opt.dataset.ddBound; // re-bind the copied options
           });
-          clonedDropdown.querySelector('.custom-dropdown__text').textContent = 'اختر المدة';
+          clonedDropdown
+            .querySelector('.custom-dropdown__text')
+            .textContent = @json(__('company.cars.months_placeholder'));
           var clonedSelect = clonedDropdown.querySelector('select');
           if (clonedSelect) clonedSelect.value = '';
 
@@ -1873,14 +1160,724 @@
           });
         });
 
-        document.getElementById('editCarForm').addEventListener('submit', function (e) {
-          e.preventDefault();
-          // مثال لقراءة القيم عند الحفظ:
-          // var payload = {
-          //   branch_units: BranchUnits.getValues(),      // { branch1: 4, branch2: 2 }
-          //   available_cars_total: BranchUnits.getTotal() // 6
-          // };
-        });
+        /* ============================================================
+         Car form: every dropdown is filled from the API, never hardcoded.
+         Source: GET company.add-car.options (or company.edit-car.show
+         when a car id is present in the query string).
+      ============================================================= */
+        var CarForm = (function () {
+          var form = document.querySelector('[data-car-form]');
+          if (!form) return null;
+
+          var csrf = document.querySelector('meta[name="csrf-token"]');
+          var carId = new URLSearchParams(window.location.search).get('car');
+          // Only the edit page ships data-update-url, so it is edit-only.
+          var editOnly = !form.dataset.storeUrl;
+
+          if (editOnly && !carId) {
+            var lockButton = form.querySelector('button[type="submit"]');
+            if (lockButton) lockButton.disabled = true;
+            window.alert(@json(__('company.cars.missing_car')));
+            return null;
+          }
+
+          var i18n = {
+            loadError: @json(__('company.cars.load_error')),
+            saveError: @json(__('company.cars.save_error')),
+            empty: @json(__('company.cars.empty_options')),
+            allBranches: @json(__('company.cars.all_branches')),
+            branchesCount: @json(__('company.cars.branches_count')),
+            noneSelected: @json(__('company.cars.no_branches_selected')),
+            unit: @json(__('company.cars.unit_car')),
+            months: @json(__('company.cars.months_placeholder')),
+          };
+
+          var ALL = 'all';
+          var options = {};
+          var car = null;
+
+          /* ---------- generic helpers ---------- */
+
+          function toItems(list, valueKey) {
+            if (Array.isArray(list)) {
+              return list.map(function (row) {
+                if (typeof row === 'object' && row !== null) {
+                  return {
+                    value: String(row[valueKey] !== undefined ? row[valueKey] : row.id),
+                    label: row.title || row.label || row.value || String(row[valueKey]),
+                  };
+                }
+                return { value: String(row), label: String(row) };
+              });
+            }
+            return Object.keys(list || {}).map(function (key) {
+              return { value: String(key), label: String(list[key]) };
+            });
+          }
+
+          function fillSelect(select, items, placeholder) {
+            if (!select) return;
+            select.innerHTML = '';
+
+            if (placeholder !== null) {
+              var blank = document.createElement('option');
+              blank.value = '';
+              blank.textContent = placeholder;
+              select.appendChild(blank);
+            }
+
+            items.forEach(function (item) {
+              var option = document.createElement('option');
+              option.value = item.value;
+              option.textContent = item.label;
+              select.appendChild(option);
+            });
+          }
+
+          function fillOptions(host, items) {
+            if (!host) return;
+            host.innerHTML = '';
+
+            if (!items.length) {
+              var empty = document.createElement('span');
+              empty.className = 'custom-dropdown__loading';
+              empty.textContent = i18n.empty;
+              host.appendChild(empty);
+              return;
+            }
+
+            items.forEach(function (item) {
+              var button = document.createElement('button');
+              button.type = 'button';
+              button.className = 'custom-dropdown__option';
+              button.setAttribute('data-value', item.value);
+
+              var text = document.createElement('span');
+              text.className = 'custom-dropdown__option-text';
+              text.textContent = item.label;
+              button.appendChild(text);
+
+              var check = document.createElement('i');
+              check.className = 'bi bi-check2 custom-dropdown__option-check';
+              button.appendChild(check);
+
+              host.appendChild(button);
+            });
+          }
+
+          function selectInDropdown(dropdown, value) {
+            if (!dropdown || value === null || value === undefined || value === '') return;
+            var button = dropdown.querySelector(
+              '.custom-dropdown__option[data-value="' + value + '"]',
+            );
+            if (button) button.click();
+          }
+
+          /* ---------- option click behaviour ----------
+             Options are rendered from the API, so they are bound after
+             they land in the DOM instead of at dropdown init time. */
+
+          function bindSingleOptions(dropdown) {
+            if (!dropdown) return;
+
+            var menu = dropdown.querySelector('.custom-dropdown__menu');
+            var trigger = dropdown.querySelector('.custom-dropdown__trigger');
+            var select = dropdown.querySelector('select');
+
+            dropdown.querySelectorAll('.custom-dropdown__option').forEach(function (option) {
+              if (option.dataset.ddBound === '1') return;
+              option.dataset.ddBound = '1';
+
+              option.addEventListener('click', function (e) {
+                e.stopPropagation();
+
+                var value = option.getAttribute('data-value');
+                var node = option.querySelector('.custom-dropdown__option-text');
+                var iconNode = option.querySelector('.custom-dropdown__option-icon');
+
+                if (select) select.value = value;
+
+                var label = dropdown.querySelector('.custom-dropdown__text');
+                if (label) label.textContent = node ? node.textContent : value;
+
+                var icon = dropdown.querySelector('.custom-dropdown__icon');
+                if (icon && iconNode) icon.innerHTML = iconNode.innerHTML;
+
+                dropdown.querySelectorAll('.custom-dropdown__option').forEach(function (opt) {
+                  opt.removeAttribute('data-selected');
+                });
+                option.setAttribute('data-selected', 'true');
+
+                if (menu) menu.classList.remove('is-visible');
+                if (trigger) {
+                  trigger.setAttribute('aria-expanded', 'false');
+                  trigger.classList.remove('is-open');
+                }
+              });
+            });
+          }
+
+          function branchSummary() {
+            var dropdown = document.getElementById('branchesDropdown');
+            if (!dropdown) return;
+
+            var label = dropdown.querySelector('.custom-dropdown__text');
+            if (!label) return;
+
+            var total = dropdown.querySelectorAll(
+              '.custom-dropdown__option[data-selected]',
+            ).length;
+            var hasAll = !!dropdown.querySelector(
+              '.custom-dropdown__option[data-value="' + ALL + '"][data-selected]',
+            );
+            var count = dropdown.querySelectorAll(
+              '.custom-dropdown__option:not([data-value="' + ALL + '"])[data-selected]',
+            ).length;
+
+            if (hasAll) label.textContent = i18n.allBranches;
+            else if (count) label.textContent = i18n.branchesCount.replace(':count', count);
+            else label.textContent = i18n.noneSelected;
+          }
+
+          function bindBranchOptions() {
+            var dropdown = document.getElementById('branchesDropdown');
+            if (!dropdown) return;
+
+            var select = dropdown.querySelector('select');
+
+            dropdown.querySelectorAll('.custom-dropdown__option').forEach(function (option) {
+              if (option.dataset.ddBound === '1') return;
+              option.dataset.ddBound = '1';
+
+              option.addEventListener('click', function (e) {
+                e.stopPropagation();
+
+                var value = option.getAttribute('data-value');
+                var isAll = value === ALL;
+
+                if (isAll) {
+                  var allSelected = option.hasAttribute('data-selected');
+                  dropdown.querySelectorAll('.custom-dropdown__option').forEach(function (opt) {
+                    if (allSelected) opt.removeAttribute('data-selected');
+                    else opt.setAttribute('data-selected', 'true');
+                  });
+                } else {
+                  if (option.hasAttribute('data-selected')) {
+                    option.removeAttribute('data-selected');
+                  } else {
+                    option.setAttribute('data-selected', 'true');
+                  }
+                  dropdown
+                    .querySelector('.custom-dropdown__option[data-value="' + ALL + '"]')
+                    .removeAttribute('data-selected');
+                }
+
+                if (select) {
+                  dropdown.querySelectorAll('.custom-dropdown__option').forEach(function (opt) {
+                    var match = select.querySelector(
+                      'option[value="' + opt.getAttribute('data-value') + '"]',
+                    );
+                    if (match) match.selected = opt.hasAttribute('data-selected');
+                  });
+                }
+
+                branchSummary();
+              });
+            });
+          }
+
+          /* ---------- branches (multi select) ---------- */
+
+          function renderBranches(items) {
+            var host = document.querySelector('[data-branch-options]');
+            var select = document.getElementById('branchesSelect');
+
+            if (select) {
+              Array.prototype.slice.call(select.options).forEach(function (option) {
+                if (option.value !== ALL) select.removeChild(option);
+              });
+            }
+
+            if (host) {
+              host.innerHTML = '';
+
+              var all = document.createElement('button');
+              all.type = 'button';
+              all.className = 'custom-dropdown__option';
+              all.setAttribute('data-value', ALL);
+              all.setAttribute('data-selected', 'true');
+
+              var allText = document.createElement('span');
+              allText.className = 'custom-dropdown__option-text';
+              allText.textContent = i18n.allBranches;
+              all.appendChild(allText);
+
+              var allCheck = document.createElement('i');
+              allCheck.className = 'bi bi-check2 custom-dropdown__option-check';
+              all.appendChild(allCheck);
+              host.appendChild(all);
+
+              items.forEach(function (item) {
+                var button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'custom-dropdown__option';
+                button.setAttribute('data-value', item.value);
+
+                var text = document.createElement('span');
+                text.className = 'custom-dropdown__option-text';
+                text.textContent = item.label;
+                button.appendChild(text);
+
+                var check = document.createElement('i');
+                check.className = 'bi bi-check2 custom-dropdown__option-check';
+                button.appendChild(check);
+
+                host.appendChild(button);
+
+                if (select) {
+                  var option = document.createElement('option');
+                  option.value = item.value;
+                  option.textContent = item.label;
+                  select.appendChild(option);
+                }
+              });
+            }
+          }
+
+          /* ---------- additional services ---------- */
+
+          function renderServices(items) {
+            var host = document.querySelector('[data-car-services]');
+            if (!host) return;
+
+            host.innerHTML = '';
+
+            if (!items.length) {
+              var empty = document.createElement('span');
+              empty.className = 'custom-dropdown__loading';
+              empty.textContent = i18n.empty;
+              host.appendChild(empty);
+              return;
+            }
+
+            items.forEach(function (item) {
+              var wrap = document.createElement('div');
+              wrap.className = 'checkbox-option-wrap';
+
+              var label = document.createElement('label');
+              label.className = 'checkbox-option';
+
+              var input = document.createElement('input');
+              input.type = 'checkbox';
+              input.value = item.value;
+              input.setAttribute('data-service-toggle', '');
+              label.appendChild(input);
+
+              var custom = document.createElement('span');
+              custom.className = 'checkbox-custom';
+              label.appendChild(custom);
+
+              var text = document.createElement('span');
+              text.className = 'checkbox-label';
+              text.textContent = item.label;
+              label.appendChild(text);
+
+              wrap.appendChild(label);
+
+              var priceWrap = document.createElement('div');
+              priceWrap.className = 'price-input-wrapper checkbox-inline-price';
+              priceWrap.style.display = 'none';
+              priceWrap.setAttribute('data-service-price-field', '');
+
+              var price = document.createElement('input');
+              price.type = 'text';
+              price.className = 'form-field__input ltr-num';
+              price.placeholder = '0';
+              price.setAttribute('data-service-price', '');
+              priceWrap.appendChild(price);
+
+              var suffix = document.createElement('span');
+              suffix.className = 'price-suffix';
+              suffix.textContent = '0';
+              priceWrap.appendChild(suffix);
+
+              wrap.appendChild(priceWrap);
+              host.appendChild(wrap);
+
+              input.addEventListener('change', function () {
+                priceWrap.style.display = input.checked ? '' : 'none';
+                if (!input.checked) price.value = '';
+              });
+            });
+          }
+
+          /* ---------- subscription durations ---------- */
+
+          function renderDurations(items) {
+            document.querySelectorAll('[data-duration-options]').forEach(function (host) {
+              fillOptions(host, items);
+            });
+            // The hidden select is what actually gets submitted, so it has to
+            // carry the same options as the button list.
+            document.querySelectorAll('[data-duration-select]').forEach(function (select) {
+              fillSelect(select, items, i18n.months);
+            });
+            document.querySelectorAll('[data-duration-dropdown] .custom-dropdown__text').forEach(
+              function (node) {
+                node.textContent = i18n.months;
+              },
+            );
+          }
+
+          /* ---------- loading ---------- */
+
+          function applyOptions(payload) {
+            options = payload;
+
+            renderBranches(toItems(payload.branches, 'id'));
+
+            var brandHost = document.querySelector('[data-options="brands"]');
+            var brandItems = toItems(payload.brands, 'id');
+            fillSelect(document.getElementById('makeSelect'), brandItems, null);
+            fillOptions(brandHost, brandItems);
+
+            var typeHost = document.querySelector('[data-options="car_types"]');
+            var typeItems = toItems(payload.car_types, 'id');
+            fillSelect(document.getElementById('carTypeSelect'), typeItems, null);
+            fillOptions(typeHost, typeItems);
+
+            var modelHost = document.querySelector('[data-options="car_models"]');
+            var modelItems = toItems(payload.car_models, 'id');
+            fillSelect(document.getElementById('modelSelect'), modelItems, null);
+            fillOptions(modelHost, modelItems);
+
+            var yearItems = toItems(payload.years, 'value');
+            fillSelect(document.getElementById('yearSelect'), yearItems, null);
+            fillOptions(document.querySelector('[data-options="years"]'), yearItems);
+
+            var powerItems = toItems(payload.power_labels, 'value');
+            fillSelect(document.getElementById('fuelSelect'), powerItems, null);
+            fillOptions(document.querySelector('[data-options="power_labels"]'), powerItems);
+
+            var doorItems = toItems(payload.door_counts, 'value');
+            fillSelect(document.getElementById('doorsSelect'), doorItems, null);
+            fillOptions(document.querySelector('[data-options="door_counts"]'), doorItems);
+
+            renderDurations(toItems(payload.month_counts, 'value'));
+            renderServices(toItems(payload.car_additional_services, 'id'));
+
+            bindBranchOptions();
+            branchSummary();
+            document.querySelectorAll('.custom-dropdown').forEach(bindSingleOptions);
+          }
+
+          function load() {
+            var url = carId
+              ? form.dataset.showUrl.replace('/0', '/' + carId)
+              : form.dataset.optionsUrl;
+
+            return fetch(url, {
+              headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' },
+            })
+              .then(function (r) {
+                return r.json();
+              })
+              .then(function (res) {
+                if (!res || res.code >= 400) throw new Error(res && res.message);
+
+                car = (res.data && res.data.car) || null;
+                applyOptions((res.data && res.data.options) || res.data || {});
+
+                if (car) hydrate(car);
+                if (window.TCarBranchUnits) window.TCarBranchUnits.refresh();
+              })
+              .catch(function () {
+                window.alert(i18n.loadError);
+              });
+          }
+
+          /* ---------- filling an existing car ---------- */
+
+          function hydrate(data) {
+            selectInDropdown(document.getElementById('makeDropdown'), data.car_brand_id);
+            selectInDropdown(document.getElementById('carTypeDropdown'), data.car_type_id);
+            selectInDropdown(document.getElementById('modelDropdown'), data.car_model_id);
+            selectInDropdown(document.getElementById('yearDropdown'), data.year);
+            // power/door_count live under `details` in the API payload
+            var details = data.details || {};
+            selectInDropdown(document.getElementById('fuelDropdown'), details.power);
+            selectInDropdown(document.getElementById('doorsDropdown'), details.door_count);
+
+            document.querySelectorAll('[data-pricing]').forEach(function (input) {
+              var value = data.pricing && data.pricing[input.dataset.pricing];
+              if (value !== undefined && value !== null) input.value = value;
+            });
+
+            if (data.details) {
+              document.querySelectorAll('#sec-specs input[type="checkbox"][name]').forEach(
+                function (input) {
+                  input.checked = Boolean(data.details[input.name]);
+                },
+              );
+            }
+
+            if (data.subscriptions && data.subscriptions.length) {
+              var addBtn = document.getElementById('addSubscriptionTierBtn');
+              var subToggle = document.getElementById('subscriptionToggle');
+              if (subToggle) subToggle.checked = true;
+              if (subToggle) subToggle.dispatchEvent(new Event('change'));
+
+              // The row that ships with the page is the template the add button
+              // clones, so the first tier reuses it instead of removing it.
+              data.subscriptions.forEach(function (tier, index) {
+                if (index > 0 && addBtn) addBtn.click();
+                var row = document.querySelectorAll('#subscriptionTiersList [data-tier-row]')[index];
+                if (!row) return;
+                var dropdown = row.querySelector('[data-duration-dropdown]');
+                selectInDropdown(dropdown, tier.month_count);
+                var prices = row.querySelectorAll('.form-field__input');
+                if (prices[0]) prices[0].value = tier.price;
+                if (prices[1]) prices[1].value = tier.lowest_price;
+              });
+            }
+
+            if (data.services && data.services.length) {
+              document.querySelectorAll('[data-service-toggle]').forEach(function (input) {
+                var match = data.services.filter(function (row) {
+                  return String(row.car_additional_service_id) === input.value;
+                })[0];
+                if (!match) return;
+                input.checked = true;
+                var field = input.closest('.checkbox-option-wrap').querySelector(
+                  '[data-service-price-field]',
+                );
+                var price = input.closest('.checkbox-option-wrap').querySelector(
+                  '[data-service-price]',
+                );
+                if (field) field.style.display = '';
+                if (price) price.value = match.price;
+              });
+            }
+
+            if (data.branches && data.branches.length) {
+              var values = {};
+              data.branches.forEach(function (row) {
+                selectInDropdown(document.getElementById('branchesDropdown'), row.branch_id);
+                values[row.branch_id] = row.stock;
+              });
+              if (window.TCarBranchUnits) window.TCarBranchUnits.setValues(values);
+            }
+
+            if (data.note_en) {
+              var en = document.querySelector('textarea[name="note_en"]');
+              if (en) en.value = data.note_en;
+            }
+            if (data.note_ar) {
+              var ar = document.querySelector('textarea[name="note_ar"]');
+              if (ar) ar.value = data.note_ar;
+            }
+          }
+
+          /* ---------- payload ---------- */
+
+          function collectPricing() {
+            var pricing = {};
+            document.querySelectorAll('[data-pricing]').forEach(function (input) {
+              var value = parseFloat(input.value);
+              pricing[input.dataset.pricing] = isNaN(value) ? 0 : value;
+            });
+            if (pricing.free_km === undefined) pricing.free_km = 0;
+            return pricing;
+          }
+
+          function collectBranches() {
+            var rows = [];
+            document
+              .querySelectorAll('#branchesDropdown .custom-dropdown__option[data-selected]')
+              .forEach(function (option) {
+                var id = option.getAttribute('data-value');
+                if (!id || id === ALL) return;
+                var stock = window.TCarBranchUnits ? window.TCarBranchUnits.getValues()[id] : 0;
+                rows.push({ branch_id: Number(id), stock: Number(stock) || 0 });
+              });
+            return rows;
+          }
+
+          function collectSubscriptions() {
+            var rows = [];
+            document.querySelectorAll('#subscriptionTiersList [data-tier-row]').forEach(
+              function (row) {
+                var select = row.querySelector('[data-duration-select]');
+                var month = select && select.value;
+                if (!month) return;
+                var prices = row.querySelectorAll('.form-field__input');
+                rows.push({
+                  month_count: Number(month),
+                  price: prices[0] ? parseFloat(prices[0].value) || 0 : 0,
+                  lowest_price: prices[1] ? parseFloat(prices[1].value) || 0 : 0,
+                });
+              },
+            );
+            return rows;
+          }
+
+          function collectServices() {
+            var rows = [];
+            document.querySelectorAll('[data-service-toggle]').forEach(function (input) {
+              if (!input.checked) return;
+              var wrap = input.closest('.checkbox-option-wrap');
+              var price = wrap && wrap.querySelector('[data-service-price]');
+              rows.push({
+                car_additional_service_id: Number(input.value),
+                price: price ? parseFloat(price.value) || 0 : 0,
+              });
+            });
+            return rows;
+          }
+
+          function collectDetails() {
+            var details = {
+              door_count: Number(document.getElementById('doorsSelect').value) || 4,
+            };
+            var power = document.getElementById('fuelSelect');
+            if (power && power.value) details.power = power.value;
+            document.querySelectorAll('#sec-specs input[type="checkbox"][name]').forEach(
+              function (input) {
+                details[input.name] = input.checked ? 1 : 0;
+              },
+            );
+            return details;
+          }
+
+          function payload() {
+            var subToggle = document.getElementById('subscriptionToggle');
+            var year = document.getElementById('yearSelect');
+
+            return {
+              car_brand_id: Number(document.getElementById('makeSelect').value) || null,
+              car_type_id: Number(document.getElementById('carTypeSelect').value) || null,
+              car_model_id: Number(document.getElementById('modelSelect').value) || null,
+              year: year && year.value ? Number(year.value) : null,
+              note_en: (document.querySelector('textarea[name="note_en"]') || {}).value || null,
+              note_ar: (document.querySelector('textarea[name="note_ar"]') || {}).value || null,
+              is_subscriber: subToggle && subToggle.checked ? 1 : 0,
+              pricing: collectPricing(),
+              subscriptions: collectSubscriptions(),
+              services: collectServices(),
+              branches: collectBranches(),
+              details: collectDetails(),
+            };
+          }
+
+          function submit() {
+            var button = form.querySelector('button[type="submit"]');
+            var body = new FormData();
+
+            body.append('car_brand_id', document.getElementById('makeSelect').value);
+            body.append('car_type_id', document.getElementById('carTypeSelect').value);
+            body.append('car_model_id', document.getElementById('modelSelect').value);
+
+            var year = document.getElementById('yearSelect');
+            if (year && year.value) body.append('year', year.value);
+
+            var noteEn = document.querySelector('textarea[name="note_en"]');
+            if (noteEn) body.append('note_en', noteEn.value);
+            var noteAr = document.querySelector('textarea[name="note_ar"]');
+            if (noteAr) body.append('note_ar', noteAr.value);
+
+            var subToggle = document.getElementById('subscriptionToggle');
+            body.append('is_subscriber', subToggle && subToggle.checked ? 1 : 0);
+
+            var pricing = collectPricing();
+            Object.keys(pricing).forEach(function (key) {
+              body.append('pricing[' + key + ']', pricing[key]);
+            });
+
+            collectSubscriptions().forEach(function (row, index) {
+              body.append('subscriptions[' + index + '][month_count]', row.month_count);
+              body.append('subscriptions[' + index + '][price]', row.price);
+              body.append('subscriptions[' + index + '][lowest_price]', row.lowest_price);
+            });
+
+            collectServices().forEach(function (row, index) {
+              body.append(
+                'services[' + index + '][car_additional_service_id]',
+                row.car_additional_service_id,
+              );
+              body.append('services[' + index + '][price]', row.price);
+            });
+
+            collectBranches().forEach(function (row, index) {
+              body.append('branches[' + index + '][branch_id]', row.branch_id);
+              body.append('branches[' + index + '][stock]', row.stock);
+            });
+
+            var details = collectDetails();
+            Object.keys(details).forEach(function (key) {
+              body.append('details[' + key + ']', details[key]);
+            });
+
+            var image = document.getElementById('carImageInput');
+            if (image && image.files && image.files[0]) body.append('image', image.files[0]);
+
+            if (button) button.disabled = true;
+
+            var url = carId
+              ? form.dataset.updateUrl.replace('/0', '/' + carId)
+              : form.dataset.storeUrl;
+
+            return fetch(url, {
+              method: carId ? 'PUT' : 'POST',
+              headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': csrf ? csrf.content : '',
+                Accept: 'application/json',
+              },
+              body: body,
+            })
+              .then(function (r) {
+                return r.json().then(function (data) {
+                  return { ok: r.ok, data: data };
+                });
+              })
+              .then(function (res) {
+                if (button) button.disabled = false;
+
+                if (!res.ok || (res.data && (res.data.code >= 400 || res.data.errors))) {
+                  var first = res.data && res.data.errors
+                    ? Object.values(res.data.errors)[0][0]
+                    : res.data && res.data.message;
+                  window.alert(first || i18n.saveError);
+                  return;
+                }
+
+                window.showSuccessModal(
+                  (res.data && res.data.message) || '',
+                  @json(route('company.office-cars')),
+                );
+              })
+              .catch(function () {
+                if (button) button.disabled = false;
+                window.alert(i18n.saveError);
+              });
+          }
+
+          form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            submit();
+          });
+
+          load();
+
+          return {
+            reload: load,
+            payload: payload,
+            bindSingleOptions: bindSingleOptions,
+            branchSummary: branchSummary,
+          };
+        })();
+
+        window.TCarForm = CarForm;
       });
     </script>
 @endpush

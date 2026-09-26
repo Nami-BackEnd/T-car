@@ -8,6 +8,7 @@ use App\Models\Brand;
 use App\Models\CarType;
 use App\Models\City;
 use App\Models\CompanyAdditionalService;
+use App\Models\Country;
 use App\Models\Vacation;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
@@ -31,9 +32,16 @@ class AdminLookupsCrudTest extends TestCase
     {
         $admin = $this->admin();
 
+        $country = Country::create([
+            'title_ar' => 'المملكة العربية السعودية',
+            'title_en' => 'Saudi Arabia',
+            'phone_code' => '+966',
+        ]);
+
         $city = City::create([
             'title_ar' => 'الرياض',
             'title_en' => 'Riyadh',
+            'country_id' => $country->id,
             'latitude' => 24.7136,
             'longitude' => 46.6753,
         ]);
@@ -43,6 +51,7 @@ class AdminLookupsCrudTest extends TestCase
             City::create([
                 'title_ar' => "مدينة {$i}",
                 'title_en' => "City {$i}",
+                'country_id' => $country->id,
                 'latitude' => 24.0 + $i,
                 'longitude' => 46.0 + $i,
             ]);
@@ -55,7 +64,7 @@ class AdminLookupsCrudTest extends TestCase
         $found = $this->actingAs($admin, 'admin')->getJson(route('admin.lookups.index', 'cities').'?search=Riyadh');
         $this->assertGreaterThanOrEqual(1, count($found->json('data')));
 
-        // store validation fails (missing EN name, bad coordinates)
+        // store validation fails (missing EN name, bad coordinates, missing country)
         $invalid = $this->actingAs($admin, 'admin')->postJson(route('admin.lookups.store', 'cities'), [
             'title_ar' => 'مكة',
             'latitude' => 120,
@@ -63,12 +72,22 @@ class AdminLookupsCrudTest extends TestCase
         ]);
         $invalid->assertStatus(422);
         $errors = $invalid->json('errors');
-        $this->assertTrue(isset($errors['title_en'], $errors['latitude'], $errors['longitude']));
+        $this->assertTrue(isset($errors['title_en'], $errors['latitude'], $errors['longitude'], $errors['country_id']));
 
-        // store succeeds with coordinates
+        // an unknown country is rejected
+        $badCountry = $this->actingAs($admin, 'admin')->postJson(route('admin.lookups.store', 'cities'), [
+            'title_ar' => 'مكة',
+            'title_en' => 'Makkah',
+            'country_id' => 999999,
+        ]);
+        $badCountry->assertStatus(422);
+        $this->assertNotNull($badCountry->json('errors.country_id'));
+
+        // store succeeds with coordinates and a country
         $stored = $this->actingAs($admin, 'admin')->postJson(route('admin.lookups.store', 'cities'), [
             'title_ar' => 'جدة',
             'title_en' => 'Jeddah',
+            'country_id' => $country->id,
             'latitude' => 21.5433,
             'longitude' => 39.1728,
         ]);
@@ -78,11 +97,14 @@ class AdminLookupsCrudTest extends TestCase
         $this->assertEquals('جدة', $stored->json('data.row.title_ar'));
         $this->assertEquals('Jeddah', $stored->json('data.row.title_en'));
         $this->assertEquals('Jeddah', City::find($cityId)->title_en);
+        $this->assertEquals($country->id, City::find($cityId)->country_id);
+        $this->assertEquals('Saudi Arabia', $stored->json('data.row.country'));
 
         // update succeeds
         $updated = $this->actingAs($admin, 'admin')->putJson(route('admin.lookups.update', ['cities', $cityId]), [
             'title_ar' => 'جدة الجديدة',
             'title_en' => 'New Jeddah',
+            'country_id' => $country->id,
             'latitude' => 21.6,
             'longitude' => 39.2,
         ]);
@@ -189,5 +211,61 @@ class AdminLookupsCrudTest extends TestCase
 
         // non-map page renders
         $this->actingAs($admin, 'admin')->get(route('admin.lookups.index', 'brands'))->assertOk();
+    }
+
+    public function test_countries_lookup_crud(): void
+    {
+        $admin = $this->admin();
+
+        // a malformed phone code is rejected
+        $invalid = $this->actingAs($admin, 'admin')->postJson(route('admin.lookups.store', 'countries'), [
+            'title_ar' => 'مصر',
+            'title_en' => 'Egypt',
+            'phone_code' => '20',
+        ]);
+        $invalid->assertStatus(422);
+        $this->assertNotNull($invalid->json('errors.phone_code'));
+
+        $missingCode = $this->actingAs($admin, 'admin')->postJson(route('admin.lookups.store', 'countries'), [
+            'title_ar' => 'مصر',
+            'title_en' => 'Egypt',
+        ]);
+        $missingCode->assertStatus(422);
+        $this->assertNotNull($missingCode->json('errors.phone_code'));
+
+        $stored = $this->actingAs($admin, 'admin')->postJson(route('admin.lookups.store', 'countries'), [
+            'title_ar' => 'مصر',
+            'title_en' => 'Egypt',
+            'phone_code' => '+20',
+        ]);
+        $stored->assertOk();
+        $countryId = $stored->json('data.row.id');
+
+        $this->assertDatabaseHas('countries', ['id' => $countryId, 'phone_code' => '+20']);
+
+        $list = $this->actingAs($admin, 'admin')->getJson(route('admin.lookups.index', 'countries').'?search=Egypt');
+        $list->assertOk();
+        $this->assertEquals('+20', $list->json('data.0.phone_code'));
+
+        $updated = $this->actingAs($admin, 'admin')->putJson(route('admin.lookups.update', ['countries', $countryId]), [
+            'title_ar' => 'مصر الجديدة',
+            'title_en' => 'New Egypt',
+            'phone_code' => '+201',
+        ]);
+        $updated->assertOk();
+        $this->assertDatabaseHas('countries', ['id' => $countryId, 'phone_code' => '+201', 'title_en' => 'New Egypt']);
+
+        // the countries page renders and offers localized country options for the city form
+        $view = $this->actingAs($admin, 'admin')->get(route('admin.lookups.index', 'countries'));
+        $view->assertOk()
+            ->assertSee(__('admin.lookups.countries'))
+            ->assertSee(__('admin.lookups.phone_code'))
+            ->assertSee('optionSources');
+
+        $citiesView = $this->actingAs($admin, 'admin')->get(route('admin.lookups.index', 'cities'));
+        $citiesView->assertOk()->assertSee('New Egypt');
+
+        $this->actingAs($admin, 'admin')->deleteJson(route('admin.lookups.destroy', ['countries', $countryId]));
+        $this->assertDatabaseMissing('countries', ['id' => $countryId]);
     }
 }

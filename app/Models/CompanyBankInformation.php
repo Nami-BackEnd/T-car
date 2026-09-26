@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CompanyBankInformation extends Model
 {
+    protected $table = 'company_bank_informations';
+
     protected $fillable = [
         'company_profile_id',
         'account_owner_name',
@@ -17,6 +19,6 @@ class CompanyBankInformation extends Model
 
     public function company(): BelongsTo
     {
-        return $this->belongsTo(Company::class, 'company_profile_id');
+        return $this->belongsTo(Company::class, 'company_id');
     }
 }

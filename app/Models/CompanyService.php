@@ -9,12 +9,21 @@ class CompanyService extends Model
 {
     protected $fillable = [
         'company_id',
+        'pricing_type',
+        'price',
         'company_additional_services_id',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'price' => 'decimal:2',
+        ];
+    }
+
     public function company(): BelongsTo
     {
-        return $this->belongsTo(CompanyUser::class, 'company_id');
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
     public function additionalService(): BelongsTo

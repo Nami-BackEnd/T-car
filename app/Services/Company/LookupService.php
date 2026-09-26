@@ -3,10 +3,12 @@
 namespace App\Services\Company;
 
 use App\Models\City;
+use App\Models\Country;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 
 class LookupService
 {
@@ -67,5 +69,39 @@ class LookupService
             ->mapWithKeys(fn (City $city) => [
                 $city->id => $isArabic ? $city->title_ar : $city->title_en,
             ]);
+    }
+
+    public function countryOptions(): Collection
+    {
+        $isArabic = app()->getLocale() === 'ar';
+
+        return Country::query()
+            ->ordered()
+            ->get()
+            ->mapWithKeys(fn (Country $country) => [
+                $country->id => $isArabic ? $country->title_ar : $country->title_en,
+            ]);
+    }
+
+    /**
+     * Dropdown sources keyed by the `options` value declared on a lookup field.
+     *
+     * @return array<string, Collection<int, string>>
+     */
+    public function optionsForFields(array $fields): array
+    {
+        $sources = array_values(array_unique(array_filter(array_column($fields, 'options'))));
+
+        $options = [];
+
+        foreach ($sources as $source) {
+            $options[$source] = match ($source) {
+                'cities' => $this->cityOptions(),
+                'countries' => $this->countryOptions(),
+                default => throw new InvalidArgumentException("Unknown lookup options source [{$source}]."),
+            };
+        }
+
+        return $options;
     }
 }

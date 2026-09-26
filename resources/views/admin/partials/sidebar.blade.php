@@ -30,6 +30,7 @@
     };
 
     $locationItems = [
+      ['label' => __('admin.lookups.countries'), 'icon' => 'ti-world', 'route' => 'admin.lookups.index', 'params' => ['countries'], 'active' => $isLookupActive('countries')],
       ['label' => __('admin.lookups.cities'), 'icon' => 'ti-map-pin', 'route' => 'admin.lookups.index', 'params' => ['cities'], 'active' => $isLookupActive('cities')],
       ['label' => __('admin.lookups.airports'), 'icon' => 'ti-plane', 'route' => 'admin.lookups.index', 'params' => ['airports'], 'active' => $isLookupActive('airports')],
       ['label' => __('admin.lookups.train_stations'), 'icon' => 'ti-train', 'route' => 'admin.lookups.index', 'params' => ['train-stations'], 'active' => $isLookupActive('train-stations')],
@@ -114,7 +115,7 @@
     $setupOpen = request()->routeIs('admin.lookups.*');
     $entity = $setupOpen ? request()->route('entity') : null;
 
-    $locationOpen = $setupOpen && in_array($entity, ['cities', 'airports', 'train-stations'], true);
+    $locationOpen = $setupOpen && in_array($entity, ['countries', 'cities', 'airports', 'train-stations'], true);
     $carOpen = $setupOpen && in_array($entity, ['brands', 'car-types', 'car-models', 'features'], true);
     $companyDataOpen = $setupOpen && in_array($entity, ['vacations', 'banks', 'company-services'], true);
     $paymentOpen = $setupOpen && in_array($entity, ['payment-methods'], true);

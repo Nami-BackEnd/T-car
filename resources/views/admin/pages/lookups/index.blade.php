@@ -98,7 +98,10 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const cfg = @json($config);
-      const cityOptions = Object.entries(@json($cityOptions) || {}).map(([value, label]) => ({ value, label }));
+      const optionSources = {
+        cities: @json($cityOptions ?? []),
+        countries: @json($countryOptions ?? []),
+      };
 
       const i18n = {
         confirmTitle: @json(__('admin.common.confirm_title')),
@@ -297,9 +300,10 @@
       // ---------- Modal fields ----------
       function fieldHtml(field) {
         if (field.type === 'select') {
-          const options = cityOptions.map((opt) =>
-            `<option value="${escapeHtml(String(opt.value))}">${escapeHtml(opt.label)}</option>`
-          ).join('');
+          const source = optionSources[field.options] || {};
+          const options = Object.entries(source)
+            .map(([value, label]) => `<option value="${escapeHtml(String(value))}">${escapeHtml(label)}</option>`)
+            .join('');
           return `
             <div class="col-md-${field.col}">
               <label class="form-label" for="f_${field.name}">${escapeHtml(field.label)}</label>

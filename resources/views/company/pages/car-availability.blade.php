@@ -3,7 +3,6 @@
 @section('title', 'T-Car — Car Availability')
 
 @section('content')
-
           <div class="page-header">
             <div>
               <h1 class="page-header__title">{{ __('company.common.352') }}</h1>
@@ -35,2576 +34,477 @@
             </div>
           </div>
 
-          
-          <div class="table-card mb-4">
-            <div class="table-toolbar">
-              <div class="table-toolbar__left">
-                <div
-                  class="view-tabs"
-                  role="tablist"
-                   aria-label="{{ __('company.common.305') }}"
-                  id="matrixViewTabs"
-                >
-                  <button
-                    type="button"
-                    class="view-tabs__btn is-active"
-                    data-filter="all"
-                    role="tab"
-                    aria-selected="true"
+          {{-- One GET form drives every filter on this screen, so a change is a
+               plain navigation and the server decides the rows and columns. --}}
+          <form method="GET" action="{{ route('company.car-availability') }}" id="availabilityFilters">
+            <div class="table-card mb-4">
+              <div class="table-toolbar">
+                <div class="table-toolbar__left">
+                  <div
+                    class="view-tabs"
+                    role="tablist"
+                    aria-label="{{ __('company.common.305') }}"
+                    id="matrixViewTabs"
                   >
-                    {{ __('company.pages.car-availability.0') }}</button>
-                  <button
-                    type="button"
-                    class="view-tabs__btn"
-                    data-filter="active"
-                    role="tab"
-                    aria-selected="false"
-                  >
-                    {{ __('company.pages.car-availability.1') }}</button>
-                  <button
-                    type="button"
-                    class="view-tabs__btn"
-                    data-filter="inactive"
-                    role="tab"
-                    aria-selected="false"
-                  >
-                    {{ __('company.pages.car-availability.2') }}</button>
+                    @php
+                      // The active/inactive tabs narrow the columns, because
+                      // is_active lives on the car, not on the branch.
+                      $tabs = [
+                        'all' => __('company.pages.car-availability.0'),
+                        'active' => __('company.pages.car-availability.1'),
+                        'inactive' => __('company.pages.car-availability.2'),
+                      ];
+                    @endphp
+                    @foreach ($tabs as $value => $label)
+                      <button
+                        type="submit"
+                        name="status"
+                        value="{{ $value }}"
+                        class="view-tabs__btn {{ $status === $value ? 'is-active' : '' }}"
+                        role="tab"
+                        aria-selected="{{ $status === $value ? 'true' : 'false' }}"
+                      >
+                        {{ $label }}
+                      </button>
+                    @endforeach
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="table-filter-bar">
-              <div class="table-filter-bar__left">
-                <button
-                  type="button"
-                  class="filter-btn"
-                  data-bs-toggle="modal"
-                  data-bs-target="#filterModal"
-                >
-                  <i class="bi bi-sliders"></i> {{ __('company.common.303') }}</button>
-                <span class="matrix-legend">
-                  <span class="matrix-legend__item"
-                    ><span class="matrix-legend__swatch matrix-legend__swatch--on"></span>
-                    {{ __('company.pages.car-availability.3') }}</span
+              <div class="table-filter-bar">
+                <div class="table-filter-bar__left">
+                  <button
+                    type="button"
+                    class="filter-btn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#filterModal"
                   >
-                  <span class="matrix-legend__item"
-                    ><span class="matrix-legend__swatch matrix-legend__swatch--off"></span> {{ __('company.pages.car-availability.4') }}</span
-                  >
-                </span>
+                    <i class="bi bi-sliders"></i> {{ __('company.common.303') }}</button>
+                  <span class="matrix-legend">
+                    <span class="matrix-legend__item"
+                      ><span class="matrix-legend__swatch matrix-legend__swatch--on"></span>
+                      {{ __('company.pages.car-availability.3') }}</span
+                    >
+                    <span class="matrix-legend__item"
+                      ><span class="matrix-legend__swatch matrix-legend__swatch--off"></span>
+                      {{ __('company.pages.car-availability.4') }}</span
+                    >
+                  </span>
+                </div>
+
+                <div class="table-search">
+                  <i class="bi bi-search"></i>
+                  <input
+                    type="search"
+                    name="q"
+                    id="fleetSearchInput"
+                    value="{{ request('q') }}"
+                    placeholder="{{ __('company.common.138') }}"
+                  />
+                </div>
               </div>
 
-              <div class="table-search">
-                <i class="bi bi-search"></i>
-                <input type="search" id="fleetSearchInput"  placeholder="{{ __('company.common.138') }}" />
-              </div>
-            </div>
+              {{-- Keeps the other filters alive when a tab or the search is
+                   submitted, so switching tabs does not drop the selection. --}}
+              @foreach (['branch', 'brand', 'car_type', 'car_model', 'year'] as $hidden)
+                @if (request($hidden))
+                  <input type="hidden" name="{{ $hidden }}" value="{{ request($hidden) }}" />
+                @endif
+              @endforeach
 
-            <div class="table-responsive-custom">
-              <table class="fleet-matrix" id="fleetMatrixTable">
-                <thead>
-                  <tr>
-                    <th class="fleet-matrix__office-head">{{ __('company.common.235') }}</th>
-                    <th>
-                      <span class="fleet-matrix__model"> {{ __('company.pages.car-availability.5') }}</span
-                      ><span class="fleet-matrix__total ltr-num">{{ __('company.pages.car-availability.6') }}</span>
-                    </th>
-                    <th>
-                      <span class="fleet-matrix__model"> {{ __('company.pages.car-availability.7') }}</span
-                      ><span class="fleet-matrix__total ltr-num">{{ __('company.pages.car-availability.8') }}</span>
-                    </th>
-                    <th>
-                      <span class="fleet-matrix__model"> {{ __('company.pages.car-availability.9') }}</span
-                      ><span class="fleet-matrix__total ltr-num">{{ __('company.pages.car-availability.8') }}</span>
-                    </th>
-                    <th>
-                      <span class="fleet-matrix__model"> {{ __('company.pages.car-availability.10') }}</span
-                      ><span class="fleet-matrix__total ltr-num">{{ __('company.pages.car-availability.11') }}</span>
-                    </th>
-                    <th>
-                      <span class="fleet-matrix__model"> {{ __('company.pages.car-availability.12') }}</span
-                      ><span class="fleet-matrix__total ltr-num">{{ __('company.pages.car-availability.13') }}</span>
-                    </th>
-                    <th>
-                      <span class="fleet-matrix__model"> {{ __('company.pages.car-availability.14') }}</span
-                      ><span class="fleet-matrix__total ltr-num">{{ __('company.pages.car-availability.15') }}</span>
-                    </th>
-                    <th>
-                      <span class="fleet-matrix__model"> {{ __('company.pages.car-availability.16') }}</span
-                      ><span class="fleet-matrix__total ltr-num">{{ __('company.pages.car-availability.17') }}</span>
-                    </th>
-                    <th>
-                      <span class="fleet-matrix__model"> {{ __('company.pages.car-availability.18') }}</span
-                      ><span class="fleet-matrix__total ltr-num">{{ __('company.pages.car-availability.19') }}</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="fleet-matrix__office">
-                      <a href="{{ route('company.office-details') }}">{{ __('company.common.49') }}</a>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">3</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">5</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">1</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">1</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">6</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">5</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">3</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">0</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
+              <div class="table-responsive-custom">
+                <table class="fleet-matrix" id="fleetMatrixTable">
+                  <thead>
+                    <tr>
+                      <th class="fleet-matrix__office-head">{{ __('company.common.235') }}</th>
 
-                  <tr>
-                    <td class="fleet-matrix__office">
-                      <a href="{{ route('company.office-details') }}">N2-Al-Olaya</a>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">0</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">1</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">1</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">4</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">1</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">2</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">2</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">6</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
+                      @forelse ($cars as $car)
+                        <th>
+                          <div class="fleet-matrix__model">
+                            <span>
+                              {{ $car->brand?->title }} {{ $car->carModel?->title }}
+                            </span>
+                          </div>
+                          <span class="fleet-matrix__total ltr-num" data-car-total="{{ $car->id }}">
+                            {{ __('company.pages.car-availability.38') }} {{ $car_totals[$car->id] ?? 0 }}
+                          </span>
+                        </th>
+                      @empty
+                        <th><span class="fleet-matrix__model">{{ __('company.pages.car-availability.40') }}</span></th>
+                      @endforelse
 
-                  <tr>
-                    <td class="fleet-matrix__office">
-                      <a href="{{ route('company.office-details') }}">N2 Rental Car - Riyadh - Almarwa</a>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">1</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">0</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">13</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">3</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">3</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">1</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">2</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">0</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
+                    </tr>
+                  </thead>
 
-                  <tr>
-                    <td class="fleet-matrix__office">
-                      <a href="{{ route('company.office-details') }}">N2 Rental Car - Rawdah</a>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">1</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">1</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">2</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">3</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">2</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">3</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">4</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">1</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
+                  <tbody>
+                    @forelse ($rows as $branch)
+                      <tr>
+                        <td class="fleet-matrix__office">
+                          <a href="{{ route('company.branches') }}">{{ $branch['title'] }}</a>
+                        </td>
 
-                  <tr>
-                    <td class="fleet-matrix__office">
-                      <a href="{{ route('company.office-details') }}">N2 Rental Car - Riyadh - Al Aziziyah</a>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">0</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">3</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">2</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">0</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">4</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">7</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">0</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">0</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
+                        @forelse ($cars as $car)
+                          @php
+                            $cellStock = $stocks[$branch['id'].':'.$car->id] ?? 0;
+                          @endphp
+                          <td>
+                            <div
+                              class="matrix-cell {{ $car->is_active ? 'matrix-cell--active' : 'matrix-cell--inactive' }}"
+                              data-state="{{ $car->is_active ? 'on' : 'off' }}"
+                              data-cell
+                              data-car="{{ $car->id }}"
+                              data-branch="{{ $branch['id'] }}"
+                              data-stock="{{ $cellStock }}"
+                              data-stock-url="{{ route('company.car-availability.stock', ['car' => $car->id]) }}"
+                            >
+                              <button
+                                type="button"
+                                class="matrix-cell__switch"
+                                role="switch"
+                                data-toggle-car="{{ $car->id }}"
+                                data-toggle-url="{{ route('company.car-availability.toggle', ['car' => $car->id]) }}"
+                                aria-checked="{{ $car->is_active ? 'true' : 'false' }}"
+                                data-state="{{ $car->is_active ? 'on' : 'off' }}"
+                                title="{{ $car->is_active ? __('company.pages.car-availability.33') : __('company.pages.car-availability.36') }}"
+                              ></button>
+                              <div class="matrix-cell__stepper">
+                                <button
+                                  type="button"
+                                  class="matrix-cell__step"
+                                  data-action="dec"
+                                  aria-label="{{ __('company.pages.car-availability.34') }}"
+                                >
+                                  −</button
+                                ><span class="matrix-cell__count ltr-num" data-count>{{ $cellStock }}</span
+                                ><button
+                                  type="button"
+                                  class="matrix-cell__step"
+                                  data-action="inc"
+                                  aria-label="{{ __('company.pages.car-availability.35') }}"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                          </td>
+                        @empty
+                          <td colspan="{{ max(count($cars), 1) }}">{{ __('company.pages.car-availability.40') }}</td>
+                        @endforelse
 
-                  <tr>
-                    <td class="fleet-matrix__office">
-                      <a href="{{ route('company.office-details') }}">N2 Rental Car - Riyadh - Exit 27, Al-Awali</a>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">1</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">1</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">7</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">3</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">3</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="on">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="true"
-                           title="{{ __('company.pages.car-availability.33') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">3</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">1</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="matrix-cell" data-state="off">
-                        <button
-                          type="button"
-                          class="matrix-cell__switch"
-                          role="switch"
-                          aria-checked="false"
-                           title="{{ __('company.pages.car-availability.36') }}"
-                        ></button>
-                        <div class="matrix-cell__stepper">
-                          <button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="dec"
-                             aria-label="{{ __('company.pages.car-availability.34') }}"
-                          >
-                            −</button
-                          ><span class="matrix-cell__count">3</span
-                          ><button
-                            type="button"
-                            class="matrix-cell__step"
-                            data-action="inc"
-                             aria-label="{{ __('company.pages.car-availability.35') }}"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="table-pagination table-pagination-dt">
-              <div class="table-pagination__size-select">
-                <label for="pageSizeSelect">{{ __('company.common.212') }}</label>
-                <select id="pageSizeSelect">
-                  <option value="10" selected>10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
-                </select>
-              </div>
-              <div class="table-pagination__pages">
-                <button class="table-pagination__page-btn" disabled>
-                  <i class="bi bi-chevron-right"></i>
-                </button>
-                <button class="table-pagination__page-btn is-active">1</button>
-                <button class="table-pagination__page-btn">2</button>
-                <button class="table-pagination__page-btn">
-                  <i class="bi bi-chevron-left"></i>
-                </button>
+                      </tr>
+                    @empty
+                      <tr>
+                        <td colspan="{{ count($cars) + 1 }}">{{ __('company.pages.car-availability.41') }}</td>
+                      </tr>
+                    @endforelse
+                  </tbody>
+                </table>
               </div>
             </div>
-          </div>
+          </form>
 @endsection
 
 @push('modals')
-</main>
-        
-      
-
-    
-    <div
-      class="modal fade"
-      id="filterModal"
-      tabindex="-1"
-      aria-labelledby="filterModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="filterModalLabel">
-              <i class="bi bi-sliders"></i> {{ __('company.pages.car-availability.20') }}</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-               aria-label="{{ __('company.common.92') }}"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form id="filterForm">
-              <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 16px">
-                
-                <div class="form-field">
-                  <label class="form-field__label">{{ __('company.common.547') }}</label>
-                  <div class="dropdown">
-                    <button
-                      type="button"
-                      class="filter-dropdown-btn dropdown-toggle w-100"
-                      id="officeSelectBtn"
-                      data-bs-toggle="dropdown"
-                      data-bs-auto-close="outside"
-                      aria-expanded="false"
-                    >
-                      <span class="filter-dropdown-btn__value" id="officeSelectValue"
-                        >{{ __('company.common.115') }}</span
-                      >
-                      <i class="bi bi-chevron-down"></i>
-                    </button>
-                    <ul
-                      class="dropdown-menu"
-                      id="officeDropdownMenu"
-                      aria-labelledby="officeSelectBtn"
-                    >
-                      <li>
-                        <div class="dropdown-search">
-                          <i class="bi bi-search"></i>
-                          <input
-                            type="search"
-                             placeholder="{{ __('company.common.260') }}"
-                            id="officeSearchInput"
-                          />
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input
-                              type="checkbox"
-                              data-office="branch1"
-                              data-label="N2 فرع العتيق"
-                            />
-                            {{ __('company.common.49') }}</label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-office="branch2" data-label="N2-Al-Olaya" />
-                            N2-Al-Olaya
-                          </label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input
-                              type="checkbox"
-                              data-office="branch3"
-                              data-label="N2 Rental Car - Riyadh"
-                            />
-                            N2 Rental Car - Riyadh
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="form-field">
-                  <label class="form-field__label">{{ __('company.common.229') }}</label>
-                  <div class="dropdown">
-                    <button
-                      type="button"
-                      class="filter-dropdown-btn dropdown-toggle w-100"
-                      id="citySelectBtn"
-                      data-bs-toggle="dropdown"
-                      data-bs-auto-close="outside"
-                      aria-expanded="false"
-                    >
-                      <span class="filter-dropdown-btn__value" id="citySelectValue"
-                        >{{ __('company.common.113') }}</span
-                      >
-                      <i class="bi bi-chevron-down"></i>
-                    </button>
-                    <ul class="dropdown-menu" id="cityDropdownMenu" aria-labelledby="citySelectBtn">
-                      <li>
-                        <div class="dropdown-search">
-                          <i class="bi bi-search"></i>
-                          <input type="search"  placeholder="{{ __('company.common.259') }}" id="citySearchInput" />
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-city="riyadh" data-label="الرياض" /> {{ __('company.common.183') }}</label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-city="jeddah" data-label="جدة" /> {{ __('company.common.357') }}</label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-city="dammam" data-label="الدمام" /> {{ __('company.common.174') }}</label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="form-field">
-                  <label class="form-field__label">{{ __('company.pages.car-availability.21') }}</label>
-                  <div class="dropdown">
-                    <button
-                      type="button"
-                      class="filter-dropdown-btn dropdown-toggle w-100"
-                      id="servicesSelectBtn"
-                      data-bs-toggle="dropdown"
-                      data-bs-auto-close="outside"
-                      aria-expanded="false"
-                    >
-                      <span class="filter-dropdown-btn__value" id="servicesSelectValue"
-                        >{{ __('company.pages.car-availability.22') }}</span
-                      >
-                      <i class="bi bi-chevron-down"></i>
-                    </button>
-                    <ul
-                      class="dropdown-menu"
-                      id="servicesDropdownMenu"
-                      aria-labelledby="servicesSelectBtn"
-                    >
-                      <li>
-                        <div class="dropdown-search">
-                          <i class="bi bi-search"></i>
-                          <input
-                            type="search"
-                             placeholder="{{ __('company.pages.car-availability.37') }}"
-                            id="servicesSearchInput"
-                          />
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-service="daily" data-label="تأجير يومي" />
-                            {{ __('company.pages.car-availability.23') }}</label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-service="monthly" data-label="تأجير شهري" />
-                            {{ __('company.pages.car-availability.24') }}</label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="form-field">
-                  <label class="form-field__label">{{ __('company.pages.car-availability.25') }}</label>
-                  <div class="dropdown">
-                    <button
-                      type="button"
-                      class="filter-dropdown-btn dropdown-toggle w-100"
-                      id="countSelectBtn"
-                      data-bs-toggle="dropdown"
-                      data-bs-auto-close="outside"
-                      aria-expanded="false"
-                    >
-                      <span class="filter-dropdown-btn__value" id="countSelectValue"
-                        >{{ __('company.common.109') }}</span
-                      >
-                      <i class="bi bi-chevron-down"></i>
-                    </button>
-                    <ul
-                      class="dropdown-menu"
-                      id="countDropdownMenu"
-                      aria-labelledby="countSelectBtn"
-                    >
-                      <li>
-                        <div class="dropdown-search">
-                          <i class="bi bi-search"></i>
-                          <input type="search"  placeholder="{{ __('company.common.257') }}" id="countSearchInput" />
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-count="1-5" data-label="1-5" /> 1-5
-                          </label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-count="6-10" data-label="6-10" /> 6-10
-                          </label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-count="10+" data-label="10+" /> 10+
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                
-                
-                <div class="form-field">
-                  <label class="form-field__label">{{ __('company.pages.car-availability.26') }}</label>
-                  <div class="dropdown">
-                    <button
-                      type="button"
-                      class="filter-dropdown-btn dropdown-toggle w-100"
-                      id="modelSelectBtn"
-                      data-bs-toggle="dropdown"
-                      data-bs-auto-close="outside"
-                      aria-expanded="false"
-                    >
-                      <span class="filter-dropdown-btn__value" id="modelSelectValue"
-                        >{{ __('company.common.116') }}</span
-                      >
-                      <i class="bi bi-chevron-down"></i>
-                    </button>
-                    <ul
-                      class="dropdown-menu"
-                      id="modelDropdownMenu"
-                      aria-labelledby="modelSelectBtn"
-                    >
-                      <li>
-                        <div class="dropdown-search">
-                          <i class="bi bi-search"></i>
-                          <input
-                            type="search"
-                             placeholder="{{ __('company.common.261') }}"
-                            id="modelSearchInput"
-                          />
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-model="accent" data-label="هونداي اكسنت" />
-                            {{ __('company.pages.car-availability.27') }}</label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-model="camry" data-label="تويوتا كامري" />
-                            {{ __('company.pages.car-availability.28') }}</label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-model="sentra" data-label="نيسان سنترا" />
-                            {{ __('company.pages.car-availability.29') }}</label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="form-field">
-                  <label class="form-field__label">{{ __('company.common.571') }}</label>
-                  <div class="dropdown">
-                    <button
-                      type="button"
-                      class="filter-dropdown-btn dropdown-toggle w-100"
-                      id="carTypeSelectBtn"
-                      data-bs-toggle="dropdown"
-                      data-bs-auto-close="outside"
-                      aria-expanded="false"
-                    >
-                      <span class="filter-dropdown-btn__value" id="carTypeSelectValue"
-                        >{{ __('company.common.118') }}</span
-                      >
-                      <i class="bi bi-chevron-down"></i>
-                    </button>
-                    <ul
-                      class="dropdown-menu"
-                      id="carTypeDropdownMenu"
-                      aria-labelledby="carTypeSelectBtn"
-                    >
-                      <li>
-                        <div class="dropdown-search">
-                          <i class="bi bi-search"></i>
-                          <input
-                            type="search"
-                             placeholder="{{ __('company.common.263') }}"
-                            id="carTypeSearchInput"
-                          />
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-cartype="sedan" data-label="سيدان" /> {{ __('company.pages.car-availability.30') }}</label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-cartype="suv" data-label="SUV" /> SUV
-                          </label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-cartype="hatchback" data-label="هاتشباك" />
-                            {{ __('company.pages.car-availability.31') }}</label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="form-field">
-                  <label class="form-field__label">{{ __('company.pages.car-availability.32') }}</label>
-                  <div class="dropdown">
-                    <button
-                      type="button"
-                      class="filter-dropdown-btn dropdown-toggle w-100"
-                      id="yearSelectBtn"
-                      data-bs-toggle="dropdown"
-                      data-bs-auto-close="outside"
-                      aria-expanded="false"
-                    >
-                      <span class="filter-dropdown-btn__value" id="yearSelectValue"
-                        >{{ __('company.common.107') }}</span
-                      >
-                      <i class="bi bi-chevron-down"></i>
-                    </button>
-                    <ul class="dropdown-menu" id="yearDropdownMenu" aria-labelledby="yearSelectBtn">
-                      <li>
-                        <div class="dropdown-search">
-                          <i class="bi bi-search"></i>
-                          <input type="search"  placeholder="{{ __('company.common.254') }}" id="yearSearchInput" />
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-year="2024" data-label="2024" /> 2024
-                          </label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-year="2023" data-label="2023" /> 2023
-                          </label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <label class="checkbox-option">
-                            <span class="checkbox-custom"></span>
-                            <input type="checkbox" data-year="2022" data-label="2022" /> 2022
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-outline" data-bs-dismiss="modal">{{ __('company.common.526') }}</button>
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{{ __('company.common.78') }}</button>
-          </div>
+  <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="filterModalLabel">
+            {{ __('company.pages.car-availability.20') }}
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+
+        {{-- Same GET form as the toolbar, so "apply" is a normal submit. --}}
+        <form method="GET" action="{{ route('company.car-availability') }}" id="availabilityFilterModal">
+          <div class="modal-body">
+            @if (request('status'))
+              <input type="hidden" name="status" value="{{ request('status') }}" />
+            @endif
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="filterBranch">{{ __('company.common.235') }}</label>
+                <select class="form-select" name="branch" id="filterBranch">
+                  <option value="">{{ __('company.cars.all_branches') }}</option>
+                  @foreach ($branches as $branch)
+                    <option value="{{ $branch['id'] }}" @selected((int) request('branch') === $branch['id'])>
+                      {{ $branch['title'] }}
+                    </option>
+                  @endforeach
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="filterBrand">{{ __('company.common.207') }}</label>
+                <select class="form-select" name="brand" id="filterBrand">
+                  <option value="">{{ __('company.common.223') }}</option>
+                  @foreach ($brands as $brand)
+                    <option value="{{ $brand['id'] }}" @selected((int) request('brand') === $brand['id'])>
+                      {{ $brand['title'] }}
+                    </option>
+                  @endforeach
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="filterModel">{{ __('company.pages.car-availability.26') }}</label>
+                <select class="form-select" name="car_model" id="filterModel">
+                  <option value="">{{ __('company.common.223') }}</option>
+                  @foreach ($car_models as $model)
+                    <option value="{{ $model['id'] }}" @selected((int) request('car_model') === $model['id'])>
+                      {{ $model['title'] }}
+                    </option>
+                  @endforeach
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="filterType">{{ __('company.cars.car_type') }}</label>
+                <select class="form-select" name="car_type" id="filterType">
+                  <option value="">{{ __('company.common.223') }}</option>
+                  @foreach ($car_types as $type)
+                    <option value="{{ $type['id'] }}" @selected((int) request('car_type') === $type['id'])>
+                      {{ $type['title'] }}
+                    </option>
+                  @endforeach
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="filterYear">{{ __('company.pages.car-availability.32') }}</label>
+                <select class="form-select" name="year" id="filterYear">
+                  <option value="">{{ __('company.common.223') }}</option>
+                  @foreach ($years as $year)
+                    <option value="{{ $year }}" @selected((int) request('year') === $year)>{{ $year }}</option>
+                  @endforeach
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="filterSearch">{{ __('company.common.138') }}</label>
+                <input
+                  type="search"
+                  class="form-control"
+                  name="q"
+                  id="filterSearch"
+                  value="{{ request('q') }}"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <a class="btn btn-outline" href="{{ route('company.car-availability') }}">
+              {{ __('company.common.303') }}
+            </a>
+            <button type="submit" class="btn btn-primary">{{ __('company.common.78') }}</button>
+          </div>
+        </form>
       </div>
     </div>
-
-    
+  </div>
 @endpush
 
 @push('scripts')
-<script>
-      document.addEventListener('DOMContentLoaded', function () {
-        /* ---- Toggle switch (enable/disable a model at a branch) ---- */
-        document.querySelectorAll('.matrix-cell__switch').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            var cell = this.closest('.matrix-cell');
-            var isOn = cell.getAttribute('data-state') === 'on';
-            cell.setAttribute('data-state', isOn ? 'off' : 'on');
-            this.setAttribute('aria-checked', String(!isOn));
-            this.setAttribute('title', isOn ? 'غير مفعّل — اضغط للتفعيل' : 'مفعّل — اضغط للتعطيل');
-          });
-        });
+  <script>
+    (function () {
+      'use strict';
 
-        /* ---- Quantity stepper +/- ---- */
-        document.querySelectorAll('.matrix-cell__step').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            var countEl = this.parentElement.querySelector('.matrix-cell__count');
-            var val = parseInt(countEl.textContent, 10) || 0;
-            if (this.getAttribute('data-action') === 'inc') {
-              val += 1;
-            } else {
-              val = Math.max(0, val - 1);
+      /**
+       * The stepper and the availability switch save on every click, so both
+       * post to the JSON endpoints and patch the cell in place. A failed write
+       * puts the number back and marks the cell, because silently leaving a
+       * number on screen that the database rejected is the worst outcome here.
+       */
+      var tokenMeta = document.querySelector('meta[name="csrf-token"]');
+
+      function csrf() {
+        return tokenMeta ? tokenMeta.getAttribute('content') : '';
+      }
+
+      function errorMessage(payload, fallback) {
+        if (payload && payload.message) {
+          return payload.message;
+        }
+
+        if (payload && payload.errors) {
+          var first = Object.values(payload.errors)[0];
+
+          if (Array.isArray(first) && first.length) {
+            return first[0];
+          }
+        }
+
+        return fallback;
+      }
+
+      function markFailed(cell) {
+        cell.classList.add('matrix-cell--error');
+        window.setTimeout(function () {
+          cell.classList.remove('matrix-cell--error');
+        }, 1600);
+      }
+
+      /* ---- Quantity stepper: save the new number on every click ---- */
+      document.querySelectorAll('[data-cell]').forEach(function (cell) {
+        var count = cell.querySelector('[data-count]');
+        var busy = false;
+
+        cell.querySelectorAll('.matrix-cell__step').forEach(function (step) {
+          step.addEventListener('click', function () {
+            if (busy) {
+              return;
             }
-            countEl.textContent = val;
-          });
-        });
 
-        /* ---- View tabs: filter the fleet matrix by enabled/disabled state.
-     Cells that don't match the current filter are hidden, and any office
-     row left with no matching cell at all is hidden too, so "المفعّلة فقط"
-     / "غير المفعّلة فقط" actually narrows down the table instead of just
-     dimming individual cells. ---- */
-        var viewTabs = document.querySelectorAll('#matrixViewTabs .view-tabs__btn');
+            var current = parseInt(count.textContent, 10) || 0;
+            var next = step.getAttribute('data-action') === 'inc' ? current + 1 : Math.max(0, current - 1);
+            var previous = current;
 
-        function applyFleetStateFilter(filter) {
-          console.log('Applying filter:', filter);
-          var table = document.getElementById('fleetMatrixTable');
-          if (!table) {
-            console.log('Table not found');
-            return;
-          }
-          var rows = table.querySelectorAll('tbody tr');
-          console.log('Found rows:', rows.length);
+            busy = true;
+            cell.classList.add('matrix-cell--saving');
+            count.textContent = next;
 
-          rows.forEach(function (row) {
-            var rowHasMatch = false;
-            var cells = row.querySelectorAll('.matrix-cell');
-            console.log('Row has cells:', cells.length);
-
-            cells.forEach(function (cell) {
-              var state = cell.getAttribute('data-state');
-              var show = filter === 'all' || filter === state;
-              cell.style.display = show ? 'inline-flex' : 'none';
-              if (show) rowHasMatch = true;
-            });
-
-            row.style.display = filter === 'all' || rowHasMatch ? '' : 'none';
-            console.log('Row display:', row.style.display);
-          });
-        }
-
-        viewTabs.forEach(function (tab) {
-          tab.addEventListener('click', function () {
-            viewTabs.forEach(function (t) {
-              t.classList.remove('is-active');
-              t.setAttribute('aria-selected', 'false');
-            });
-            this.classList.add('is-active');
-            this.setAttribute('aria-selected', 'true');
-            applyFleetStateFilter(this.getAttribute('data-filter'));
-          });
-        });
-
-        // Apply initial filter on page load
-        var initialActiveTab = document.querySelector('#matrixViewTabs .view-tabs__btn.is-active');
-        if (initialActiveTab) {
-          applyFleetStateFilter(initialActiveTab.getAttribute('data-filter'));
-        }
-
-        /* ---- Search filters office rows ---- */
-        var searchInput = document.getElementById('fleetSearchInput');
-        if (searchInput) {
-          searchInput.addEventListener('input', function () {
-            var q = this.value.trim().toLowerCase();
-            var activeFilter = document.querySelector('#matrixViewTabs .view-tabs__btn.is-active');
-            var filterValue = activeFilter ? activeFilter.getAttribute('data-filter') : 'all';
-
-            document.querySelectorAll('#fleetMatrixTable tbody tr').forEach(function (row) {
-              var officeName = row.querySelector('.fleet-matrix__office').textContent.toLowerCase();
-              var matchesSearch = officeName.includes(q);
-
-              var rowHasStateMatch = true;
-              if (filterValue !== 'all') {
-                rowHasStateMatch = false;
-                row.querySelectorAll('.matrix-cell').forEach(function (cell) {
-                  if (cell.getAttribute('data-state') === filterValue) rowHasStateMatch = true;
-                });
-              }
-
-              row.style.display = matchesSearch && rowHasStateMatch ? '' : 'none';
-            });
-          });
-        }
-
-        /* ---- Generic helper: keeps the filter modal a fixed size no matter
-     how many options are picked. Instead of concatenating every selected
-     label into the button (which stretches the button/grid and pushes
-     content outside the modal), it shows the labels up to 2 selections
-     and switches to a short "N محدد" count afterwards. The full list is
-     still available as a title tooltip on hover. ---- */
-        function updateMultiSelectDisplay(selected, btnEl, valueEl, placeholder) {
-          if (selected.length === 0) {
-            valueEl.textContent = placeholder;
-            valueEl.removeAttribute('title');
-            btnEl.classList.remove('has-value');
-            return;
-          }
-          var labels = selected
-            .map(function (o) {
-              return o.label;
+            fetch(cell.getAttribute('data-stock-url'), {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'X-CSRF-TOKEN': csrf(),
+                'X-Requested-With': 'XMLHttpRequest',
+              },
+              body: JSON.stringify({ branch: Number(cell.getAttribute('data-branch')), stock: next }),
             })
-            .join('، ');
-          valueEl.textContent = selected.length > 2 ? selected.length + ' محدد' : labels;
-          valueEl.setAttribute('title', labels);
-          btnEl.classList.add('has-value');
-        }
-
-        function syncFilterCheckboxVisual(checkbox) {
-          var option = checkbox.closest('.checkbox-option');
-          if (option) option.classList.toggle('is-checked', checkbox.checked);
-        }
-
-        document
-          .querySelectorAll('#filterModal input[type="checkbox"]')
-          .forEach(function (checkbox) {
-            syncFilterCheckboxVisual(checkbox);
-            checkbox.addEventListener('change', function () {
-              syncFilterCheckboxVisual(this);
-            });
-          });
-
-        /* ---- Multi-select dropdown logic (مكتب) ---- */
-        var selectedOffices = [];
-        var officeSelectBtn = document.getElementById('officeSelectBtn');
-        var officeSelectValue = document.getElementById('officeSelectValue');
-        var officeDropdownMenu = document.getElementById('officeDropdownMenu');
-        var officeSearchInput = document.getElementById('officeSearchInput');
-
-        officeDropdownMenu
-          .querySelectorAll('input[type="checkbox"][data-office]')
-          .forEach(function (cb) {
-            cb.addEventListener('change', function () {
-              var office = this.getAttribute('data-office');
-              var label = this.getAttribute('data-label');
-              if (this.checked) {
-                if (
-                  !selectedOffices.some(function (o) {
-                    return o.value === office;
-                  })
-                ) {
-                  selectedOffices.push({ value: office, label: label });
-                }
-              } else {
-                selectedOffices = selectedOffices.filter(function (o) {
-                  return o.value !== office;
+              .then(function (response) {
+                return response.json().then(function (payload) {
+                  return { ok: response.ok, payload: payload };
                 });
-              }
-              updateOfficeDisplay();
-            });
-          });
-
-        function updateOfficeDisplay() {
-          updateMultiSelectDisplay(
-            selectedOffices,
-            officeSelectBtn,
-            officeSelectValue,
-            'اختر المكتب',
-          );
-        }
-
-        officeSearchInput.addEventListener('click', function (e) {
-          e.stopPropagation();
-        });
-        officeSearchInput.addEventListener('input', function () {
-          var q = this.value.trim().toLowerCase();
-          officeDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            var label = li.querySelector('input').getAttribute('data-label').toLowerCase();
-            li.style.display = label.includes(q) ? '' : 'none';
-          });
-        });
-
-        officeSelectBtn.addEventListener('hidden.bs.dropdown', function () {
-          officeSearchInput.value = '';
-          officeDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            li.style.display = '';
-          });
-        });
-
-        /* ---- Multi-select dropdown logic (المدينة) ---- */
-        var selectedCities = [];
-        var citySelectBtn = document.getElementById('citySelectBtn');
-        var citySelectValue = document.getElementById('citySelectValue');
-        var cityDropdownMenu = document.getElementById('cityDropdownMenu');
-        var citySearchInput = document.getElementById('citySearchInput');
-
-        cityDropdownMenu
-          .querySelectorAll('input[type="checkbox"][data-city]')
-          .forEach(function (cb) {
-            cb.addEventListener('change', function () {
-              var city = this.getAttribute('data-city');
-              var label = this.getAttribute('data-label');
-              if (this.checked) {
-                if (
-                  !selectedCities.some(function (c) {
-                    return c.value === city;
-                  })
-                ) {
-                  selectedCities.push({ value: city, label: label });
+              })
+              .then(function (result) {
+                if (!result.ok) {
+                  count.textContent = previous;
+                  markFailed(cell);
+                  window.alert(
+                    errorMessage(result.payload, @json(__('company.pages.car-availability.44')))
+                  );
+                  return;
                 }
-              } else {
-                selectedCities = selectedCities.filter(function (c) {
-                  return c.value !== city;
-                });
-              }
-              updateCityDisplay();
-            });
-          });
 
-        function updateCityDisplay() {
-          updateMultiSelectDisplay(selectedCities, citySelectBtn, citySelectValue, 'اختر المدينة');
-        }
-
-        citySearchInput.addEventListener('click', function (e) {
-          e.stopPropagation();
-        });
-        citySearchInput.addEventListener('input', function () {
-          var q = this.value.trim().toLowerCase();
-          cityDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            var label = li.querySelector('input').getAttribute('data-label').toLowerCase();
-            li.style.display = label.includes(q) ? '' : 'none';
-          });
-        });
-
-        citySelectBtn.addEventListener('hidden.bs.dropdown', function () {
-          citySearchInput.value = '';
-          cityDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            li.style.display = '';
-          });
-        });
-
-        /* ---- Multi-select dropdown logic (خدمات) ---- */
-        var selectedServices = [];
-        var servicesSelectBtn = document.getElementById('servicesSelectBtn');
-        var servicesSelectValue = document.getElementById('servicesSelectValue');
-        var servicesDropdownMenu = document.getElementById('servicesDropdownMenu');
-        var servicesSearchInput = document.getElementById('servicesSearchInput');
-
-        servicesDropdownMenu
-          .querySelectorAll('input[type="checkbox"][data-service]')
-          .forEach(function (cb) {
-            cb.addEventListener('change', function () {
-              var service = this.getAttribute('data-service');
-              var label = this.getAttribute('data-label');
-              if (this.checked) {
-                if (
-                  !selectedServices.some(function (s) {
-                    return s.value === service;
-                  })
-                ) {
-                  selectedServices.push({ value: service, label: label });
-                }
-              } else {
-                selectedServices = selectedServices.filter(function (s) {
-                  return s.value !== service;
-                });
-              }
-              updateServicesDisplay();
-            });
-          });
-
-        function updateServicesDisplay() {
-          updateMultiSelectDisplay(
-            selectedServices,
-            servicesSelectBtn,
-            servicesSelectValue,
-            'اختر الخدمات',
-          );
-        }
-
-        servicesSearchInput.addEventListener('click', function (e) {
-          e.stopPropagation();
-        });
-        servicesSearchInput.addEventListener('input', function () {
-          var q = this.value.trim().toLowerCase();
-          servicesDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            var label = li.querySelector('input').getAttribute('data-label').toLowerCase();
-            li.style.display = label.includes(q) ? '' : 'none';
-          });
-        });
-
-        servicesSelectBtn.addEventListener('hidden.bs.dropdown', function () {
-          servicesSearchInput.value = '';
-          servicesDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            li.style.display = '';
-          });
-        });
-
-        /* ---- Multi-select dropdown logic (عدد السيارات المتاحة) ---- */
-        var selectedCounts = [];
-        var countSelectBtn = document.getElementById('countSelectBtn');
-        var countSelectValue = document.getElementById('countSelectValue');
-        var countDropdownMenu = document.getElementById('countDropdownMenu');
-        var countSearchInput = document.getElementById('countSearchInput');
-
-        countDropdownMenu
-          .querySelectorAll('input[type="checkbox"][data-count]')
-          .forEach(function (cb) {
-            cb.addEventListener('change', function () {
-              var count = this.getAttribute('data-count');
-              var label = this.getAttribute('data-label');
-              if (this.checked) {
-                if (
-                  !selectedCounts.some(function (c) {
-                    return c.value === count;
-                  })
-                ) {
-                  selectedCounts.push({ value: count, label: label });
-                }
-              } else {
-                selectedCounts = selectedCounts.filter(function (c) {
-                  return c.value !== count;
-                });
-              }
-              updateCountDisplay();
-            });
-          });
-
-        function updateCountDisplay() {
-          updateMultiSelectDisplay(selectedCounts, countSelectBtn, countSelectValue, 'اختر العدد');
-        }
-
-        countSearchInput.addEventListener('click', function (e) {
-          e.stopPropagation();
-        });
-        countSearchInput.addEventListener('input', function () {
-          var q = this.value.trim().toLowerCase();
-          countDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            var label = li.querySelector('input').getAttribute('data-label').toLowerCase();
-            li.style.display = label.includes(q) ? '' : 'none';
-          });
-        });
-
-        countSelectBtn.addEventListener('hidden.bs.dropdown', function () {
-          countSearchInput.value = '';
-          countDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            li.style.display = '';
-          });
-        });
-
-        /* ---- Multi-select dropdown logic (نشط) ---- */
-        var selectedActive = [];
-        var activeSelectBtn = document.getElementById('activeSelectBtn');
-        var activeSelectValue = document.getElementById('activeSelectValue');
-        var activeDropdownMenu = document.getElementById('activeDropdownMenu');
-        var activeSearchInput = document.getElementById('activeSearchInput');
-
-        activeDropdownMenu
-          .querySelectorAll('input[type="checkbox"][data-active]')
-          .forEach(function (cb) {
-            cb.addEventListener('change', function () {
-              var active = this.getAttribute('data-active');
-              var label = this.getAttribute('data-label');
-              if (this.checked) {
-                if (
-                  !selectedActive.some(function (a) {
-                    return a.value === active;
-                  })
-                ) {
-                  selectedActive.push({ value: active, label: label });
-                }
-              } else {
-                selectedActive = selectedActive.filter(function (a) {
-                  return a.value !== active;
-                });
-              }
-              updateActiveDisplay();
-            });
-          });
-
-        function updateActiveDisplay() {
-          updateMultiSelectDisplay(
-            selectedActive,
-            activeSelectBtn,
-            activeSelectValue,
-            'اختر الحالة',
-          );
-        }
-
-        activeSearchInput.addEventListener('click', function (e) {
-          e.stopPropagation();
-        });
-        activeSearchInput.addEventListener('input', function () {
-          var q = this.value.trim().toLowerCase();
-          activeDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            var label = li.querySelector('input').getAttribute('data-label').toLowerCase();
-            li.style.display = label.includes(q) ? '' : 'none';
-          });
-        });
-
-        activeSelectBtn.addEventListener('hidden.bs.dropdown', function () {
-          activeSearchInput.value = '';
-          activeDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            li.style.display = '';
-          });
-        });
-
-        /* ---- Multi-select dropdown logic (موديل السيارة) ---- */
-        var selectedModels = [];
-        var modelSelectBtn = document.getElementById('modelSelectBtn');
-        var modelSelectValue = document.getElementById('modelSelectValue');
-        var modelDropdownMenu = document.getElementById('modelDropdownMenu');
-        var modelSearchInput = document.getElementById('modelSearchInput');
-
-        modelDropdownMenu
-          .querySelectorAll('input[type="checkbox"][data-model]')
-          .forEach(function (cb) {
-            cb.addEventListener('change', function () {
-              var model = this.getAttribute('data-model');
-              var label = this.getAttribute('data-label');
-              if (this.checked) {
-                if (
-                  !selectedModels.some(function (m) {
-                    return m.value === model;
-                  })
-                ) {
-                  selectedModels.push({ value: model, label: label });
-                }
-              } else {
-                selectedModels = selectedModels.filter(function (m) {
-                  return m.value !== model;
-                });
-              }
-              updateModelDisplay();
-            });
-          });
-
-        function updateModelDisplay() {
-          updateMultiSelectDisplay(
-            selectedModels,
-            modelSelectBtn,
-            modelSelectValue,
-            'اختر الموديل',
-          );
-        }
-
-        modelSearchInput.addEventListener('click', function (e) {
-          e.stopPropagation();
-        });
-        modelSearchInput.addEventListener('input', function () {
-          var q = this.value.trim().toLowerCase();
-          modelDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            var label = li.querySelector('input').getAttribute('data-label').toLowerCase();
-            li.style.display = label.includes(q) ? '' : 'none';
-          });
-        });
-
-        modelSelectBtn.addEventListener('hidden.bs.dropdown', function () {
-          modelSearchInput.value = '';
-          modelDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            li.style.display = '';
-          });
-        });
-
-        /* ---- Multi-select dropdown logic (نوع السيارة) ---- */
-        var selectedCarTypes = [];
-        var carTypeSelectBtn = document.getElementById('carTypeSelectBtn');
-        var carTypeSelectValue = document.getElementById('carTypeSelectValue');
-        var carTypeDropdownMenu = document.getElementById('carTypeDropdownMenu');
-        var carTypeSearchInput = document.getElementById('carTypeSearchInput');
-
-        carTypeDropdownMenu
-          .querySelectorAll('input[type="checkbox"][data-cartype]')
-          .forEach(function (cb) {
-            cb.addEventListener('change', function () {
-              var carType = this.getAttribute('data-cartype');
-              var label = this.getAttribute('data-label');
-              if (this.checked) {
-                if (
-                  !selectedCarTypes.some(function (c) {
-                    return c.value === carType;
-                  })
-                ) {
-                  selectedCarTypes.push({ value: carType, label: label });
-                }
-              } else {
-                selectedCarTypes = selectedCarTypes.filter(function (c) {
-                  return c.value !== carType;
-                });
-              }
-              updateCarTypeDisplay();
-            });
-          });
-
-        function updateCarTypeDisplay() {
-          updateMultiSelectDisplay(
-            selectedCarTypes,
-            carTypeSelectBtn,
-            carTypeSelectValue,
-            'اختر النوع',
-          );
-        }
-
-        carTypeSearchInput.addEventListener('click', function (e) {
-          e.stopPropagation();
-        });
-        carTypeSearchInput.addEventListener('input', function () {
-          var q = this.value.trim().toLowerCase();
-          carTypeDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            var label = li.querySelector('input').getAttribute('data-label').toLowerCase();
-            li.style.display = label.includes(q) ? '' : 'none';
-          });
-        });
-
-        carTypeSelectBtn.addEventListener('hidden.bs.dropdown', function () {
-          carTypeSearchInput.value = '';
-          carTypeDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            li.style.display = '';
-          });
-        });
-
-        /* ---- Multi-select dropdown logic (تاريخ السيارة) ---- */
-        var selectedYears = [];
-        var yearSelectBtn = document.getElementById('yearSelectBtn');
-        var yearSelectValue = document.getElementById('yearSelectValue');
-        var yearDropdownMenu = document.getElementById('yearDropdownMenu');
-        var yearSearchInput = document.getElementById('yearSearchInput');
-
-        yearDropdownMenu
-          .querySelectorAll('input[type="checkbox"][data-year]')
-          .forEach(function (cb) {
-            cb.addEventListener('change', function () {
-              var year = this.getAttribute('data-year');
-              var label = this.getAttribute('data-label');
-              if (this.checked) {
-                if (
-                  !selectedYears.some(function (y) {
-                    return y.value === year;
-                  })
-                ) {
-                  selectedYears.push({ value: year, label: label });
-                }
-              } else {
-                selectedYears = selectedYears.filter(function (y) {
-                  return y.value !== year;
-                });
-              }
-              updateYearDisplay();
-            });
-          });
-
-        function updateYearDisplay() {
-          updateMultiSelectDisplay(selectedYears, yearSelectBtn, yearSelectValue, 'اختر السنة');
-        }
-
-        yearSearchInput.addEventListener('click', function (e) {
-          e.stopPropagation();
-        });
-        yearSearchInput.addEventListener('input', function () {
-          var q = this.value.trim().toLowerCase();
-          yearDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            var label = li.querySelector('input').getAttribute('data-label').toLowerCase();
-            li.style.display = label.includes(q) ? '' : 'none';
-          });
-        });
-
-        yearSelectBtn.addEventListener('hidden.bs.dropdown', function () {
-          yearSearchInput.value = '';
-          yearDropdownMenu.querySelectorAll('li:not(:first-child)').forEach(function (li) {
-            li.style.display = '';
+                var stored = result.payload && result.payload.data ? result.payload.data.stock : next;
+                count.textContent = stored;
+                recalculateTotals(cell, stored);
+              })
+              .catch(function () {
+                count.textContent = previous;
+                markFailed(cell);
+                window.alert(@json(__('company.pages.car-availability.44')));
+              })
+              .finally(function () {
+                busy = false;
+                cell.classList.remove('matrix-cell--saving');
+              });
           });
         });
       });
-    </script>
-@endpush
 
+      /**
+       * The column header carries that car's fleet total and the row carries the
+       * branch total, so one write has to move all three numbers or the table
+       * starts lying. They are derived from the cells already on screen.
+       */
+      function recalculateTotals(cell, stock) {
+        var carId = cell.getAttribute('data-car');
+        var delta = stock - (parseInt(cell.getAttribute('data-stock') || '0', 10) || 0);
+
+        cell.setAttribute('data-stock', String(stock));
+
+        var headerTotal = document.querySelector('[data-car-total="' + carId + '"]');
+
+        if (headerTotal && delta) {
+          headerTotal.textContent = (parseInt(headerTotal.textContent, 10) || 0) + delta;
+        }
+      }
+
+      /* ---- Availability switch: every cell shows the same car-level state ---- */
+      document.querySelectorAll('[data-toggle-car]').forEach(function (toggle) {
+        var busy = false;
+
+        toggle.addEventListener('click', function () {
+          if (busy) {
+            return;
+          }
+
+          var wasOn = toggle.getAttribute('data-state') === 'on';
+          var nowOn = !wasOn;
+
+          busy = true;
+          setCarState(toggle.getAttribute('data-toggle-car'), nowOn);
+
+          fetch(toggle.getAttribute('data-toggle-url'), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+                'X-CSRF-TOKEN': csrf(),
+              'X-Requested-With': 'XMLHttpRequest',
+            },
+          })
+            .then(function (response) {
+              return response.json().then(function (payload) {
+                return { ok: response.ok, payload: payload };
+              });
+            })
+            .then(function (result) {
+              if (!result.ok) {
+                setCarState(toggle.getAttribute('data-toggle-car'), wasOn);
+                window.alert(
+                  errorMessage(result.payload, @json(__('company.pages.car-availability.44')))
+                );
+                return;
+              }
+
+              var isActive = result.payload && result.payload.data ? result.payload.data.is_active : nowOn;
+              var on = !!isActive;
+
+              setCarState(toggle.getAttribute('data-toggle-car'), on);
+            })
+            .catch(function () {
+              setCarState(toggle.getAttribute('data-toggle-car'), wasOn);
+              window.alert(@json(__('company.pages.car-availability.44')));
+            })
+            .finally(function () {
+              busy = false;
+            });
+        });
+
+        function setCarState(carId, isActive) {
+            document.querySelectorAll('[data-toggle-car="' + carId + '"]').forEach(function (toggle) {
+              toggle.setAttribute('data-state', isActive ? 'on' : 'off');
+              toggle.setAttribute('aria-checked', String(isActive));
+            });
+
+            document.querySelectorAll('[data-cell][data-car="' + carId + '"]').forEach(function (cell) {
+              cell.setAttribute('data-state', isActive ? 'on' : 'off');
+              cell.classList.toggle('matrix-cell--active', isActive);
+              cell.classList.toggle('matrix-cell--inactive', !isActive);
+            });
+        }
+      });
+
+      /* ---- Typing in the search box submits the GET form, so the server
+             filters instead of hiding rows after the fact. ---- */
+      var search = document.getElementById('fleetSearchInput');
+
+      if (search) {
+        var timer = null;
+
+        search.addEventListener('input', function () {
+          window.clearTimeout(timer);
+          timer = window.setTimeout(function () {
+            search.form.submit();
+          }, 600);
+        });
+      }
+    })();
+  </script>
+@endpush

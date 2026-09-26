@@ -38,6 +38,7 @@ abstract class AbstractDropdownController extends Controller
         return view($this->viewName, [
             'config' => $this->viewConfig($entity, $config),
             'cityOptions' => $this->service->cityOptions(),
+            'countryOptions' => $this->service->countryOptions(),
         ]);
     }
 
@@ -136,6 +137,9 @@ abstract class AbstractDropdownController extends Controller
             if (isset($field['step'])) {
                 $resolved['step'] = $field['step'];
             }
+            if (isset($field['options'])) {
+                $resolved['options'] = $field['options'];
+            }
 
             return $resolved;
         }, $config['fields']);
@@ -154,16 +158,18 @@ abstract class AbstractDropdownController extends Controller
 
     private function rules(array $fields, bool $updating): array
     {
-        $required = ['title_ar', 'title_en', 'name_ar', 'name_en', 'city_id', 'date'];
+        $required = ['title_ar', 'title_en', 'name_ar', 'name_en', 'city_id', 'country_id', 'phone_code', 'date'];
 
         $typeRules = [
             'title_ar' => ['string', 'max:255'],
             'title_en' => ['string', 'max:255'],
             'name_ar' => ['string', 'max:255'],
             'name_en' => ['string', 'max:255'],
+            'phone_code' => ['string', 'max:8', 'regex:/^\+[0-9]{1,6}$/'],
             'latitude' => ['numeric', 'between:-90,90'],
             'longitude' => ['numeric', 'between:-180,180'],
             'city_id' => ['integer', 'exists:cities,id'],
+            'country_id' => ['integer', 'exists:countries,id'],
             'date' => ['date'],
             'is_active' => ['boolean'],
         ];
@@ -202,6 +208,11 @@ abstract class AbstractDropdownController extends Controller
             'city_id.required' => __($v.'city_required'),
             'city_id.integer' => __($v.'city_invalid'),
             'city_id.exists' => __($v.'city_invalid'),
+            'country_id.required' => __($v.'country_required'),
+            'country_id.integer' => __($v.'country_invalid'),
+            'country_id.exists' => __($v.'country_invalid'),
+            'phone_code.required' => __($v.'phone_code_required'),
+            'phone_code.regex' => __($v.'phone_code_invalid'),
             'latitude.numeric' => __($v.'latitude_numeric'),
             'latitude.between' => __($v.'latitude_between'),
             'longitude.numeric' => __($v.'longitude_numeric'),
@@ -225,9 +236,12 @@ abstract class AbstractDropdownController extends Controller
             'name_ar' => $row->name_ar ?? $row->title_ar ?? '',
             'name_en' => $row->name_en ?? $row->title_en ?? '',
             'city_id' => $row->city_id ?? null,
+            'country_id' => $row->country_id ?? null,
+            'phone_code' => $row->phone_code ?? null,
             'latitude' => $row->latitude !== null ? (float) $row->latitude : null,
             'longitude' => $row->longitude !== null ? (float) $row->longitude : null,
             'city' => null,
+            'country' => null,
             'date' => $row->date ? $row->date->toDateString() : null,
             'is_active' => (bool) ($row->is_active ?? true),
             'created_at' => $row->created_at?->toISOString(),
@@ -235,6 +249,10 @@ abstract class AbstractDropdownController extends Controller
 
         if ($row->relationLoaded('city') && $row->city !== null) {
             $data['city'] = $isArabic ? $row->city->title_ar : $row->city->title_en;
+        }
+
+        if ($row->relationLoaded('country') && $row->country !== null) {
+            $data['country'] = $isArabic ? $row->country->title_ar : $row->country->title_en;
         }
 
         return $data;

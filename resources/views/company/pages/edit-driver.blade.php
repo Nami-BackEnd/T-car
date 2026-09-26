@@ -42,7 +42,6 @@
                     type="text"
                     class="form-field__input"
                     id="driverFullName"
-                    value="ابو سفيان"
                   />
                   <span class="form-field__error">{{ __('company.common.580') }}</span>
                 </div>
@@ -107,65 +106,47 @@
                         >
                         <i class="bi bi-chevron-down"></i>
                       </button>
-                      <ul class="dropdown-menu w-100" aria-labelledby="countryCodeBtn">
+                      <ul class="dropdown-menu w-100" aria-labelledby="countryCodeBtn" id="countryCodeMenu">
                         <li>
                           <div class="dropdown-search">
                             <i class="bi bi-search"></i>
                             <input type="search"  placeholder="{{ __('company.pages.edit-driver.7') }}" />
                           </div>
                         </li>
-                        <li>
-                          <a class="dropdown-item ltr-num" href="#" data-value="966+"
-                            >{{ __('company.common.44') }}</a
-                          >
-                        </li>
-                        <li>
-                          <a class="dropdown-item ltr-num" href="#" data-value="971+"
-                            >{{ __('company.common.46') }}</a
-                          >
-                        </li>
-                        <li>
-                          <a class="dropdown-item ltr-num" href="#" data-value="973+"
-                            >{{ __('company.common.47') }}</a
-                          >
-                        </li>
-                        <li>
-                          <a class="dropdown-item ltr-num" href="#" data-value="965+"
-                            >{{ __('company.common.43') }}</a
-                          >
-                        </li>
-                        <li>
-                          <a class="dropdown-item ltr-num" href="#" data-value="968+">{{ __('company.common.45') }}</a>
-                        </li>
-                        <li>
-                          <a class="dropdown-item ltr-num" href="#" data-value="974+">{{ __('company.common.48') }}</a>
+                        <li id="countryCodeList">
+                          <div class="dropdown-item">
+                            <span class="text-muted small">{{ __('company.drivers.loading') }}</span>
+                          </div>
                         </li>
                       </ul>
                     </div>
                     <span class="form-field__error">{{ __('company.common.179') }}</span>
                   </div>
 
-                  <div class="form-field">
-                    <label class="form-field__label">{{ __('company.common.181') }}</label>
+                  <div class="form-field" data-required>
+                    <label class="form-field__label"
+                      >{{ __('company.common.181') }}<span class="text-danger">*</span></label
+                    >
                     <input
                       type="text"
                       class="form-field__input ltr-num"
                       id="driverPhoneNumber"
-                      value="564873828"
                     />
+                    <span class="form-field__error">{{ __('company.drivers.errors.phone_required') }}</span>
                   </div>
                 </div>
 
                 
                 <div class="form-grid">
-                  <div class="form-field">
-                    <label class="form-field__label">{{ __('company.common.295') }}</label>
+                  <div class="form-field" data-required>
+                    <label class="form-field__label"
+                      >{{ __('company.common.295') }}<span class="text-danger">*</span></label
+                    >
                     <div class="date-field-wrap">
                       <input
                         type="date"
                         class="form-field__input ltr-num"
                         id="licenseExpiryInput"
-                        value="2034-03-08"
                       />
                       <button
                         type="button"
@@ -177,11 +158,19 @@
                         <i class="bi bi-calendar3"></i>
                       </button>
                     </div>
+                    <span class="form-field__error">{{ __('company.drivers.errors.license_required') }}</span>
                   </div>
 
-                  <div class="form-field">
-                    <label class="form-field__label">{{ __('company.common.402') }}</label>
-                    <input type="text" class="form-field__input ltr-num" value="2507205157" />
+                  <div class="form-field" data-required>
+                    <label class="form-field__label"
+                      >{{ __('company.common.402') }}<span class="text-danger">*</span></label
+                    >
+                    <input
+                      type="text"
+                      class="form-field__input ltr-num"
+                      id="driverIdentityNumber"
+                    />
+                    <span class="form-field__error">{{ __('company.drivers.errors.identity_required') }}</span>
                   </div>
                 </div>
 
@@ -194,7 +183,6 @@
                     type="email"
                     class="form-field__input ltr-num"
                     id="driverEmail"
-                    value="Kamrulahmed13579@Gmail.com"
                   />
                   <span class="form-field__error">{{ __('company.common.177') }}</span>
                 </div>
@@ -208,6 +196,7 @@
                         class="form-field__input ltr-num"
                         id="driverPassword"
                         placeholder="••••••••"
+                        autocomplete="new-password"
                       />
                       <button
                         type="button"
@@ -230,6 +219,7 @@
                         class="form-field__input ltr-num"
                         id="driverPasswordConfirm"
                         placeholder="••••••••"
+                        autocomplete="new-password"
                       />
                       <button
                         type="button"
@@ -244,17 +234,9 @@
                     <span class="form-field__error">{{ __('company.common.482') }}</span>
                   </div>
                 </div>
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                  <span class="form-field__hint"
-                    >{{ __('company.pages.edit-driver.5') }}</span
-                  >
-                  <button type="button" class="btn-generate-password" id="generatePasswordBtn">
-                    <i class="bi bi-shuffle"></i> {{ __('company.pages.edit-driver.6') }}</button>
-                </div>
               </div>
             </div>
 
-            
             <div class="eo-savebar">
               <button type="button" class="btn btn-outline" id="cancelDriverBtn">
                 <i class="bi bi-x-lg"></i> {{ __('company.common.95') }}</button>
@@ -274,290 +256,409 @@
 
 @push('scripts')
 <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        // Status toggle functionality (kept from the drivers list page)
-        document.querySelectorAll('.status-toggle').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            var currentStatus = this.getAttribute('data-status');
+    var driverId = @json(request()->route('driver')?->id ?? request()->route('driver'));
+    var showUrl = @json(route('company.drivers.show', request()->route('driver')));
+    var updateUrl = @json(route('company.edit-driver.update', request()->route('driver')));
+    var driversUrl = @json(route('company.drivers'));
+    var csrf = document.querySelector('meta[name="csrf-token"]');
+    var isAr = @json(app()->getLocale() === 'ar');
 
-            if (currentStatus === 'active') {
-              this.setAttribute('data-status', 'inactive');
-              this.classList.remove('status-toggle--active');
-              this.classList.add('status-toggle--inactive');
-              this.textContent = 'غير مفعل';
-            } else {
-              this.setAttribute('data-status', 'active');
-              this.classList.remove('status-toggle--inactive');
-              this.classList.add('status-toggle--active');
-              this.textContent = 'مفعل';
-            }
-          });
+    var noMatches = @json(__('company.pages.edit-driver.2'));
+    var branchPlaceholder = @json(__('company.common.110'));
+    var saveFailed = @json(__('company.drivers.errors.save_failed'));
+
+    var messages = {
+      name: @json(__('company.drivers.errors.name_required')),
+      phone: @json(__('company.drivers.errors.phone_required')),
+      identity: @json(__('company.drivers.errors.identity_required')),
+      license: @json(__('company.drivers.errors.license_required')),
+      email: @json(__('company.drivers.errors.email_invalid')),
+      branches: @json(__('company.drivers.errors.branches_required')),
+      saveFailed: saveFailed,
+    };
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, function (c) {
+        return {
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+        }[c];
+      });
+    }
+
+    var assignedBranches = [];
+    var allBranches = [];
+    var selectedPhoneCode = '';
+
+    var branchSelectBtn = document.getElementById('branchSelectBtn');
+    var branchSelectValue = document.getElementById('branchSelectValue');
+    var branchDropdownMenu = document.getElementById('branchDropdownMenu');
+    var branchDropdownEmpty = document.getElementById('branchDropdownEmpty');
+    var branchSearchInput = document.getElementById('branchSearchInput');
+
+    function setField(id, value) {
+      var el = document.getElementById(id);
+      if (el) el.value = value === null || value === undefined ? '' : value;
+    }
+
+    function setError(el, message) {
+      if (!el) return false;
+      var field = el.closest('.form-field');
+      if (!field) return false;
+      field.classList.add('is-invalid');
+      var slot = field.querySelector('.form-field__error');
+      if (slot && message) slot.textContent = message;
+      return false;
+    }
+
+    function clearError(el) {
+      if (!el) return true;
+      var field = el.closest('.form-field');
+      if (field) field.classList.remove('is-invalid');
+      return true;
+    }
+
+    /* ---- Branch dropdown ---- */
+    function updateBranchDisplay() {
+      if (assignedBranches.length === 0) {
+        branchSelectValue.textContent = branchPlaceholder;
+        branchSelectBtn.classList.remove('has-value');
+        return;
+      }
+
+      var labels = assignedBranches.map(function (id) {
+        var branch = allBranches.find(function (b) {
+          return b.id === id;
         });
+        return branch ? branch.label : id;
+      });
 
-        /* ============================================================
-       Multi-select dropdown logic (تخصيصه إلى فرع)
-    ============================================================= */
-        var ALL_BRANCHES = [
-          'N2 فرع العتيق',
-          'N2-Al-Olaya',
-          'N2 Rental Car - Riyadh - Almarwa',
-          'N2 Rental Car-Rawdah',
-          'N2 Rental Car - Riyadh - Al Aziziyah',
-          'N2 Rental Car - Riyadh -Exit 27, Al-Awali',
-          'N2 Rental Car - Riyadh - Qurtubah',
-          'N2 - Tuwaiq, Riyadh',
-          'N2 Rental Car - Riyadh - Badr',
-          'N2 Rental Car - Jeddah - Al Salamah',
-          'N2 Rental Car - Dammam - Al Faisaliyah',
-        ];
+      branchSelectValue.textContent = labels.join('، ');
+      branchSelectValue.setAttribute('title', labels.join('، '));
+      branchSelectBtn.classList.add('has-value');
+    }
 
-        // الفروع المخصصة لهذا السائق حاليًا (الحالة المبدئية)
-        var assignedBranches = [
-          'N2 Rental Car - Riyadh -Exit 27, Al-Awali',
-          'N2 Rental Car - Riyadh - Al Aziziyah',
-          'N2 Rental Car - Riyadh - Almarwa',
-          'N2 Rental Car-Rawdah',
-          'N2-Al-Olaya',
-          'N2 فرع العتيق',
-          'N2 Rental Car - Riyadh - Qurtubah',
-          'N2 - Tuwaiq, Riyadh',
-          'N2 Rental Car - Riyadh - Badr',
-        ];
-
-        var branchSelectBtn = document.getElementById('branchSelectBtn');
-        var branchSelectValue = document.getElementById('branchSelectValue');
-        var branchDropdownMenu = document.getElementById('branchDropdownMenu');
-        var branchDropdownEmpty = document.getElementById('branchDropdownEmpty');
-        var branchSearchInput = document.getElementById('branchSearchInput');
-
-        function isAssigned(name) {
-          return assignedBranches.indexOf(name) !== -1;
-        }
-
-        function renderBranchDropdownItems() {
-          branchDropdownMenu.querySelectorAll('.branch-dropdown-item').forEach(function (el) {
-            el.remove();
-          });
-          ALL_BRANCHES.forEach(function (name) {
-            var li = document.createElement('li');
-            li.className = 'branch-dropdown-item';
-            li.innerHTML =
-              '<div class="dropdown-item">' +
-              '<label class="checkbox-option">' +
-              '<input type="checkbox" data-branch="' +
-              name +
-              '" ' +
-              (isAssigned(name) ? 'checked' : '') +
-              '>' +
-              '<span class="checkbox-custom"></span>' +
-              '<span class="checkbox-label">' +
-              name +
-              '</span>' +
-              '</label>' +
-              '</div>';
-            branchDropdownMenu.insertBefore(li, branchDropdownEmpty);
-          });
-
-          branchDropdownMenu
-            .querySelectorAll('input[type="checkbox"][data-branch]')
-            .forEach(function (cb) {
-              cb.addEventListener('change', function () {
-                var name = this.getAttribute('data-branch');
-                if (this.checked) {
-                  if (!isAssigned(name)) assignedBranches.push(name);
-                } else {
-                  assignedBranches = assignedBranches.filter(function (b) {
-                    return b !== name;
-                  });
-                }
-                updateBranchDisplay();
-                branchSelectBtn
-                  .closest('.form-field')
-                  .classList.toggle('is-invalid', assignedBranches.length === 0);
+    function bindBranchCheckboxes() {
+      branchDropdownMenu
+        .querySelectorAll('input[type="checkbox"][data-branch]')
+        .forEach(function (cb) {
+          cb.onchange = function () {
+            var id = parseInt(this.getAttribute('data-branch'), 10);
+            if (this.checked) {
+              if (assignedBranches.indexOf(id) === -1) assignedBranches.push(id);
+            } else {
+              assignedBranches = assignedBranches.filter(function (b) {
+                return b !== id;
               });
-            });
-        }
-
-        function updateBranchDisplay() {
-          if (assignedBranches.length === 0) {
-            branchSelectValue.textContent = 'اختر الفروع';
-            branchSelectBtn.classList.remove('has-value');
-          } else {
-            branchSelectValue.textContent = assignedBranches.join(', ');
-            branchSelectBtn.classList.add('has-value');
-          }
-        }
-
-        renderBranchDropdownItems();
-        updateBranchDisplay();
-
-        // بحث مباشر داخل منيو الفروع
-        branchSearchInput.addEventListener('click', function (e) {
-          e.stopPropagation();
-        });
-        branchSearchInput.addEventListener('input', function () {
-          var q = this.value.trim().toLowerCase();
-          var visibleCount = 0;
-          branchDropdownMenu.querySelectorAll('.branch-dropdown-item').forEach(function (item) {
-            var match = item.textContent.trim().toLowerCase().includes(q);
-            item.style.display = match ? '' : 'none';
-            if (match) visibleCount++;
-          });
-          branchDropdownEmpty.classList.toggle('d-none', visibleCount !== 0);
-        });
-
-        // إعادة ضبط خانة البحث عند إغلاق المنيو
-        branchSelectBtn.addEventListener('hidden.bs.dropdown', function () {
-          branchSearchInput.value = '';
-          branchDropdownMenu.querySelectorAll('.branch-dropdown-item').forEach(function (item) {
-            item.style.display = '';
-          });
-          branchDropdownEmpty.classList.add('d-none');
-        });
-
-        /* ============================================================
-       Single-select dropdown logic (country code)
-    ============================================================= */
-        function wireSingleSelectDropdown(triggerBtn, valueEl) {
-          if (!triggerBtn) return;
-          var menu = triggerBtn.nextElementSibling;
-          menu.querySelectorAll('.dropdown-item').forEach(function (item) {
-            item.addEventListener('click', function (e) {
-              e.preventDefault();
-              valueEl.textContent = this.getAttribute('data-value');
-              triggerBtn.classList.add('has-value');
-              triggerBtn.closest('.form-field').classList.remove('is-invalid');
-            });
-          });
-        }
-        wireSingleSelectDropdown(
-          document.getElementById('countryCodeBtn'),
-          document.getElementById('countryCodeValue'),
-        );
-
-        /* ============================================================
-       Password show/hide toggles
-    ============================================================= */
-        document.querySelectorAll('[data-toggle-password]').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            var input = document.getElementById(this.getAttribute('data-toggle-password'));
-            var icon = this.querySelector('i');
-            if (input.type === 'password') {
-              input.type = 'text';
-              icon.className = 'bi bi-eye-slash';
-            } else {
-              input.type = 'password';
-              icon.className = 'bi bi-eye';
             }
-          });
+            updateBranchDisplay();
+            clearError(branchSelectBtn);
+          };
         });
+    }
 
-        /* ============================================================
-       Generate a strong random password into both password fields
-    ============================================================= */
-        var generatePasswordBtn = document.getElementById('generatePasswordBtn');
-        if (generatePasswordBtn) {
-          generatePasswordBtn.addEventListener('click', function () {
-            var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
-            var pwd = '';
-            for (var i = 0; i < 12; i++) {
-              pwd += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
+    function renderBranchDropdownItems() {
+      branchDropdownMenu.querySelectorAll('.branch-dropdown-item').forEach(function (el) {
+        el.remove();
+      });
 
-            var pass1 = document.getElementById('driverPassword');
-            var pass2 = document.getElementById('driverPasswordConfirm');
-            [pass1, pass2].forEach(function (input) {
-              input.value = pwd;
-              input.type = 'text';
-              var toggleBtn = input.parentElement.querySelector('[data-toggle-password]');
-              if (toggleBtn) toggleBtn.querySelector('i').className = 'bi bi-eye-slash';
-              input.closest('.form-field').classList.remove('is-invalid');
-            });
-          });
-        }
+      if (!allBranches.length) {
+        branchDropdownEmpty.classList.remove('d-none');
+        return;
+      }
 
-        /* ============================================================
-       Open the native date picker when the calendar icon is clicked
-    ============================================================= */
-        document.getElementById('licenseExpiryIconBtn').addEventListener('click', function () {
-          var input = document.getElementById('licenseExpiryInput');
-          if (input.showPicker) {
-            input.showPicker();
-          } else {
-            input.focus();
-          }
-        });
+      branchDropdownEmpty.classList.add('d-none');
 
-        /* ============================================================
-       Lightweight validation + submit
-       (password fields are optional on the edit page — only
-       validated if the admin starts changing them)
-    ============================================================= */
-        var form = document.getElementById('addDriverForm');
-        var successBanner = document.getElementById('saveSuccessBanner');
+      allBranches.forEach(function (branch) {
+        var li = document.createElement('li');
+        li.className = 'branch-dropdown-item';
+        li.innerHTML =
+          '<div class="dropdown-item">' +
+          '<label class="checkbox-option">' +
+          '<input type="checkbox" data-branch="' +
+          branch.id +
+          '" ' +
+          (assignedBranches.indexOf(branch.id) !== -1 ? 'checked' : '') +
+          '>' +
+          '<span class="checkbox-custom"></span>' +
+          '<span class="checkbox-label">' +
+          escapeHtml(branch.label) +
+          '</span>' +
+          '</label>' +
+          '</div>';
+        branchDropdownMenu.insertBefore(li, branchDropdownEmpty);
+      });
 
-        function validateForm() {
-          var isValid = true;
+      bindBranchCheckboxes();
+    }
 
-          function markField(el, ok) {
-            var field = el.closest('.form-field');
-            field.classList.toggle('is-invalid', !ok);
-            if (!ok) isValid = false;
-          }
+    /* ---- Phone code dropdown ---- */
+    function renderPhoneCodes(countries) {
+      var list = document.getElementById('countryCodeList');
+      if (!list) return;
 
-          markField(
-            document.getElementById('driverFullName'),
-            document.getElementById('driverFullName').value.trim().length > 0,
+      list.innerHTML = countries
+        .map(function (country) {
+          var label = (isAr ? country.title_ar : country.title_en) || country.title_en;
+          return (
+            '<div class="dropdown-item"><a class="dropdown-item ltr-num" href="#" data-value="' +
+            escapeHtml(country.phone_code) + '">' + escapeHtml(label) + '</a></div>'
           );
+        })
+        .join('');
 
-          var branchChosen = assignedBranches.length > 0;
-          markField(document.getElementById('branchSelectBtn'), branchChosen);
-
-          markField(document.getElementById('countryCodeBtn'), true);
-
-          var emailVal = document.getElementById('driverEmail').value.trim();
-          var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
-          markField(document.getElementById('driverEmail'), emailOk);
-
-          var pass1 = document.getElementById('driverPassword').value;
-          var pass2 = document.getElementById('driverPasswordConfirm').value;
-          if (pass1 || pass2) {
-            markField(document.getElementById('driverPassword'), pass1.length >= 6);
-            markField(
-              document.getElementById('driverPasswordConfirm'),
-              pass2.length >= 6 && pass2 === pass1,
-            );
-          } else {
-            document
-              .getElementById('driverPassword')
-              .closest('.form-field')
-              .classList.remove('is-invalid');
-            document
-              .getElementById('driverPasswordConfirm')
-              .closest('.form-field')
-              .classList.remove('is-invalid');
-          }
-
-          return isValid;
-        }
-
-        form.addEventListener('submit', function (e) {
+      list.querySelectorAll('a[data-value]').forEach(function (link) {
+        link.addEventListener('click', function (e) {
           e.preventDefault();
-          successBanner.classList.remove('is-visible');
-
-          if (validateForm()) {
-            successBanner.classList.add('is-visible');
-            successBanner.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          } else {
-            var firstInvalid = form.querySelector('.form-field.is-invalid');
-            if (firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        });
-
-        document.getElementById('cancelDriverBtn').addEventListener('click', function () {
-          window.location.href = '{{ route('company.drivers') }}';
+          selectedPhoneCode = this.getAttribute('data-value');
+          document.getElementById('countryCodeValue').textContent = selectedPhoneCode;
         });
       });
-    </script>
-@endpush
+    }
 
+    /* ---- Load driver + options, then hydrate the form ---- */
+    function load() {
+      return fetch(showUrl, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+      })
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (res) {
+          if (res.code && res.code >= 400) {
+            window.location.href = driversUrl;
+            return;
+          }
+
+          var driver = res.data.driver;
+          var options = res.data.options || {};
+
+          setField('driverFullName', driver.name);
+          setField('driverPhoneNumber', driver.phone);
+          setField('driverEmail', driver.email);
+          setField('driverIdentityNumber', driver.identity_number);
+          setField('licenseExpiryInput', driver.license_expiration_date);
+
+          selectedPhoneCode = driver.phone_code || '';
+          setField('countryCodeValue', selectedPhoneCode);
+
+          allBranches = (options.branches || []).map(function (branch) {
+            return {
+              id: parseInt(branch.id, 10),
+              label: (isAr ? branch.name_ar : branch.name_en) || branch.name_ar || branch.name_en,
+            };
+          });
+          // A driver flagged as covering every branch may have no explicit
+          // pivot rows, so hydrate the picker from the option list instead.
+          assignedBranches = driver.assigned_to_all_branches
+            ? allBranches.map(function (b) {
+                return b.id;
+              })
+            : (driver.branch_ids || []).map(function (id) {
+                return parseInt(id, 10);
+              });
+
+          renderBranchDropdownItems();
+          updateBranchDisplay();
+          renderPhoneCodes(options.phone_codes || []);
+        })
+        .catch(function () {});
+    }
+
+    /* ---- Inline search inside the branch dropdown ---- */
+    if (branchSearchInput) {
+      branchSearchInput.addEventListener('click', function (e) {
+        e.stopPropagation();
+      });
+      branchSearchInput.addEventListener('input', function () {
+        var q = this.value.trim().toLowerCase();
+        var visible = 0;
+
+        branchDropdownMenu.querySelectorAll('.branch-dropdown-item').forEach(function (li) {
+          var label = (li.textContent || '').trim().toLowerCase();
+          var show = !q || label.indexOf(q) !== -1;
+          li.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+
+        branchDropdownEmpty.classList.toggle('d-none', visible !== 0);
+        if (!visible) {
+          branchDropdownEmpty.querySelector('div').textContent = noMatches;
+        }
+      });
+    }
+
+    /* ---- Password show/hide ---- */
+    document.querySelectorAll('[data-toggle-password]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var input = document.getElementById(this.getAttribute('data-toggle-password'));
+        var icon = this.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.className = 'bi bi-eye-slash';
+        } else {
+          input.type = 'password';
+          icon.className = 'bi bi-eye';
+        }
+      });
+    });
+
+    /* ---- Native date picker ---- */
+    var dateIconBtn = document.getElementById('licenseExpiryIconBtn');
+    if (dateIconBtn) {
+      dateIconBtn.addEventListener('click', function () {
+        var input = document.getElementById('licenseExpiryInput');
+        if (input.showPicker) {
+          input.showPicker();
+        } else {
+          input.focus();
+        }
+      });
+    }
+
+    /* ---- Validation + submit ---- */
+    var form = document.getElementById('addDriverForm');
+    var successBanner = document.getElementById('saveSuccessBanner');
+
+    function value(id) {
+      var el = document.getElementById(id);
+      return el ? el.value.trim() : '';
+    }
+
+    function validateForm() {
+      var isValid = true;
+
+      function check(id, ok, message) {
+        if (ok) {
+          clearError(document.getElementById(id));
+        } else {
+          isValid = setError(document.getElementById(id), message);
+        }
+      }
+
+      check('driverFullName', value('driverFullName').length > 0, messages.name);
+      check('driverPhoneNumber', value('driverPhoneNumber').length > 0, messages.phone);
+      check('driverIdentityNumber', value('driverIdentityNumber').length > 0, messages.identity);
+      check('licenseExpiryInput', value('licenseExpiryInput').length > 0, messages.license);
+
+      var emailVal = value('driverEmail');
+      var emailOk = emailVal === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
+      check('driverEmail', emailOk, messages.email);
+
+      // Password is optional on edit; blank means "keep current".
+      var pass1 = value('driverPassword');
+      if (pass1) {
+        var pass2 = value('driverPasswordConfirm');
+        var passOk = pass1.length >= 8 && pass1 === pass2;
+        check('driverPassword', passOk, messages.passwordMismatch);
+        check('driverPasswordConfirm', passOk, messages.passwordMismatch);
+      } else {
+        clearError(document.getElementById('driverPassword'));
+        clearError(document.getElementById('driverPasswordConfirm'));
+      }
+
+      if (assignedBranches.length === 0) {
+        isValid = setError(branchSelectBtn, messages.branches);
+      } else {
+        clearError(branchSelectBtn);
+      }
+
+      return isValid;
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      successBanner.classList.remove('is-visible');
+
+      if (!validateForm()) {
+        var firstInvalid = form.querySelector('.form-field.is-invalid');
+        if (firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      var payload = {
+        name: value('driverFullName'),
+        phone_code: selectedPhoneCode,
+        phone: value('driverPhoneNumber'),
+        license_expiration_date: value('licenseExpiryInput'),
+        identity_number: value('driverIdentityNumber'),
+        email: value('driverEmail') || null,
+        assigned_to_all_branches:
+          allBranches.length > 0 && assignedBranches.length === allBranches.length,
+        branches: assignedBranches,
+      };
+
+      if (value('driverPassword')) {
+        payload.password = value('driverPassword');
+        payload.password_confirmation = value('driverPasswordConfirm');
+      }
+
+      var submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+
+      fetch(updateUrl, {
+        method: 'PUT',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-TOKEN': csrf.content,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (res) {
+          if (res.code && res.code >= 400) {
+            applyServerErrors(res.data && res.data.errors);
+            window.alert((res.data && res.data.message) || messages.saveFailed);
+            return;
+          }
+
+          // Laravel validation failures resolve with HTTP 422 and no
+          // `code` field, so surface the field errors instead of the
+          // generic success path.
+          if (res.errors) {
+            applyServerErrors(res.errors);
+            window.alert(messages.saveFailed);
+            return;
+          }
+          window.location.href = driversUrl;
+        })
+        .catch(function () {
+          window.alert(messages.saveFailed);
+        })
+        .then(function () {
+          if (submitBtn) submitBtn.disabled = false;
+        });
+    });
+
+    function applyServerErrors(errors) {
+      if (!errors) return;
+
+      var map = {
+        name: 'driverFullName',
+        phone: 'driverPhoneNumber',
+        identity_number: 'driverIdentityNumber',
+        license_expiration_date: 'licenseExpiryInput',
+        email: 'driverEmail',
+        password: 'driverPassword',
+        branches: 'branchSelectBtn',
+      };
+
+      Object.keys(map).forEach(function (key) {
+        if (!errors[key]) return;
+        setError(document.getElementById(map[key]), errors[key][0]);
+      });
+    }
+
+    var cancelBtn = document.getElementById('cancelDriverBtn');
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', function () {
+        window.location.href = driversUrl;
+      });
+    }
+
+    load();
+  </script>
+@endpush
